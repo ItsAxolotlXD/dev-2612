@@ -140,20 +140,14 @@ export const getStoredSettings = (): SystemSettings => {
           fontScale = 2;
         }
       }
-      let navigationMode = parsed.navigationMode;
+      let navigationMode = parsed.navigationMode || DEFAULT_SETTINGS.navigationMode;
       if (navigationMode === 'immersive' || navigationMode === 'immersive_floaty') {
         navigationMode = 'floaty';
       }
-      // Side View (sidebar) is the default navigation mode
-      if (!navigationMode || parsed.navModeVersion !== 3) {
-        navigationMode = 'sidebar';
-      }
-      const immersiveSearch = parsed.immersiveSearchVersion === 2
+      const theme = parsed.theme === 'light' ? 'light' : 'dark';
+      const immersiveSearch = typeof parsed.immersiveSearch === 'boolean'
         ? parsed.immersiveSearch
         : true;
-      const theme = parsed.themeVersion === 2
-        ? (parsed.theme === 'light' ? 'light' : 'dark')
-        : 'dark';
       return { 
         ...DEFAULT_SETTINGS, 
         ...parsed,
@@ -161,8 +155,8 @@ export const getStoredSettings = (): SystemSettings => {
         themeVersion: 2,
         immersiveSearch,
         immersiveSearchVersion: 2,
-        navigationMode: navigationMode || DEFAULT_SETTINGS.navigationMode,
-        navModeVersion: 2,
+        navigationMode,
+        navModeVersion: 3,
         floatingSearchBar: parsed.floatingSearchBarVersion === 1
           ? (typeof parsed.floatingSearchBar === 'boolean' ? parsed.floatingSearchBar : true)
           : true,

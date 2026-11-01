@@ -189,7 +189,7 @@ export const Settings: React.FC<SettingsProps> = ({
     matchesSearch(['Appearance', 'Interface', 'giao diện', 'chế độ ứng dụng', 'ban ngày', 'ban đêm', 'light', 'dark', 'thanh điều hướng', 'navigation', 'side view', 'top view', 'tab view', 'thu phóng giao diện', 'font', 'vị trí thanh bên', 'siêu chế độ tối', 'super dark']);
   const matchesAccessibility = matchesSearch(['Accessibility', 'trợ năng', 'hover to expand']);
   const matchesKeyboard = matchesSearch(['Keyboard and Mouse', 'Native keyboard', 'bàn phím số', 'clipboard', 'âm bàn phím', 'keyboard sound', 'keybinds', 'phím tắt']);
-  const matchesTools = false;
+  const matchesTools = matchesSearch(['Tools', 'công cụ', 'ghi chú', 'sparkle notes', 'notes', 'tỉ lệ khung hình', 'aspect ratio']);
   const matchesVersion = 
     matchesSearch(['Updates', 'thông tin phiên bản', 'cập nhật', 'software update', 'build', 'test sparkle', 'update sparkle', 'sparkle recovery', 'recovery', 'khôi phục', 'reset', 'restart out of box experience', 'out of box experience', 'oobe', 'setup wizard']);
 
@@ -290,7 +290,7 @@ export const Settings: React.FC<SettingsProps> = ({
             >
               <div className="space-y-2.5 bg-transparent pt-0.5">
                 {/* 1. Native keyboard */}
-                {false && matchesSearch(['Native keyboard', 'bàn phím', 'cảm ứng']) && (
+                {matchesSearch(['Native keyboard', 'bàn phím', 'cảm ứng']) && (
                   <motion.div 
                     variants={slideUpVariant}
                     initial="hidden"
@@ -323,7 +323,7 @@ export const Settings: React.FC<SettingsProps> = ({
                 )}
 
                 {/* 2. Immersive search experience */}
-                {false && matchesSearch(['Immersive search experience', 'tìm kiếm', 'immersive']) && (
+                {matchesSearch(['Immersive search experience', 'tìm kiếm', 'immersive']) && (
                   <motion.div 
                     variants={slideUpVariant}
                     initial="hidden"
@@ -356,7 +356,7 @@ export const Settings: React.FC<SettingsProps> = ({
                 )}
 
                 {/* 3. Fluent icons */}
-                {false && matchesSearch(['Fluent icons', '3d icons', 'biểu tượng 3d']) && (
+                {matchesSearch(['Fluent icons', '3d icons', 'biểu tượng 3d']) && (
                   <motion.div 
                     variants={slideUpVariant}
                     initial="hidden"
@@ -400,7 +400,7 @@ export const Settings: React.FC<SettingsProps> = ({
                 )}
 
                 {/* New Watch Tab */}
-                {false && matchesSearch(['New Watch Tab', 'watch', 'preview', 'tab xem']) && (
+                {matchesSearch(['New Watch Tab', 'watch', 'preview', 'tab xem']) && (
                   <motion.div
                     variants={slideUpVariant}
                     initial="hidden"
@@ -626,7 +626,7 @@ export const Settings: React.FC<SettingsProps> = ({
                 )}
 
                 {/* 2. Thanh điều hướng */}
-                {false && matchesSearch(['Thanh điều hướng', 'side view', 'top view', 'tab view', 'navigation']) && (
+                {matchesSearch(['Thanh điều hướng', 'side view', 'top view', 'tab view', 'navigation']) && (
                   <motion.div 
                     variants={slideUpVariant}
                     initial="hidden"
@@ -761,7 +761,7 @@ export const Settings: React.FC<SettingsProps> = ({
                 )}
 
                 {/* 4. Vị trí thanh bên (nếu dùng Side View) */}
-                {false && draftSettings.navigationMode === 'sidebar' && matchesSearch(['Vị trí thanh bên', 'trái', 'phải', 'sidebar position']) && (
+                {draftSettings.navigationMode === 'sidebar' && matchesSearch(['Vị trí thanh bên', 'trái', 'phải', 'sidebar position']) && (
                   <motion.div
                     variants={slideUpVariant}
                     initial="hidden"
@@ -801,7 +801,7 @@ export const Settings: React.FC<SettingsProps> = ({
                 )}
 
                 {/* 5. Siêu chế độ tối */}
-                {false && matchesSearch(['Siêu chế độ tối', 'super dark', 'oled', 'pure black']) && (
+                {matchesSearch(['Siêu chế độ tối', 'super dark', 'oled', 'pure black']) && (
                   <motion.div
                     variants={slideUpVariant}
                     initial="hidden"
@@ -921,7 +921,7 @@ export const Settings: React.FC<SettingsProps> = ({
                 )}
 
                 {/* 2. Page loading */}
-                {false && matchesSearch(['Page loading', 'tải trang', 'vòng xoay']) && (
+                {matchesSearch(['Page loading', 'tải trang', 'vòng xoay']) && (
                   <motion.div 
                     variants={slideUpVariant}
                     initial="hidden"
@@ -957,7 +957,7 @@ export const Settings: React.FC<SettingsProps> = ({
                 )}
 
                 {/* 3. Load pages sequentially */}
-                {false && matchesSearch(['Load pages sequentially', 'tải tuần tự', 'cuộn trang']) && (
+                {matchesSearch(['Load pages sequentially', 'tải tuần tự', 'cuộn trang']) && (
                   <motion.div 
                     variants={slideUpVariant}
                     initial="hidden"
@@ -1274,9 +1274,9 @@ export const Settings: React.FC<SettingsProps> = ({
           </section>
         )}
 
-        {/* 4. SECTION: TOOLS (removed) */}
-        {false && matchesTools && (
-          <section id="settings-section-tools" className="space-y-3 bg-transparent">
+        {/* 4. SECTION: TOOLS */}
+        {matchesTools && (
+          <section id="settings-section-tools" className="order-5 space-y-3 bg-transparent">
             {/* Category Header */}
             <motion.div
               variants={slideUpVariant}
@@ -1316,7 +1316,7 @@ export const Settings: React.FC<SettingsProps> = ({
             >
               <div className="space-y-2.5 bg-transparent pt-0.5">
                 {/* 1. Tỉ lệ khung hình */}
-                {false && matchesSearch(['Tỉ lệ khung hình', 'aspect ratio', '16:9', '4:3']) && (
+                {matchesSearch(['Tỉ lệ khung hình', 'aspect ratio', '16:9', '4:3']) && (
                   <motion.div 
                     variants={slideUpVariant}
                     initial="hidden"
@@ -1359,39 +1359,8 @@ export const Settings: React.FC<SettingsProps> = ({
                   </motion.div>
                 )}
 
-                {/* 2. Tự động ẩn Side View */}
-                {false && matchesSearch(['Tự động ẩn Side View', 'auto hide', 'sidebar']) && (
-                  <motion.div 
-                    variants={slideUpVariant}
-                    initial="hidden"
-                    animate="visible"
-                    custom={elementIndex++}
-                    className="settings-block-card rounded-[6px] bg-white dark:bg-[#2c3037] shadow-xs px-4 py-3 sm:py-3.5 flex items-center justify-between gap-4 transition-colors hover:bg-black/[0.02] dark:hover:bg-[#363b43] border-none"
-                  >
-                    <div className="min-w-0 flex-1 pr-2">
-                      <div className="font-normal text-sm text-[#111827] dark:text-white" style={{ fontWeight: 400 }}>
-                        Tự động ẩn Side View
-                      </div>
-                      <div className="text-xs text-[#6B7280] dark:text-[#9CA3AF] mt-0.5 leading-normal">
-                        Tự động thu gọn thanh menu khi không di chuột vào.
-                      </div>
-                    </div>
-
-                    <button
-                      id="toggle-autohide-sidebar"
-                      type="button"
-                      role="switch"
-                      aria-checked={draftSettings.autoHideSidebar}
-                      onClick={() => updateDraft('autoHideSidebar', !draftSettings.autoHideSidebar)}
-                      className="toggle-switch-btn focus:outline-none shrink-0 border-none"
-                    >
-                      <span className="toggle-switch-thumb" />
-                    </button>
-                  </motion.div>
-                )}
-
-                {/* 3. Sparkle Notes */}
-                {false && matchesSearch(['Sparkle Notes', 'ghi chú', 'notes']) && (
+                {/* 2. Sparkle Notes */}
+                {matchesSearch(['Sparkle Notes', 'ghi chú', 'notes']) && (
                   <motion.div 
                     variants={slideUpVariant}
                     initial="hidden"
@@ -1420,7 +1389,7 @@ export const Settings: React.FC<SettingsProps> = ({
                     </button>
                   </motion.div>
                 )}
-                  </div>
+              </div>
             </motion.div>
           </section>
         )}

@@ -29,7 +29,8 @@ import {
   Film,
   Music,
   FileText,
-  FolderPlus
+  FolderPlus,
+  HardDrive
 } from 'lucide-react';
 import { galleryDB, GalleryFolder, GalleryMediaItem } from '../services/galleryStorage';
 import { 
@@ -1860,6 +1861,29 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <span className="truncate text-[13.5px]">Feedback</span>
           </button>
 
+          {/* Drivers Management Tab Item - placed directly above Settings */}
+          <button
+            type="button"
+            id={isMobile ? 'mobile-nav-drivers' : 'sidebar-nav-drivers'}
+            data-nav-active={isCurrentActive('/drivers') ? 'true' : undefined}
+            onClick={() => handleNavClick('/drivers')}
+            aria-label="Drivers Management"
+            className={`sidebar-nav-item w-full h-[38px] flex items-center gap-3.5 px-3 cursor-pointer relative text-left rounded-[6px] transition-colors ${
+              isCurrentActive('/drivers')
+                ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white font-medium shadow-xs'
+                : 'text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white'
+            }`}
+          >
+            {isCurrentActive('/drivers') && (
+              <span
+                aria-hidden="true"
+                className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-[16px] bg-[#4cc2ff] rounded-full z-30 pointer-events-none"
+              />
+            )}
+            <HardDrive className="w-5 h-5 shrink-0 text-black dark:text-white" />
+            <span className="truncate text-[13.5px]">Drivers Management</span>
+          </button>
+
           {/* Bottom Settings Tab Item - icon thường khi dynamic */}
           <button
             type="button"
@@ -2276,6 +2300,30 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     />
                   )}
                   <FluentPersonFeedbackIcon className="w-5 h-5 text-[#111827] dark:text-white shrink-0" />
+                </button>
+
+                {/* Collapsed Drivers Management Button placed directly above Settings */}
+                <button
+                  type="button"
+                  id="sidebar-collapsed-drivers"
+                  data-nav-active={isCurrentActive('/drivers') ? 'true' : undefined}
+                  onClick={() => handleNavClick('/drivers')}
+                  onMouseEnter={(e) => showTooltip('Drivers Management', e)}
+                  onMouseLeave={hideTooltip}
+                  aria-label="Drivers Management"
+                  className={`sidebar-nav-item w-10 h-[38px] rounded-[6px] shrink-0 flex items-center justify-center relative transition-colors cursor-pointer ${
+                    isCurrentActive('/drivers')
+                      ? 'bg-black/10 dark:bg-white/[0.12] text-[#111827] dark:text-white shadow-xs'
+                      : 'text-[#4b5563] dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-[#111827] dark:hover:text-white'
+                  }`}
+                >
+                  {isCurrentActive('/drivers') && (
+                    <span
+                      aria-hidden="true"
+                      className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-[16px] bg-[#4cc2ff] rounded-full z-30 pointer-events-none"
+                    />
+                  )}
+                  <HardDrive className="w-5 h-5 text-[#111827] dark:text-white shrink-0" />
                 </button>
 
                 {/* Bottom Settings Icon */}

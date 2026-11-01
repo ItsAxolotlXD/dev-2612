@@ -8758,3 +8758,41 @@ html.dark .app-toast-tick {
   opacity: 0.9 !important;
 }
 
+/* ==========================================================================
+   No Visual Driver Mode: Disable blur and transparency, render solid colors
+   ========================================================================== */
+.no-visual-drivers,
+.no-visual-drivers * {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+.no-visual-drivers [class*="backdrop-blur"],
+.no-visual-drivers [class*="bg-opacity"],
+.no-visual-drivers .glass-panel,
+.no-visual-drivers .fluent-glass,
+.no-visual-drivers .mica-surface {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* Fallback solid backgrounds for navigation bars and sidebars in dark mode */
+.no-visual-drivers aside#waves-desktop-sidebar,
+.no-visual-drivers header#waves-topbar,
+.no-visual-drivers nav#waves-bottom-dock,
+.no-visual-drivers div[role="dialog"] {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  background-color: #1e2227 !important;
+}
+
+/* Fallback solid backgrounds in light mode */
+html.light-mode .no-visual-drivers aside#waves-desktop-sidebar,
+html.light-mode .no-visual-drivers header#waves-topbar,
+html.light-mode .no-visual-drivers nav#waves-bottom-dock,
+html.light-mode .no-visual-drivers div[role="dialog"] {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  background-color: #f3f3f3 !important;
+}
+

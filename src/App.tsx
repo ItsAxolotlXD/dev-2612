@@ -18,6 +18,9 @@ import { SplashScreen } from './components/SplashScreen';
 import { SPINNING_RING_GIF_LOOP_DURATION_MS } from './components/SpinningRing';
 import { AnimatedBootScreen } from './components/AnimatedBootScreen';
 import { SparkleSetupWizard } from './components/SparkleSetupWizard';
+import { SparkleDriverModal } from './components/SparkleDriverModal';
+import { useDrivers } from './hooks/useDrivers';
+import { DriversManagement } from './pages/DriversManagement';
 import { NativeKeyboard } from './components/NativeKeyboard';
 import { NativeKeyboardProvider } from './context/NativeKeyboardContext';
 import { NotesProvider } from './context/NotesContext';
@@ -57,6 +60,8 @@ import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
 
 export default function App() {
   const { settings, draftSettings, hasChanges, applyDraftSettings, discardDraftSettings } = useSettings();
+  const { isResolutionInstalled, isVisualInstalled } = useDrivers();
+  const [isDriverModalOpen, setIsDriverModalOpen] = useState(false);
 
   // Tooltip & navigation block for unsaved settings
   const [showUnsavedTooltip, setShowUnsavedTooltip] = useState(false);
@@ -187,6 +192,7 @@ export default function App() {
     setIsSetupWizardOpen(false);
     setIsBootVideoFinished(true);
     setIsSplashFinished(true);
+    setIsDriverModalOpen(true);
   }, []);
 
   // Modals state
@@ -756,6 +762,9 @@ export default function App() {
       case '/winui-3':
         return <WinUI3 />;
 
+      case '/drivers':
+        return <DriversManagement onOpenDriverModal={() => setIsDriverModalOpen(true)} navigate={navigate} />;
+
       case '/settings':
         return (
           <Settings
@@ -823,10 +832,21 @@ export default function App() {
     <NativeKeyboardProvider>
       <NotesProvider>
         <div
-        data-immersive-sidebar={settings.immersiveSidebar}
-      data-sidebar-position={settings.sidebarPosition}
-      className={`min-h-screen ${settings.superDarkMode ? 'bg-black' : 'bg-[#f9f9f9] dark:bg-[#1b1f24]'} text-[#111827] dark:text-[#E0E0E6] flex font-sans selection:bg-[#d946ef] selection:text-white dark:selection:bg-[#ff2d92] dark:selection:text-white relative`}
-    >
+          id="sparkle-app-container-wrapper"
+          className="w-full min-h-screen bg-black overflow-x-hidden flex items-center justify-center"
+        >
+          <div
+            id="sparkle-app-root"
+            data-immersive-sidebar={settings.immersiveSidebar}
+            data-sidebar-position={settings.sidebarPosition}
+            className={`min-h-screen w-full ${!isVisualInstalled ? 'no-visual-drivers' : ''} ${settings.superDarkMode ? 'bg-black' : 'bg-[#f9f9f9] dark:bg-[#1b1f24]'} text-[#111827] dark:text-[#E0E0E6] flex font-sans selection:bg-[#d946ef] selection:text-white dark:selection:bg-[#ff2d92] dark:selection:text-white relative`}
+            style={!isResolutionInstalled ? {
+              width: '75%',
+              transform: 'scaleX(1.333333)',
+              transformOrigin: 'center center',
+              margin: '0 auto',
+            } : undefined}
+          >
       {/* Fixed atmospheric cosmic background matching custom nebula gradient */}
       <div 
         id="fixed-app-background-solid" 
@@ -1113,7 +1133,14 @@ export default function App() {
         isOpen={isSetupWizardOpen}
         onFinish={handleFinishSetupWizard}
       />
+
+      {/* Sparkle Driver Setup Modal Dialogs */}
+      <SparkleDriverModal
+        isOpen={isDriverModalOpen}
+        onClose={() => setIsDriverModalOpen(false)}
+      />
     </div>
+  </div>
       </NotesProvider>
     </NativeKeyboardProvider>
   );
