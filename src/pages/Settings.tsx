@@ -180,7 +180,13 @@ export const Settings: React.FC<SettingsProps> = ({
   const query = searchQuery.trim().toLowerCase();
   const matchesSearch = (texts: (string | undefined)[]) => {
     if (!query) return true;
-    return texts.some((t) => t && t.toLowerCase().includes(query));
+    const queryWords = query.split(/\s+/).filter(Boolean);
+    return texts.some((t) => {
+      if (!t) return false;
+      const lower = t.toLowerCase();
+      if (lower.includes(query) || query.includes(lower)) return true;
+      return queryWords.every((word) => lower.includes(word));
+    });
   };
 
   const matchesExperimental = 
@@ -191,7 +197,7 @@ export const Settings: React.FC<SettingsProps> = ({
   const matchesKeyboard = matchesSearch(['Keyboard and Mouse', 'Native keyboard', 'bàn phím số', 'clipboard', 'âm bàn phím', 'keyboard sound', 'keybinds', 'phím tắt']);
   const matchesTools = matchesSearch(['Tools', 'công cụ', 'ghi chú', 'sparkle notes', 'notes', 'tỉ lệ khung hình', 'aspect ratio']);
   const matchesVersion = 
-    matchesSearch(['Updates', 'thông tin phiên bản', 'cập nhật', 'software update', 'build', 'test sparkle', 'update sparkle', 'sparkle recovery', 'recovery', 'khôi phục', 'reset', 'restart out of box experience', 'out of box experience', 'oobe', 'setup wizard']);
+    matchesSearch(['Updates', 'thông tin phiên bản', 'cập nhật', 'software update', 'build', 'test sparkle', 'update sparkle', 'sparkle recovery', 'recovery', 'khôi phục', 'reset', 'reset oobe', 'restart oobe', 'restart out of box experience', 'reset out of box experience', 'out of box experience', 'oobe', 'setup wizard', 'cài đặt ban đầu', 'thiết lập ban đầu', 'khởi tạo ban đầu']);
 
   const hasAnyMatch = 
     !query || 
@@ -1436,12 +1442,12 @@ export const Settings: React.FC<SettingsProps> = ({
             >
               <div className="space-y-2.5 bg-transparent pt-0.5">
                 {/* 1. Version information */}
-                {matchesSearch(['Update version', 'Build number', 'Branch', 'Channel', 'Insider Preview', 'co_release', '26103.11', '26.12']) && (
+                {matchesSearch(['Update version', 'Build number', 'Branch', 'Channel', 'Test Build Dev', 'Dev', 'Insider Preview', 'dev_release', 'co_release', 'fs_dev6_flit', '26.12']) && (
                   <motion.div variants={slideUpVariant} initial="hidden" animate="visible" custom={elementIndex++} className="settings-block-card rounded-[6px] bg-white dark:bg-[#2c3037] shadow-xs p-4 sm:p-5 space-y-3 select-text hover:bg-black/[0.02] dark:hover:bg-[#363b43] transition-colors border-none">
                     <div className="flex items-center justify-between text-xs sm:text-sm"><span className="text-[#111827] dark:text-white">Update version</span><span className="font-semibold text-[#9CA3AF]">26.12</span></div>
                     <div className="flex items-center justify-between text-xs sm:text-sm"><span className="text-[#111827] dark:text-white">Build number</span><span className="font-semibold text-[#9CA3AF]">26103.11</span></div>
-                    <div className="flex items-center justify-between text-xs sm:text-sm"><span className="text-[#111827] dark:text-white">Branch</span><span className="font-semibold text-[#9CA3AF]">co_release</span></div>
-                    <div className="flex items-center justify-between text-xs sm:text-sm"><span className="text-[#111827] dark:text-white">Channel</span><span className="font-semibold text-[#4cc2ff]">Insider Preview</span></div>
+                    <div className="flex items-center justify-between text-xs sm:text-sm"><span className="text-[#111827] dark:text-white">Branch</span><span className="font-semibold text-[#9CA3AF]">dev_release</span></div>
+                    <div className="flex items-center justify-between text-xs sm:text-sm"><span className="text-[#111827] dark:text-white">Channel</span><span className="font-semibold text-[#4cc2ff]">Test Build Dev</span></div>
                   </motion.div>
                 )}
 
@@ -1484,17 +1490,18 @@ export const Settings: React.FC<SettingsProps> = ({
                   </motion.div>
                 )}
 
-                {/* Restart Out of Box Experience */}
-                {(!query || matchesSearch(['setup', 'wizard', 'oobe', 'bắt đầu', 'khởi tạo', 'sparkle setup', 'out of box experience', 'restart out of box experience'])) && (
+                {/* Reset Out of Box Experience (OOBE) */}
+                {(!query || matchesSearch(['Reset Out of Box Experience', 'Reset OOBE', 'Restart Out of Box Experience', 'Restart OOBE', 'OOBE', 'Setup Wizard', 'cài đặt ban đầu', 'thiết lập ban đầu', 'khởi tạo ban đầu', 'reset', 'restart', 'setup', 'wizard', 'sparkle setup'])) && (
                   <motion.div variants={slideUpVariant} initial="hidden" animate="visible" custom={elementIndex++} className="settings-block-card rounded-[6px] bg-white dark:bg-[#2c3037] shadow-xs p-4 sm:p-4.5 flex items-center justify-between gap-3 hover:bg-black/[0.02] dark:hover:bg-[#363b43] transition-colors border-none">
                     <div>
-                      <div className="font-normal text-[#111827] dark:text-white text-xs sm:text-sm">Restart Out of Box Experience</div>
+                      <div className="font-normal text-[#111827] dark:text-white text-xs sm:text-sm">Reset Out of Box Experience (OOBE)</div>
                       <div className="text-[11px] sm:text-xs text-[#9CA3AF] mt-0.5 leading-normal">
-                        Relaunch the Windows 11 Out of Box Experience setup wizard from the beginning to customize country, keyboard, drive partitions, and username.
+                        Relaunch and reset the Windows 11 Out of Box Experience setup wizard from the beginning to customize country, keyboard, drive partitions, and username.
                       </div>
                     </div>
                     <button
                       type="button"
+                      id="btn-reset-oobe"
                       onClick={() => {
                         try {
                           localStorage.removeItem('sparkle_setup_wizard_completed');
@@ -1507,7 +1514,7 @@ export const Settings: React.FC<SettingsProps> = ({
                       }}
                       className="px-4 py-1.5 rounded-[6px] font-normal text-white bg-[#005fb8] dark:bg-[#4cc2ff] hover:bg-[#0067c0] dark:hover:bg-[#6bd0ff] dark:text-black transition-colors text-xs flex items-center justify-center shrink-0 shadow-xs tracking-tight text-center select-none border-none cursor-pointer"
                     >
-                      <span className="light-mode-white-label">Restart OOBE</span>
+                      <span className="light-mode-white-label">Reset OOBE</span>
                     </button>
                   </motion.div>
                 )}

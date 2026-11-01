@@ -1,5 +1,7 @@
 export interface AppToastDetail {
+  title?: string;
   message: string;
+  appName?: string;
   actionLabel?: string;
   onAction?: () => void;
   id?: string | number;
@@ -8,7 +10,8 @@ export interface AppToastDetail {
 export const showAppToast = (
   message: string,
   actionLabel?: string,
-  onAction?: () => void
+  onAction?: () => void,
+  options?: { title?: string; appName?: string }
 ) => {
   if (typeof window !== 'undefined') {
     window.dispatchEvent(
@@ -17,6 +20,8 @@ export const showAppToast = (
           message,
           actionLabel,
           onAction,
+          title: options?.title,
+          appName: options?.appName,
           id: Date.now() + Math.random(),
         },
       })

@@ -46,8 +46,8 @@ export const EvaluationWatermark: React.FC<EvaluationWatermarkProps> = ({ classN
       } text-[11px] sm:text-[12px] leading-[1.35] font-normal tracking-normal ${className}`}
       style={{ fontFamily: "'Segoe UI Variable Text', 'Segoe UI', system-ui, sans-serif" }}
     >
-      <div>Sparkle 26.12 Insider Preview</div>
-      <div>Evaluation copy. Build 26103.11.co_release-1309</div>
+      <div>Sparkle 26.12 Test Build Dev</div>
+      <div>Evaluation copy. Build 26103.11.dev_release-1309</div>
     </div>
   );
 };

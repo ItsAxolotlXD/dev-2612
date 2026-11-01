@@ -25,7 +25,7 @@ export const AppScrollbar: React.FC<AppScrollbarProps> = ({
   const dragStartScrollTopRef = useRef<number>(0);
   const activeContainerRef = useRef<HTMLElement | null>(null);
 
-  // Determine active scroll target (internal scroll container on gallery or window)
+  // Determine active scroll target (internal scroll container on gallery, main tab container, or window)
   const getScrollContainer = useCallback((): HTMLElement | Window => {
     if (currentRoute === '/gallery') {
       const galleryScroll = document.querySelector<HTMLElement>('[data-gallery-scroll="true"]');
@@ -33,6 +33,11 @@ export const AppScrollbar: React.FC<AppScrollbarProps> = ({
         activeContainerRef.current = galleryScroll;
         return galleryScroll;
       }
+    }
+    const mainScroll = document.querySelector<HTMLElement>('#main-content-scroll-container');
+    if (mainScroll && mainScroll.scrollHeight > mainScroll.clientHeight + 10) {
+      activeContainerRef.current = mainScroll;
+      return mainScroll;
     }
     activeContainerRef.current = null;
     return window;

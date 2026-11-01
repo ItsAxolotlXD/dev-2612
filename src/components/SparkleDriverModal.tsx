@@ -172,9 +172,10 @@ export const SparkleDriverModal: React.FC<SparkleDriverModalProps> = ({
 
       {/* Windows Blue Dialog Frame (#0078d7) matching SparkleRecoveryModal */}
       <div
+        id="sparkle-driver-modal-card"
         role="dialog"
         aria-modal="true"
-        className="relative z-10 w-full max-w-[620px] bg-[#0078d7] text-white rounded-none px-6 py-5 sm:px-8 sm:py-6 shadow-[0_24px_64px_rgba(0,0,0,0.85)] select-text border-none"
+        className="fluent-modal-dialog relative z-10 w-full max-w-[500px] bg-[#0078d7] text-white rounded-none px-6 py-5 sm:px-7 sm:py-6 shadow-[0_24px_64px_rgba(0,0,0,0.85)] select-text border-none"
         style={{
           backgroundColor: '#0078d7',
           fontFamily: "'Segoe UI Variable Text', 'Segoe UI', system-ui, sans-serif",

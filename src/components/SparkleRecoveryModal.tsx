@@ -40,6 +40,7 @@ export const SparkleRecoveryModal: React.FC<SparkleRecoveryModalProps> = ({
   const [reasonBug, setReasonBug] = useState(false);
   const [bugDetails, setBugDetails] = useState('');
   const [reasonDefaults, setReasonDefaults] = useState(false);
+  const [reasonResetOOBE, setReasonResetOOBE] = useState(false);
   const [reasonOther, setReasonOther] = useState(false);
   const [otherDetails, setOtherDetails] = useState('');
 
@@ -58,6 +59,7 @@ export const SparkleRecoveryModal: React.FC<SparkleRecoveryModalProps> = ({
       setReasonBug(false);
       setBugDetails('');
       setReasonDefaults(false);
+      setReasonResetOOBE(false);
       setReasonOther(false);
       setOtherDetails('');
       setSubmitToFeedback(true);
@@ -119,6 +121,7 @@ export const SparkleRecoveryModal: React.FC<SparkleRecoveryModalProps> = ({
           localStorage.removeItem('waves_sidebar_collapsed');
           localStorage.removeItem('vplay_recent_channel_id');
           localStorage.removeItem('vplay_font_size');
+          localStorage.removeItem('sparkle_setup_wizard_completed');
           localStorage.setItem('waves_system_settings', JSON.stringify(DEFAULT_SETTINGS));
         } catch (err) {
           console.error('Failed to reset settings:', err);
@@ -149,6 +152,12 @@ export const SparkleRecoveryModal: React.FC<SparkleRecoveryModalProps> = ({
         }
         if (reasonDefaults) {
           opinionLines.push('Option: I want to reset my app to defaults.');
+        }
+        if (reasonResetOOBE) {
+          opinionLines.push('Option: Reset Out of Box Experience (OOBE).');
+          try {
+            localStorage.removeItem('sparkle_setup_wizard_completed');
+          } catch {}
         }
         if (reasonOther) {
           opinionLines.push(`Other reason: ${otherDetails.trim() || 'General feedback'}`);
@@ -235,7 +244,7 @@ export const SparkleRecoveryModal: React.FC<SparkleRecoveryModalProps> = ({
         <div
           role="dialog"
           aria-modal="true"
-          className="relative z-10 w-full max-w-[620px] bg-[#0078d7] text-white rounded-none px-6 py-5 sm:px-8 sm:py-6 shadow-[0_24px_64px_rgba(0,0,0,0.85)] select-text border-none"
+          className="fluent-modal-dialog sparkle-recovery-dialog relative z-10 w-full max-w-[500px] bg-[#0078d7] text-white rounded-none px-6 py-5 sm:px-7 sm:py-6 shadow-[0_24px_64px_rgba(0,0,0,0.85)] select-text border-none"
           style={{
             backgroundColor: '#0078d7',
             fontFamily: "'Segoe UI Variable Text', 'Segoe UI', system-ui, sans-serif"
@@ -331,6 +340,20 @@ export const SparkleRecoveryModal: React.FC<SparkleRecoveryModalProps> = ({
                       animate="visible"
                       className="flex items-center justify-end gap-3 mt-5 sm:mt-6"
                     >
+                      <button
+                        type="button"
+                        onClick={() => {
+                          try {
+                            localStorage.removeItem('sparkle_setup_wizard_completed');
+                          } catch {}
+                          onClose();
+                          window.dispatchEvent(new CustomEvent('launch-sparkle-setup'));
+                        }}
+                        className="sparkle-recovery-btn border-2 border-solid border-white px-3.5 py-1 sm:px-4 sm:py-1 text-[11.5px] sm:text-[12px] font-normal transition-colors cursor-pointer select-none rounded-none tracking-normal"
+                        style={buttonStyle}
+                      >
+                        Reset OOBE
+                      </button>
                       <button
                         type="button"
                         onClick={() => startTransition(2, 'Preparing recovery options...')}
@@ -444,6 +467,32 @@ export const SparkleRecoveryModal: React.FC<SparkleRecoveryModalProps> = ({
                             style={{ fontWeight: 400 }}
                           >
                             I want to reset my app to defaults
+                          </span>
+                        </label>
+                      </div>
+
+                      {/* Checkbox: Reset Out of Box Experience (OOBE) */}
+                      <div>
+                        <label className="flex items-center gap-3 cursor-pointer select-none group">
+                          <div
+                            onClick={() => setReasonResetOOBE(!reasonResetOOBE)}
+                            style={{ border: '2px solid #ffffff', boxSizing: 'border-box' }}
+                            className={`w-4.5 h-4.5 sm:w-5 sm:h-5 shrink-0 flex items-center justify-center transition-colors rounded-none ${
+                              reasonResetOOBE ? 'bg-white' : 'bg-transparent group-hover:bg-white/15'
+                            }`}
+                          >
+                            {reasonResetOOBE && (
+                              <svg viewBox="0 0 16 16" className="w-3.5 h-3.5 fill-[#0078d7]" aria-hidden="true">
+                                <path d="M13.485 3.429a1 1 0 0 1 .086 1.411l-7 8a1 1 0 0 1-1.474.025l-3.5-3.75a1 1 0 1 1 1.45-1.38l2.748 2.944 6.279-7.174a1 1 0 0 1 1.411-.076z" />
+                              </svg>
+                            )}
+                          </div>
+                          <span
+                            onClick={() => setReasonResetOOBE(!reasonResetOOBE)}
+                            className="text-white text-xs sm:text-[13.5px] font-normal leading-normal"
+                            style={{ fontWeight: 400 }}
+                          >
+                            Reset Out of Box Experience (OOBE) setup wizard
                           </span>
                         </label>
                       </div>
@@ -675,7 +724,5 @@ export const SparkleRecoveryModal: React.FC<SparkleRecoveryModalProps> = ({
     </AnimatePresence>
   );
 
-  return typeof document !== 'undefined'
-    ? createPortal(modalContent, document.body)
-    : modalContent;
+  return modalContent;
 };

@@ -119,8 +119,8 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
           } text-[11px] sm:text-[12px] leading-[1.35] font-normal`}
           style={{ fontFamily: "'Segoe UI Variable Text', 'Segoe UI', system-ui, sans-serif" }}
         >
-          <div>Sparkle 26.12 Insider Preview</div>
-          <div>Evaluation copy. Build 26103.11.co_release-1309</div>
+          <div>Sparkle 26.12 Test Insider Preview</div>
+          <div>Evaluation copy. Build fs_dev6_flit.dev_release-1309</div>
         </div>
       )}
     </div>

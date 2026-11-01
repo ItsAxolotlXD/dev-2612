@@ -65,6 +65,13 @@
             document.documentElement.classList.remove('light-mode');
             document.documentElement.classList.add('dark');
           }
+
+          var resDriver = localStorage.getItem('sparkle_driver_resolution');
+          if (resDriver !== 'installed') {
+            document.documentElement.classList.add('missing-resolution-driver');
+          } else {
+            document.documentElement.classList.remove('missing-resolution-driver');
+          }
         } catch(e) {
           document.documentElement.classList.remove('light-mode');
           document.documentElement.classList.add('dark');

@@ -199,6 +199,22 @@ export default function App() {
   const [isWelcomeModalOpen, setIsWelcomeModalOpen] = useState(false);
   const [isBootVideoFinished, setIsBootVideoFinished] = useState(() => !settings.animatedBootScreen);
   const [isSplashFinished, setIsSplashFinished] = useState(false);
+
+  // Sync missing resolution driver state to document element for 4:3 stretched modal dialogs
+  useEffect(() => {
+    document.documentElement.classList.toggle('missing-resolution-driver', !isResolutionInstalled);
+  }, [isResolutionInstalled]);
+
+  // Check drivers on startup (if missing drivers, show SparkleDriverModal)
+  const hasCheckedDriverStartupRef = useRef(false);
+  useEffect(() => {
+    if (isSplashFinished && !isSetupWizardOpen && !hasCheckedDriverStartupRef.current) {
+      hasCheckedDriverStartupRef.current = true;
+      if (!isResolutionInstalled || !isVisualInstalled) {
+        setIsDriverModalOpen(true);
+      }
+    }
+  }, [isSplashFinished, isSetupWizardOpen, isResolutionInstalled, isVisualInstalled]);
   const [isUnderConstructionOpen, setIsUnderConstructionOpen] = useState(false);
   const [isSpotlightOpen, setIsSpotlightOpen] = useState(false);
   const [isCustomStreamModalOpen, setIsCustomStreamModalOpen] = useState(false);
@@ -451,7 +467,12 @@ export default function App() {
     }
 
     // Scroll to top on navigation
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    const scrollContainer = document.querySelector<HTMLElement>('#main-content-scroll-container');
+    if (scrollContainer) {
+      scrollContainer.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
 
     // Tab Splash screen: displays centered tab icon with spinning ring for 1 second on tab switch
     if (isDifferentTab) {
@@ -833,13 +854,13 @@ export default function App() {
       <NotesProvider>
         <div
           id="sparkle-app-container-wrapper"
-          className="w-full min-h-screen bg-black overflow-x-hidden flex items-center justify-center"
+          className="w-full h-screen bg-black overflow-hidden flex items-center justify-center"
         >
           <div
             id="sparkle-app-root"
             data-immersive-sidebar={settings.immersiveSidebar}
             data-sidebar-position={settings.sidebarPosition}
-            className={`min-h-screen w-full ${!isVisualInstalled ? 'no-visual-drivers' : ''} ${settings.superDarkMode ? 'bg-black' : 'bg-[#f9f9f9] dark:bg-[#1b1f24]'} text-[#111827] dark:text-[#E0E0E6] flex font-sans selection:bg-[#d946ef] selection:text-white dark:selection:bg-[#ff2d92] dark:selection:text-white relative`}
+            className={`h-screen w-full ${!isVisualInstalled ? 'no-visual-drivers' : ''} ${settings.superDarkMode ? 'bg-black' : 'bg-[#f9f9f9] dark:bg-[#1b1f24]'} text-[#111827] dark:text-[#E0E0E6] flex font-sans selection:bg-[#d946ef] selection:text-white dark:selection:bg-[#ff2d92] dark:selection:text-white relative overflow-hidden`}
             style={!isResolutionInstalled ? {
               width: '75%',
               transform: 'scaleX(1.333333)',
@@ -893,7 +914,9 @@ export default function App() {
       )}
 
       {/* Main App Container */}
-      <div className={`flex-1 flex flex-col min-w-0 min-h-screen transition-[padding] duration-[160ms] ease-[cubic-bezier(0.34,1.45,0.64,1)] bg-[#f3f3f3] dark:bg-[#1b1f24] ${
+      <div 
+        id="main-content-scroll-container"
+        className={`flex-1 flex flex-col min-w-0 h-screen overflow-y-auto overflow-x-hidden no-scrollbar transition-[padding] duration-[160ms] ease-[cubic-bezier(0.34,1.45,0.64,1)] bg-[#f3f3f3] dark:bg-[#1b1f24] ${
         isInkCanvasEditor || isGalleryViewerOpen
           ? 'md:pl-0 md:pr-0 pb-0'
           : settings.navigationMode === 'topbar'
@@ -942,7 +965,7 @@ export default function App() {
         />}
 
         {/* Dynamic Page Content with smooth slide-up transition - Bo cong 10px góc trên trái ở desktop, không bo ở mobile */}
-        <main className={`main-tab-page flex-1 w-full mx-auto rounded-tl-none md:rounded-tl-[10px] rounded-tr-none rounded-br-none rounded-bl-none overflow-hidden bg-[#f9f9f9] dark:bg-[#282c31] ${
+        <main className={`main-tab-page flex-1 w-full mx-auto rounded-tl-none md:rounded-tl-[10px] rounded-tr-none rounded-br-none rounded-bl-none bg-[#f9f9f9] dark:bg-[#282c31] ${
           currentRoute === '/' || currentRoute === '/home' || currentRoute === '/news' || currentRoute === '/updates' || isOfficeRoute || currentRoute === '/craftmine' || currentRoute === '/photopea' || currentRoute === '/vlc' || currentRoute === '/screenbox' || currentRoute === '/screenbug' || currentRoute === '/gallery' || currentRoute === '/draws' || currentRoute.startsWith('/draws/') || currentRoute === '/camera'
             ? 'p-0 max-w-none pt-0' 
             : 'px-4 sm:px-6 md:px-8 py-5 max-w-7xl'
@@ -965,7 +988,7 @@ export default function App() {
               initial={{ opacity: 0, y: 22 }}
               animate={isSplashFinished ? { opacity: 1, y: 0 } : { opacity: 0, y: 22 }}
               transition={{ duration: 0.44, ease: [0.16, 1, 0.3, 1] }}
-              className={`tab-element-slide-up-container w-full h-full rounded-tl-none md:rounded-tl-[10px] rounded-tr-none rounded-br-none rounded-bl-none overflow-hidden ${
+              className={`tab-element-slide-up-container w-full min-h-full rounded-tl-none md:rounded-tl-[10px] rounded-tr-none rounded-br-none rounded-bl-none ${
                 settings.pageAnimation === 'zoomIn' ? 'page-anim-zoom origin-center' : ''
               }`}
             >

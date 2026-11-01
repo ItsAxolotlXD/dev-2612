@@ -61,6 +61,10 @@ html.light-mode ::-moz-selection,
   color: #ffffff !important;
 }
 
+/* 4:3 stretched mode: #sparkle-app-root handles the native 4:3 to 16:9 stretch scaling for all children.
+   Modals and dialogs naturally inherit this stretch without needing duplicate scaleX transforms. */
+
+
 @layer base {
   html.light-mode .light-mode-white-label {
     color: #000000 !important;
