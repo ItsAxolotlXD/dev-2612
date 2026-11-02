@@ -253,5 +253,9 @@ export const SearchPane: React.FC<SearchPaneProps> = ({
     </AnimatePresence>
   );
 
-  return typeof document === 'undefined' ? null : createPortal(pane, document.body);
+  if (typeof document === 'undefined') return null;
+
+  // Mount inside the app root so the drawer inherits its 4:3 fallback stretch when the resolution driver is missing.
+  const portalTarget = document.getElementById('sparkle-app-root') ?? document.body;
+  return createPortal(pane, portalTarget);
 };
