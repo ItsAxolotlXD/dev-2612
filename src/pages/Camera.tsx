@@ -22,6 +22,7 @@ import { galleryDB, GalleryMediaItem, GalleryFolder } from '../services/galleryS
 import { useSettings } from '../hooks/useSettings';
 import { showAppToast } from '../utils/toast';
 import { CAMERA_ICON_URL } from '../components/FluentIcons';
+import { SpinningRing } from '../components/SpinningRing';
 
 interface CameraProps {
   navigate: (route: string, state?: any) => void;
@@ -653,7 +654,7 @@ export const Camera: React.FC<CameraProps> = ({ navigate }) => {
               {/* State 1: Connecting / Requesting camera permission */}
               {isRequestingPermission && (
                 <div className="absolute inset-0 z-20 flex flex-col items-center justify-center gap-3 bg-black/85 text-white p-6 text-center">
-                  <RefreshCw className="w-8 h-8 animate-spin text-[#4cc2ff]" />
+                  <SpinningRing size={32} ariaLabel="Đang kết nối với máy ảnh" />
                   <p className="text-sm font-medium">Đang kết nối với máy ảnh của thiết bị...</p>
                   <p className="text-xs text-white/60 max-w-sm">
                     Vui lòng bấm &ldquo;Cho phép&rdquo; (Allow) nếu trình duyệt hỏi quyền sử dụng camera.

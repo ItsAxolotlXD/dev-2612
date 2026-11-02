@@ -903,11 +903,13 @@ export default function App() {
       {isInkCanvasEditor && !isInkCanvasChromeVisible && <><div onMouseEnter={() => setIsInkCanvasChromeVisible(true)} className="fixed left-0 top-0 bottom-0 w-3 z-[200]" /><div onMouseEnter={() => setIsInkCanvasChromeVisible(true)} className="fixed left-0 top-0 right-0 h-3 z-[200]" /><div onMouseEnter={() => setIsInkCanvasChromeVisible(true)} className="fixed left-0 bottom-0 right-0 h-3 z-[200]" /></>}
 
       {/* Sidebar Navigation (Desktop + Mobile Drawer) */}
-      {(settings.navigationMode === 'sidebar' || isMobileSidebarOpen || mobileDragOffset !== null) && (!isInkCanvasEditor || isInkCanvasChromeVisible) && !isGalleryViewerOpen && (
+      {(settings.navigationMode !== 'floaty' || isMobileSidebarOpen || mobileDragOffset !== null) && (!isInkCanvasEditor || isInkCanvasChromeVisible) && !isGalleryViewerOpen && (
         <Sidebar
           currentRoute={isDriverManagementPanelOpen ? '/drivers' : currentRoute}
           navigate={navigate}
           onOpenSearch={handleOpenSearch}
+          searchQuery={currentTabSearchQuery}
+          onSearchChange={handleTabSearchChange}
           onSelectChannel={setCurrentChannel}
           isCollapsed={isSidebarCollapsed}
           onToggleCollapse={toggleSidebarCollapse}
@@ -944,10 +946,8 @@ export default function App() {
         className={`flex-1 flex flex-col min-w-0 h-screen overflow-y-auto overflow-x-hidden no-scrollbar transition-[padding] duration-[160ms] ease-[cubic-bezier(0.34,1.45,0.64,1)] bg-[#f3f3f3] dark:bg-[#1b1f24] ${
         isInkCanvasEditor || isGalleryViewerOpen
           ? 'md:pl-0 md:pr-0 pb-0'
-          : settings.navigationMode === 'topbar'
-          ? 'md:pl-0 md:pr-0 pb-10'
-          : !settings.dockToSidebar || settings.navigationMode !== 'sidebar'
-            ? 'md:pl-0 md:pr-0 pb-20'
+          : !settings.dockToSidebar || settings.navigationMode === 'floaty'
+          ? 'md:pl-0 md:pr-0 pb-20'
             : settings.sidebarPosition === 'right'
               ? isEffectiveCollapsed
                 ? 'md:pr-[48px]'
@@ -956,38 +956,42 @@ export default function App() {
                 ? 'md:pl-[48px]'
                 : 'md:pl-[260px]'
       }`}>
-        {/* TopBar Header - hidden on an Ink Canvas sheet until the top edge is hovered or when Gallery media viewer is open */}
-        {(!isInkCanvasEditor || isInkCanvasChromeVisible) && !isGalleryViewerOpen && <TopBar
-          currentRoute={currentRoute}
-          navigate={navigate}
-          tabSearchQuery={currentTabSearchQuery}
-          onTabSearchChange={handleTabSearchChange}
-          onOpenSearch={handleOpenSearch}
-          onOpenMobileMenu={() => setIsMobileSidebarOpen(true)}
-          currentChannel={currentChannel}
-          channels={channels}
-          onSelectChannel={setCurrentChannel}
-          onOpenHelp={() => setIsHelpModalOpen(true)}
-          onOpenDiscord={() => setIsWelcomeModalOpen(true)}
-          onOpenSummarize={(art) => {
-            setSummarizeArticle(art);
-            setIsNewsSummaryOpen(true);
-          }}
-          onOpenTextToSpeech={(art) => {
-            setTtsArticle(art);
-            setIsTtsOpen(true);
-          }}
-          onOpenFindWords={() => {
-            setIsFindWordsOpen(true);
-          }}
-          onOpenAddStream={() => setIsAddStreamOpen(true)}
-          onImportChannels={handleImportPlaylist}
-          onOpenNotifications={() => setIsUnderConstructionOpen(true)}
-          fontSize={articleFontSize}
-          onChangeFontSize={handleFontSizeChange}
-          showUnsavedTooltip={showUnsavedTooltip}
-          onDismissUnsavedTooltip={() => setShowUnsavedTooltip(false)}
-        />}
+        {/* Keep search behavior mounted for the sidebar field and shortcuts without showing the old header. */}
+        {(!isInkCanvasEditor || isInkCanvasChromeVisible) && !isGalleryViewerOpen && (
+          <div className="hidden" aria-hidden="true">
+            <TopBar
+              currentRoute={currentRoute}
+              navigate={navigate}
+              tabSearchQuery={currentTabSearchQuery}
+              onTabSearchChange={handleTabSearchChange}
+              onOpenSearch={handleOpenSearch}
+              onOpenMobileMenu={() => setIsMobileSidebarOpen(true)}
+              currentChannel={currentChannel}
+              channels={channels}
+              onSelectChannel={setCurrentChannel}
+              onOpenHelp={() => setIsHelpModalOpen(true)}
+              onOpenDiscord={() => setIsWelcomeModalOpen(true)}
+              onOpenSummarize={(art) => {
+                setSummarizeArticle(art);
+                setIsNewsSummaryOpen(true);
+              }}
+              onOpenTextToSpeech={(art) => {
+                setTtsArticle(art);
+                setIsTtsOpen(true);
+              }}
+              onOpenFindWords={() => {
+                setIsFindWordsOpen(true);
+              }}
+              onOpenAddStream={() => setIsAddStreamOpen(true)}
+              onImportChannels={handleImportPlaylist}
+              onOpenNotifications={() => setIsUnderConstructionOpen(true)}
+              fontSize={articleFontSize}
+              onChangeFontSize={handleFontSizeChange}
+              showUnsavedTooltip={showUnsavedTooltip}
+              onDismissUnsavedTooltip={() => setShowUnsavedTooltip(false)}
+            />
+          </div>
+        )}
 
         {/* Dynamic Page Content with smooth slide-up transition - Bo cong 10px góc trên trái ở desktop, không bo ở mobile */}
         <main className={`main-tab-page flex-1 w-full mx-auto rounded-tl-none md:rounded-tl-[10px] rounded-tr-none rounded-br-none rounded-bl-none bg-[#f9f9f9] dark:bg-[#282c31] ${

@@ -17,16 +17,13 @@ import {
   MessageSquareHeart
 } from 'lucide-react';
 import { SparkleRecoveryModal } from './SparkleRecoveryModal';
+import { WINDOWS_LOADING_GIF } from '../constants/assets';
 
 export interface SparkleSetupWizardProps {
   isOpen: boolean;
   onFinish: () => void;
   initialStep?: number;
 }
-
-// User-specified Windows loading circle GIF
-const WINDOWS_LOADING_GIF =
-  'https://upload.wikimedia.org/wikipedia/commons/3/3f/Windows-loading-cargando.gif?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=original';
 
 // Country list for Step 1
 const REGIONS = [

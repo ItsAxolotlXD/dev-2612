@@ -200,10 +200,14 @@ export const EpgScheduleWidget: React.FC<EpgScheduleWidgetProps> = ({
               disabled={isRefreshing || isLoading}
               title="Làm mới lịch phát sóng"
               className={`p-2 rounded-full text-[#9CA3AF] hover:text-white hover:bg-white/10 active:scale-95 transition-all cursor-pointer border-0 ${
-                isRefreshing ? 'animate-spin text-[#4cc2ff]' : ''
+                isRefreshing ? 'text-[#4cc2ff]' : ''
               }`}
             >
-              <RefreshCw className="w-4 h-4" />
+              {isRefreshing ? (
+                <SpinningRing size={16} ariaLabel="Đang làm mới lịch phát sóng" />
+              ) : (
+                <RefreshCw className="w-4 h-4" />
+              )}
             </button>
 
             {onClose && (
@@ -252,10 +256,14 @@ export const EpgScheduleWidget: React.FC<EpgScheduleWidgetProps> = ({
                 disabled={isRefreshing || isLoading}
                 title="Làm mới lịch phát sóng"
                 className={`p-1.5 rounded-[6px] text-neutral-600 dark:text-neutral-300 hover:bg-black/5 dark:hover:bg-white/10 active:scale-95 transition-all cursor-pointer border-0 ${
-                  isRefreshing ? 'animate-spin text-[#4cc2ff]' : ''
+                  isRefreshing ? 'text-[#4cc2ff]' : ''
                 }`}
               >
-                <RefreshCw className="w-4 h-4" />
+                {isRefreshing ? (
+                  <SpinningRing size={16} ariaLabel="Đang làm mới lịch phát sóng" />
+                ) : (
+                  <RefreshCw className="w-4 h-4" />
+                )}
               </button>
             </div>
           </div>

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'motion/react';
-import { SPINNING_RING_GIF_URL } from './SpinningRing';
+import { SpinningRing } from './SpinningRing';
 import { DEFAULT_SETTINGS } from '../hooks/useSettings';
 
 interface SparkleRecoveryModalProps {
@@ -285,20 +285,7 @@ export const SparkleRecoveryModal: React.FC<SparkleRecoveryModalProps> = ({
                   animate="visible"
                   className="flex items-center gap-3.5 mt-5 sm:mt-6"
                 >
-                  <div
-                    aria-hidden="true"
-                    className="w-6 h-6 bg-white shrink-0"
-                    style={{
-                      WebkitMaskImage: `url("${SPINNING_RING_GIF_URL}")`,
-                      maskImage: `url("${SPINNING_RING_GIF_URL}")`,
-                      WebkitMaskSize: 'contain',
-                      maskSize: 'contain',
-                      WebkitMaskRepeat: 'no-repeat',
-                      maskRepeat: 'no-repeat',
-                      WebkitMaskPosition: 'center',
-                      maskPosition: 'center',
-                    }}
-                  />
+                  <SpinningRing size={24} className="shrink-0" ariaLabel="Please wait" />
                   <span className="text-white text-xs sm:text-[13.5px] font-normal tracking-wide" style={{ fontWeight: 400 }}>
                     Please wait
                   </span>
@@ -676,21 +663,7 @@ export const SparkleRecoveryModal: React.FC<SparkleRecoveryModalProps> = ({
                       animate="visible"
                       className="flex items-center gap-3.5 mt-5 sm:mt-6"
                     >
-                      {/* White Windows spinning ring loader */}
-                      <div
-                        aria-hidden="true"
-                        className="w-6 h-6 bg-white shrink-0"
-                        style={{
-                          WebkitMaskImage: `url("${SPINNING_RING_GIF_URL}")`,
-                          maskImage: `url("${SPINNING_RING_GIF_URL}")`,
-                          WebkitMaskSize: 'contain',
-                          maskSize: 'contain',
-                          WebkitMaskRepeat: 'no-repeat',
-                          maskRepeat: 'no-repeat',
-                          WebkitMaskPosition: 'center',
-                          maskPosition: 'center',
-                        }}
-                      />
+                      <SpinningRing size={24} className="shrink-0" ariaLabel="Recovery in progress" />
                       <span className="text-white text-xs sm:text-[13.5px] font-normal tracking-wide" style={{ fontWeight: 400 }}>
                         {progress}% completed
                       </span>

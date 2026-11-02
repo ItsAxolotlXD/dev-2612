@@ -81,6 +81,7 @@ import { Channel, NewsArticle } from '../types';
 import { DiscordWelcomeModal } from './DiscordWelcomeModal';
 import { UnderConstructionModal } from './UnderConstructionModal';
 import { parseM3UPlaylist, downloadPlaylistFile } from '../utils/m3uParser';
+import { getAppPortalTarget, toAppPortalCoordinates } from '../utils/appPortal';
 
 const LOGO_SRC = 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-iTzEG0iuHLTKbWp5e2y55NABj3UWZr.png';
 
@@ -227,6 +228,8 @@ interface SidebarProps {
   currentRoute: string;
   navigate: (route: string, state?: any) => void;
   onOpenSearch: () => void;
+  searchQuery?: string;
+  onSearchChange?: (query: string) => void;
   selectedChannel?: Channel | null;
   onSelectChannel?: (channel: Channel) => void;
   isCollapsed?: boolean;
@@ -255,6 +258,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
   currentRoute,
   navigate,
   onOpenSearch,
+  searchQuery = '',
+  onSearchChange,
   onSelectChannel,
   isCollapsed = false,
   onToggleCollapse,
@@ -307,11 +312,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const showTooltip = (label: string, e: React.MouseEvent<HTMLElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
     const isRightSidebar = settings.sidebarPosition === 'right';
-    setCollapsedTooltip({
-      label,
-      top: rect.top + rect.height / 2,
-      left: isRightSidebar ? rect.left - 10 : rect.right + 10,
-    });
+    const point = toAppPortalCoordinates(
+      isRightSidebar ? rect.left - 10 : rect.right + 10,
+      rect.top + rect.height / 2,
+    );
+    setCollapsedTooltip({ label, top: point.y, left: point.x });
   };
 
   const hideTooltip = () => {
@@ -1300,6 +1305,53 @@ export const Sidebar: React.FC<SidebarProps> = ({
             dependencyKey={`${navItems.length}-${isLiveTvExpanded}-${currentRoute}`}
           />
 
+          <div className="shrink-0 pb-1">
+            <div
+              role="search"
+              aria-label="Search this page"
+              className="flex h-9 w-full items-center gap-2 rounded-[6px] border border-black/[0.06] bg-white/70 px-2.5 dark:border-white/[0.06] dark:bg-[#282c31]"
+            >
+              <button
+                type="button"
+                onClick={onOpenSearch}
+                aria-label="Open global search"
+                title="Open global search"
+                className="flex h-7 w-6 shrink-0 items-center justify-center text-neutral-500 transition-colors hover:text-[#0078d4] dark:text-neutral-300 dark:hover:text-[#4cc2ff]"
+              >
+                <FluentSearchIcon className="h-4 w-4" />
+              </button>
+              <input
+                id={isMobile ? 'mobile-sidebar-search' : 'sidebar-search'}
+                type="text"
+                value={searchQuery}
+                onChange={(event) => onSearchChange?.(event.target.value)}
+                onKeyDown={(event) => {
+                  if (event.key !== 'Enter' || event.nativeEvent.isComposing || event.keyCode === 229) return;
+                  event.preventDefault();
+                  onOpenSearch();
+                }}
+                aria-label="Search current page"
+                placeholder="Search"
+                autoComplete="off"
+                autoCapitalize="off"
+                autoCorrect="off"
+                spellCheck={false}
+                className="min-w-0 flex-1 bg-transparent text-[13px] text-[#111827] outline-none placeholder:text-neutral-500 dark:text-white dark:placeholder:text-neutral-400"
+              />
+              {searchQuery && (
+                <button
+                  type="button"
+                  onClick={() => onSearchChange?.('')}
+                  aria-label="Clear search"
+                  title="Clear search"
+                  className="flex h-6 w-6 shrink-0 items-center justify-center rounded text-neutral-500 transition-colors hover:bg-black/5 hover:text-[#111827] dark:text-neutral-300 dark:hover:bg-white/10 dark:hover:text-white"
+                >
+                  <X className="h-3.5 w-3.5" />
+                </button>
+              )}
+            </div>
+          </div>
+
           {/* 1. Home */}
           <div className="shrink-0">
             <button
@@ -1861,13 +1913,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <span className="truncate text-[13.5px]">Feedback</span>
           </button>
 
-          {/* Drivers Management Tab Item - placed directly above Settings */}
+          {/* Manage Drivers tab item placed directly above Settings */}
           <button
             type="button"
             id={isMobile ? 'mobile-nav-drivers' : 'sidebar-nav-drivers'}
             data-nav-active={isCurrentActive('/drivers') ? 'true' : undefined}
             onClick={() => handleNavClick('/drivers')}
-            aria-label="Drivers Management"
+            aria-label="Manage Drivers"
             className={`sidebar-nav-item w-full h-[38px] flex items-center gap-3.5 px-3 cursor-pointer relative text-left rounded-[6px] transition-colors ${
               isCurrentActive('/drivers')
                 ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white font-medium shadow-xs'
@@ -1881,7 +1933,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               />
             )}
             <HardDrive className="w-5 h-5 shrink-0 text-black dark:text-white" />
-            <span className="truncate text-[13.5px]">Drivers Management</span>
+            <span className="truncate text-[13.5px]">Manage Drivers</span>
           </button>
 
           {/* Bottom Settings Tab Item - icon thường khi dynamic */}
@@ -2003,6 +2055,18 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   currentRoute={currentRoute}
                   dependencyKey={`${navItems.length}-${currentRoute}`}
                 />
+
+                <button
+                  type="button"
+                  id="sidebar-collapsed-search"
+                  onClick={onOpenSearch}
+                  onMouseEnter={(event) => showTooltip('Search', event)}
+                  onMouseLeave={hideTooltip}
+                  aria-label="Open global search"
+                  className="sidebar-nav-item w-10 h-[38px] rounded-[6px] shrink-0 flex items-center justify-center relative transition-colors cursor-pointer text-black dark:text-white hover:bg-black/5 dark:hover:bg-white/[0.05]"
+                >
+                  <FluentSearchIcon className="w-5 h-5 text-black dark:text-white" />
+                </button>
 
                 {/* 1. Home Icon */}
                 <button
@@ -2302,15 +2366,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   <FluentPersonFeedbackIcon className="w-5 h-5 text-[#111827] dark:text-white shrink-0" />
                 </button>
 
-                {/* Collapsed Drivers Management Button placed directly above Settings */}
+                {/* Collapsed Manage Drivers button placed directly above Settings */}
                 <button
                   type="button"
                   id="sidebar-collapsed-drivers"
                   data-nav-active={isCurrentActive('/drivers') ? 'true' : undefined}
                   onClick={() => handleNavClick('/drivers')}
-                  onMouseEnter={(e) => showTooltip('Drivers Management', e)}
+                  onMouseEnter={(e) => showTooltip('Manage Drivers', e)}
                   onMouseLeave={hideTooltip}
-                  aria-label="Drivers Management"
+                  aria-label="Manage Drivers"
                   className={`sidebar-nav-item w-10 h-[38px] rounded-[6px] shrink-0 flex items-center justify-center relative transition-colors cursor-pointer ${
                     isCurrentActive('/drivers')
                       ? 'bg-black/10 dark:bg-white/[0.12] text-[#111827] dark:text-white shadow-xs'
@@ -2484,7 +2548,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             </motion.div>
           )}
         </AnimatePresence>,
-        document.body
+        getAppPortalTarget() ?? document.body
       )}
     </>
   );

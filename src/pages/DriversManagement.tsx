@@ -47,7 +47,7 @@ export const DriversManagement: React.FC<DriversManagementProps> = ({
           </div>
           <div className="min-w-0">
             <h1 id="driver-management-panel-title" className="text-2xl sm:text-3xl font-semibold tracking-tight text-[#111827] dark:text-white">
-              Drivers Management
+              Manage Drivers
             </h1>
             <p className="text-xs sm:text-sm text-[#666666] dark:text-[#a0a0a0] mt-0.5">
               Manage display resolution adapters, visual effects drivers, and GPU composition.
@@ -71,7 +71,7 @@ export const DriversManagement: React.FC<DriversManagementProps> = ({
             <button
               type="button"
               onClick={onClose}
-              aria-label="Close Drivers Management panel"
+              aria-label="Close Manage Drivers panel"
               className="flex h-8 w-8 shrink-0 items-center justify-center rounded border border-black/15 text-[#4b5563] transition-colors hover:bg-black/5 hover:text-[#111827] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0078d4] dark:border-white/20 dark:text-white/75 dark:hover:bg-white/10 dark:hover:text-white"
             >
               <X className="h-4 w-4" aria-hidden="true" />
