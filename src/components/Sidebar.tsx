@@ -475,6 +475,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
     ? !isExpandedOnHover
     : (settings.autoHideSidebar ? !isHovered : isCollapsed);
 
+  useEffect(() => {
+    if (!effectiveCollapsed) setCollapsedTooltip(null);
+  }, [effectiveCollapsed]);
+
   const handleNavClick = (route: string, state?: any) => {
     navigate(route, state);
     if (onCloseMobile) onCloseMobile();
