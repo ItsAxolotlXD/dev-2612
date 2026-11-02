@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   Camera as CameraIcon, 
+  Lock,
+  Unlock,
   RotateCw, 
   Timer, 
   Grid3X3, 
@@ -22,6 +24,7 @@ import { galleryDB, GalleryMediaItem, GalleryFolder } from '../services/galleryS
 import { useSettings } from '../hooks/useSettings';
 import { showAppToast } from '../utils/toast';
 import { CAMERA_ICON_URL } from '../components/FluentIcons';
+import { SpinningRing } from '../components/SpinningRing';
 
 interface CameraProps {
   navigate: (route: string, state?: any) => void;
@@ -48,6 +51,8 @@ export const Camera: React.FC<CameraProps> = ({ navigate }) => {
   // 1. Hardware / MediaStream State
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
+  const isCameraLockedRef = useRef(true);
+  const [isCameraLocked, setIsCameraLocked] = useState(true);
   const [isStreamActive, setIsStreamActive] = useState(false);
   const [isRequestingPermission, setIsRequestingPermission] = useState(false);
   const [permissionError, setPermissionError] = useState<'denied' | 'not_found' | 'error' | null>(null);
@@ -200,8 +205,23 @@ export const Camera: React.FC<CameraProps> = ({ navigate }) => {
     setIsStreamActive(false);
   }, []);
 
+  const lockCamera = useCallback(() => {
+    isCameraLockedRef.current = true;
+    setIsCameraLocked(true);
+    stopCurrentStream();
+    setIsRequestingPermission(false);
+    setPermissionError(null);
+    setErrorMessage('');
+  }, [stopCurrentStream]);
+
+  const unlockCamera = useCallback(() => {
+    isCameraLockedRef.current = false;
+    setIsCameraLocked(false);
+  }, []);
+
   // Request actual camera stream from the device
   const startCamera = useCallback(async (forcedDeviceId?: string) => {
+    if (isCameraLockedRef.current) return;
     stopCurrentStream();
     setIsRequestingPermission(true);
     setPermissionError(null);
@@ -235,8 +255,14 @@ export const Camera: React.FC<CameraProps> = ({ navigate }) => {
       try {
         stream = await navigator.mediaDevices.getUserMedia(constraints);
       } catch (err: any) {
+        if (isCameraLockedRef.current) throw err;
         // Fallback: If 1080p ideal fails, try generic video constraint
         stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+      }
+
+      if (isCameraLockedRef.current) {
+        stream.getTracks().forEach((track) => track.stop());
+        return;
       }
 
       streamRef.current = stream;
@@ -251,6 +277,10 @@ export const Camera: React.FC<CameraProps> = ({ navigate }) => {
       setPermissionError(null);
       await enumerateDevices();
     } catch (err: any) {
+      if (isCameraLockedRef.current) {
+        setIsStreamActive(false);
+        return;
+      }
       console.error('Lỗi khi truy cập camera thiết bị:', err);
       setIsStreamActive(false);
       if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
@@ -268,16 +298,18 @@ export const Camera: React.FC<CameraProps> = ({ navigate }) => {
     }
   }, [activeDeviceId, enumerateDevices, facingMode, stopCurrentStream]);
 
-  // Start real device camera on mount or when facingMode changes
   useEffect(() => {
-    startCamera();
-    return () => {
-      stopCurrentStream();
-    };
-  }, [facingMode]);
+    if (!isCameraLocked) startCamera();
+  }, [activeDeviceId, facingMode, isCameraLocked, startCamera]);
+
+  useEffect(() => () => {
+    isCameraLockedRef.current = true;
+    stopCurrentStream();
+  }, [stopCurrentStream]);
 
   // Focus tap effect
   const handleViewfinderClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (isCameraLocked) return;
     const rect = e.currentTarget.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
@@ -458,7 +490,6 @@ export const Camera: React.FC<CameraProps> = ({ navigate }) => {
       const nextIndex = (currentIndex + 1) % availableDevices.length;
       const nextDevice = availableDevices[nextIndex];
       setActiveDeviceId(nextDevice.deviceId);
-      startCamera(nextDevice.deviceId);
     } else {
       setFacingMode((prev) => (prev === 'user' ? 'environment' : 'user'));
     }
@@ -501,7 +532,12 @@ export const Camera: React.FC<CameraProps> = ({ navigate }) => {
               className="w-5 h-5 object-contain"
             />
             <span className="font-semibold text-xs tracking-tight">Camera</span>
-            {isStreamActive ? (
+            {isCameraLocked ? (
+              <span className="text-[10px] px-2 py-0.5 rounded-full bg-neutral-500/15 text-neutral-600 dark:text-neutral-300 font-medium flex items-center gap-1">
+                <Lock className="w-3 h-3" />
+                <span>Đã khóa</span>
+              </span>
+            ) : isStreamActive ? (
               <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 font-medium flex items-center gap-1">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                 <span>Trực tiếp ({facingMode === 'user' ? 'Trước' : 'Sau'})</span>
@@ -576,8 +612,20 @@ export const Camera: React.FC<CameraProps> = ({ navigate }) => {
             </button>
           </div>
 
-          {/* Right: Gallery Shortcut */}
+          {/* Right: Camera lock and Gallery shortcuts */}
           <div className="flex items-center gap-1.5">
+            {!isCameraLocked && (
+              <button
+                type="button"
+                onClick={lockCamera}
+                aria-label="Khóa camera"
+                title="Khóa camera"
+                className="h-8 px-2.5 rounded-[5px] text-xs font-medium text-neutral-600 dark:text-neutral-300 hover:text-black dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 flex items-center gap-1.5 transition-colors cursor-pointer"
+              >
+                <Lock className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Khóa camera</span>
+              </button>
+            )}
             <button
               type="button"
               onClick={() => {
@@ -650,10 +698,32 @@ export const Camera: React.FC<CameraProps> = ({ navigate }) => {
                 }`}
               />
 
+              {isCameraLocked && (
+                <div className="absolute inset-0 z-20 flex flex-col items-center justify-center gap-4 bg-black/90 text-white p-6 text-center">
+                  <div className="w-16 h-16 rounded-full bg-white/10 border border-white/15 flex items-center justify-center text-white/80">
+                    <Lock className="w-7 h-7" />
+                  </div>
+                  <div>
+                    <h2 className="text-base font-semibold">Máy ảnh đang được khóa</h2>
+                    <p className="text-xs text-white/60 mt-1 max-w-sm leading-relaxed">
+                      Camera sẽ không được truy cập cho đến khi bạn mở khóa.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={unlockCamera}
+                    className="px-4 py-2 rounded-[6px] bg-[#0078d4] dark:bg-[#4cc2ff] hover:bg-[#106ebe] dark:hover:bg-[#6bd0ff] text-white dark:text-black font-semibold text-xs flex items-center gap-2 transition-colors cursor-pointer shadow-md"
+                  >
+                    <Unlock className="w-3.5 h-3.5" />
+                    <span>Mở khóa camera</span>
+                  </button>
+                </div>
+              )}
+
               {/* State 1: Connecting / Requesting camera permission */}
-              {isRequestingPermission && (
+              {!isCameraLocked && isRequestingPermission && (
                 <div className="absolute inset-0 z-20 flex flex-col items-center justify-center gap-3 bg-black/85 text-white p-6 text-center">
-                  <RefreshCw className="w-8 h-8 animate-spin text-[#4cc2ff]" />
+                  <SpinningRing size={32} ariaLabel="Đang kết nối với máy ảnh" />
                   <p className="text-sm font-medium">Đang kết nối với máy ảnh của thiết bị...</p>
                   <p className="text-xs text-white/60 max-w-sm">
                     Vui lòng bấm &ldquo;Cho phép&rdquo; (Allow) nếu trình duyệt hỏi quyền sử dụng camera.
@@ -786,8 +856,12 @@ export const Camera: React.FC<CameraProps> = ({ navigate }) => {
               <button
                 type="button"
                 onClick={() => startCamera()}
-                title="Tải lại kết nối Camera"
-                className="p-2.5 rounded-full hover:bg-black/5 dark:hover:bg-white/10 text-neutral-500 hover:text-black dark:hover:text-white transition-colors cursor-pointer"
+                aria-label={isCameraLocked ? 'Mở khóa camera để kết nối' : 'Tải lại kết nối Camera'}
+                title={isCameraLocked ? 'Mở khóa camera để kết nối' : 'Tải lại kết nối Camera'}
+                disabled={isCameraLocked}
+                className={`p-2.5 rounded-full hover:bg-black/5 dark:hover:bg-white/10 text-neutral-500 hover:text-black dark:hover:text-white transition-colors ${
+                  isCameraLocked ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer'
+                }`}
               >
                 <RefreshCw className="w-5 h-5" />
               </button>

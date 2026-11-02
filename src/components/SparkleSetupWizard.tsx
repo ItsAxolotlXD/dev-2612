@@ -17,16 +17,13 @@ import {
   MessageSquareHeart
 } from 'lucide-react';
 import { SparkleRecoveryModal } from './SparkleRecoveryModal';
+import { WINDOWS_LOADING_GIF } from '../constants/assets';
 
 export interface SparkleSetupWizardProps {
   isOpen: boolean;
   onFinish: () => void;
   initialStep?: number;
 }
-
-// User-specified Windows loading circle GIF
-const WINDOWS_LOADING_GIF =
-  'https://upload.wikimedia.org/wikipedia/commons/3/3f/Windows-loading-cargando.gif?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=original';
 
 // Country list for Step 1
 const REGIONS = [
@@ -327,7 +324,7 @@ export const SparkleSetupWizard: React.FC<SparkleSetupWizardProps> = ({
     }, 10000);
   };
 
-  // Quick skip for testing
+  // Bypass the setup steps and any running post-install sequence.
   const handleQuickSkip = () => {
     if (transitionTimerRef.current) clearTimeout(transitionTimerRef.current);
     if (postTimerRef.current) clearTimeout(postTimerRef.current);
@@ -379,6 +376,14 @@ export const SparkleSetupWizard: React.FC<SparkleSetupWizardProps> = ({
 
     return (
       <div className="fixed inset-0 z-[2147483647] select-none flex items-center justify-center overflow-hidden font-sans bg-black">
+        <button
+          type="button"
+          onClick={handleQuickSkip}
+          aria-label="Skip setup"
+          className="absolute right-6 top-6 z-10 border border-white/60 bg-black/45 px-4 py-2 text-sm text-white transition-colors hover:bg-black/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+        >
+          Skip
+        </button>
         {/* 4:3 native ratio stretched to 16:9 fullscreen */}
         <div
           className="w-full h-full flex flex-col items-center justify-center overflow-hidden"
@@ -567,8 +572,16 @@ export const SparkleSetupWizard: React.FC<SparkleSetupWizardProps> = ({
             <div className="w-28 h-[2px] bg-white mt-0.5 rounded-full" />
           </div>
 
-          {/* Right side placeholder (Skip button removed per user request) */}
-          <div className="w-24" />
+          <div className="w-24 flex items-center justify-end">
+            <button
+              type="button"
+              onClick={handleQuickSkip}
+              aria-label="Skip setup"
+              className="px-2.5 py-1 bg-[#00477e] hover:bg-[#005a9e] active:bg-[#003c6b] border border-white/40 text-white text-xs font-normal transition-colors cursor-pointer shadow-xs"
+            >
+              Skip
+            </button>
+          </div>
         </div>
 
       {/* 2. MAIN CENTER CONTENT AREA */}

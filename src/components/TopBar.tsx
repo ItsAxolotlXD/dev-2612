@@ -60,6 +60,7 @@ import { NEWS_DATA } from '../data/news';
 import { galleryDB, GalleryMediaItem } from '../services/galleryStorage';
 import { showAppToast } from '../utils/toast';
 import { SearchPane } from './SearchPane';
+import { getAppPortalTarget, toAppPortalCoordinates } from '../utils/appPortal';
 
 function stripHtml(html: string): string {
   return (html || '').replace(/<[^>]*>?/gm, ' ').replace(/\s+/g, ' ').trim();
@@ -273,10 +274,14 @@ export const TopBar: React.FC<TopBarProps> = ({
     if (titleSpan && titleSpan.scrollWidth > titleSpan.clientWidth) {
       const rect = titleSpan.getBoundingClientRect();
       const isNearTop = rect.top < 45;
+      const point = toAppPortalCoordinates(
+        Math.max(16, Math.min(window.innerWidth - 16, rect.left + rect.width / 2)),
+        isNearTop ? rect.bottom + 6 : rect.top - 6,
+      );
       setResultTitleTooltip({
         text: title,
-        top: isNearTop ? rect.bottom + 6 : rect.top - 6,
-        left: Math.max(16, Math.min(window.innerWidth - 16, rect.left + rect.width / 2)),
+        top: point.y,
+        left: point.x,
         placement: isNearTop ? 'bottom' : 'top',
       });
       return;
@@ -831,13 +836,13 @@ export const TopBar: React.FC<TopBarProps> = ({
       },
       {
         id: 'flag-nav-mode',
-        title: 'TopBar Navigation Mode',
+        title: 'Sidebar Navigation Mode',
         subtitle: 'System Setting',
-        keywords: 'navigation mode kiểu điều hướng topbar thanh trên cùng sidebar',
+        keywords: 'navigation mode kiểu điều hướng sidebar side view tab view floaty',
         type: 'setting-toggle',
         customToggle: {
-          checked: settings.navigationMode === 'topbar',
-          onToggle: () => updateSetting('navigationMode', settings.navigationMode === 'topbar' ? 'sidebar' : 'topbar'),
+          checked: settings.navigationMode === 'sidebar',
+          onToggle: () => updateSetting('navigationMode', settings.navigationMode === 'sidebar' ? 'floaty' : 'sidebar'),
         },
         onSelect: () => navigate('/settings'),
       },
@@ -2328,7 +2333,7 @@ export const TopBar: React.FC<TopBarProps> = ({
             {resultTitleTooltip.text}
           </motion.div>
         </AnimatePresence>,
-        document.body
+        getAppPortalTarget() ?? document.body
       )}
     </header>
   );

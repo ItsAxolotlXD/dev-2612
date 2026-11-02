@@ -1,5 +1,5 @@
 export const WINDOWS_LOADING_GIF =
-  'https://upload.wikimedia.org/wikipedia/commons/3/3f/Windows-loading-cargando.gif?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=original';
+  'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Windows-loading-cargando-ZtAxeDuKXrDJFXcmZSTV8IJHtxe0SF.gif';
 
 export const ANIMATED_BOOT_SCREEN_VIDEO_SRC = '/animated_splash_screen.mp4';
 

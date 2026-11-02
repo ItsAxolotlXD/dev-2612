@@ -38,7 +38,7 @@ const APP_PAGES = [
 
 const SETTINGS_SHORTCUTS = [
   { id: 'set-font', title: 'Text Scaling & Typography', desc: 'Adjust font size scale from 78% to 124%', route: '/settings', keywords: 'font size zoom text scale' },
-  { id: 'set-nav', title: 'Navigation Mode', desc: 'Switch between Top View, Side View, and Tab View', route: '/settings', keywords: 'navigation mode topbar sidebar floaty tab view' },
+  { id: 'set-nav', title: 'Navigation Mode', desc: 'Switch between Side View and Tab View', route: '/settings', keywords: 'navigation mode sidebar floaty tab view' },
   { id: 'set-autohide', title: 'Auto-hide Side View', desc: 'Automatically collapse sidebar when watching content', route: '/settings', keywords: 'auto-hide sidebar collapse' },
   { id: 'set-motion', title: 'Motion & Movements', desc: 'Reduce animations or enable fluid transitions', route: '/settings', keywords: 'motion reduce animations movements' },
   { id: 'set-keybinds', title: 'Custom Keybinds', desc: 'Configure keyboard shortcuts for quick actions', route: '/settings', keywords: 'keybinds shortcuts keyboard alt' },

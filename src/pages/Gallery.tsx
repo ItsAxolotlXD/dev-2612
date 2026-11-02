@@ -59,6 +59,7 @@ import {
   FluentCopyIcon
 } from '../components/FluentIcons';
 import { showAppToast } from '../utils/toast';
+import { getAppPortalTarget, toAppPortalCoordinates } from '../utils/appPortal';
 
 export const WINDOWS_11_FOLDER_ICON = 'https://thumb.wikimedia.org/wikipedia/commons/thumb/5/52/Windows_11_FOLDER.svg/1280px-Windows_11_FOLDER.svg.png?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=thumbnail';
 
@@ -134,11 +135,8 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '', ro
 
   const showTooltip = (label: string, e: React.MouseEvent<HTMLElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
-    setGalleryTooltip({
-      label,
-      top: rect.bottom + 8,
-      left: rect.left + rect.width / 2,
-    });
+    const point = toAppPortalCoordinates(rect.left + rect.width / 2, rect.bottom + 8);
+    setGalleryTooltip({ label, top: point.y, left: point.x });
   };
 
   const hideTooltip = () => {
@@ -2402,7 +2400,7 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '', ro
             </motion.div>
           )}
         </AnimatePresence>,
-        document.body
+        getAppPortalTarget() ?? document.body
       )}
     </div>
   );

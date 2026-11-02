@@ -508,7 +508,7 @@ html:not(.light-mode) .tab-element-slide-up-container {
   background-color: #282c31 !important;
 }
 
-/* Main tab page: bo cong 10px ở góc trên trái trang khi ở desktop, khi ��� mobile ko bo */
+/* Main tab page: bo cong 10px ở góc trên trái trang khi ở desktop, khi ����� mobile ko bo */
 @media (min-width: 768px) {
   main,
   .main-tab-page,
@@ -990,20 +990,6 @@ html:not(.light-mode) #vplay-splash-screen {
   animation: fluent-progress-spin 1s linear infinite !important;
   transform-origin: center center;
   display: block;
-}
-
-.winui-gif-progress-ring {
-  display: block;
-  width: 100%;
-  height: 100%;
-  background-color: var(--ui-accent, #ff82ff);
-  -webkit-mask-position: center;
-  -webkit-mask-repeat: no-repeat;
-  -webkit-mask-size: contain;
-  mask-mode: alpha;
-  mask-position: center;
-  mask-repeat: no-repeat;
-  mask-size: contain;
 }
 
 circle[data-splash-ring="true"] {

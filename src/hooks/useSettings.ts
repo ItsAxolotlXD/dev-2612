@@ -143,6 +143,8 @@ export const getStoredSettings = (): SystemSettings => {
       let navigationMode = parsed.navigationMode || DEFAULT_SETTINGS.navigationMode;
       if (navigationMode === 'immersive' || navigationMode === 'immersive_floaty') {
         navigationMode = 'floaty';
+      } else if (navigationMode === 'topbar') {
+        navigationMode = 'sidebar';
       }
       const theme = parsed.theme === 'light' ? 'light' : 'dark';
       const immersiveSearch = typeof parsed.immersiveSearch === 'boolean'

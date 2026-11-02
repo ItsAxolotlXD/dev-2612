@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { SPINNING_RING_GIF_URL } from './SpinningRing';
+import { SpinningRing } from './SpinningRing';
 import { useDrivers } from '../hooks/useDrivers';
 import { showAppToast } from '../utils/toast';
 
@@ -216,20 +216,7 @@ export const SparkleDriverModal: React.FC<SparkleDriverModalProps> = ({
                 animate="visible"
                 className="flex items-center gap-3.5 mt-5 sm:mt-6"
               >
-                <div
-                  aria-hidden="true"
-                  className="w-6 h-6 bg-white shrink-0"
-                  style={{
-                    WebkitMaskImage: `url("${SPINNING_RING_GIF_URL}")`,
-                    maskImage: `url("${SPINNING_RING_GIF_URL}")`,
-                    WebkitMaskSize: 'contain',
-                    maskSize: 'contain',
-                    WebkitMaskRepeat: 'no-repeat',
-                    maskRepeat: 'no-repeat',
-                    WebkitMaskPosition: 'center',
-                    maskPosition: 'center',
-                  }}
-                />
+                <SpinningRing size={24} className="shrink-0" ariaLabel="Installing drivers" />
                 <span className="text-white text-xs sm:text-[13.5px] font-normal tracking-wide" style={{ fontWeight: 400 }}>
                   Please wait while installing...
                 </span>

@@ -1,14 +1,12 @@
 import React from 'react';
+import { WINDOWS_LOADING_GIF } from '../constants/assets';
 
-export const SPINNING_RING_GIF_URL =
-  'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/ew-d4Dd9KCAbDzszRo6i0Oxnwqq4QFgh6.gif';
-
-// The supplied GIF contains 114 frames with a 30ms delay per frame.
+export const SPINNING_RING_GIF_URL = WINDOWS_LOADING_GIF;
 export const SPINNING_RING_GIF_LOOP_DURATION_MS = 114 * 30;
 
 interface SpinningRingProps {
   size?: number;
-  /** The GIF defines its own stroke weight; retained for existing call sites. */
+  /** Retained for existing call sites; the shared GIF defines its own indicator style. */
   strokeWidth?: number;
   className?: string;
   ariaLabel?: string;
@@ -19,7 +17,7 @@ export const SpinningRing: React.FC<SpinningRingProps> = ({
   size = 48,
   className = '',
   ariaLabel = 'Đang tải...',
-  onGifReady
+  onGifReady,
 }) => (
   <div
     role="status"
@@ -27,26 +25,16 @@ export const SpinningRing: React.FC<SpinningRingProps> = ({
     className={`inline-flex items-center justify-center select-none pointer-events-none ${className}`}
     style={{ width: size, height: size }}
   >
-    <div
+    <img
+      src={SPINNING_RING_GIF_URL}
+      alt=""
       aria-hidden="true"
-      data-spinning-ring="true"
-      className="winui-gif-progress-ring"
-      style={{
-        WebkitMaskImage: `url("${SPINNING_RING_GIF_URL}")`,
-        maskImage: `url("${SPINNING_RING_GIF_URL}")`
-      }}
+      className="h-full w-full object-contain select-none pointer-events-none"
+      draggable={false}
+      loading="eager"
+      decoding="async"
+      onLoad={onGifReady}
+      onError={onGifReady}
     />
-    {onGifReady && (
-      <img
-        src={SPINNING_RING_GIF_URL}
-        alt=""
-        aria-hidden="true"
-        className="sr-only"
-        loading="eager"
-        decoding="async"
-        onLoad={onGifReady}
-        onError={onGifReady}
-      />
-    )}
   </div>
 );

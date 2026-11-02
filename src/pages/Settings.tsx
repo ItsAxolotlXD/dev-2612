@@ -362,7 +362,7 @@ export const Settings: React.FC<SettingsProps> = ({
                 )}
 
                 {/* 3. Fluent icons */}
-                {matchesSearch(['Fluent icons', '3d icons', 'biểu tượng 3d']) && (
+                {matchesSearch(['Fluent icons', '3d icons', 'bi��u tượng 3d']) && (
                   <motion.div 
                     variants={slideUpVariant}
                     initial="hidden"
@@ -632,7 +632,7 @@ export const Settings: React.FC<SettingsProps> = ({
                 )}
 
                 {/* 2. Thanh điều hướng */}
-                {matchesSearch(['Thanh điều hướng', 'side view', 'top view', 'tab view', 'navigation']) && (
+                {matchesSearch(['Thanh điều hướng', 'side view', 'tab view', 'navigation']) && (
                   <motion.div 
                     variants={slideUpVariant}
                     initial="hidden"
@@ -641,26 +641,16 @@ export const Settings: React.FC<SettingsProps> = ({
                     className="settings-block-card rounded-[6px] bg-white dark:bg-[#2c3037] shadow-xs px-4 py-3 sm:py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-black/[0.02] dark:hover:bg-[#363b43] transition-colors border-none"
                   >
                     <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-2">
-                        <div className="font-normal text-sm text-[#111827] dark:text-white" style={{ fontWeight: 400 }}>
-                          Thanh điều hướng
-                        </div>
-                        {draftSettings.navigationMode === 'topbar' && (
-                          <span className="inline-flex items-center text-[10px] font-semibold text-[#0078d4] dark:text-[#4cc2ff] bg-[#0078d4]/10 dark:bg-[#4cc2ff]/10 px-2 py-0.5 rounded-[6px]">
-                            Top View
-                          </span>
-                        )}
+                      <div className="font-normal text-sm text-[#111827] dark:text-white" style={{ fontWeight: 400 }}>
+                        Thanh điều hướng
                       </div>
                       <div className="text-xs text-[#6B7280] dark:text-[#9CA3AF] mt-0.5 leading-normal">
-                        {draftSettings.navigationMode === 'topbar'
-                          ? 'Giao diện Top View đưa thanh điều khiển lên đầu màn hình.'
-                          : 'Lựa chọn kiểu điều hướng của ứng dụng (Side View, Top View, Tab View).'}
+                        Lựa chọn kiểu điều hướng của ứng dụng (Side View hoặc Tab View).
                       </div>
                     </div>
-                    <div className="settings-segmented-group grid grid-cols-3 gap-1 rounded-[6px] bg-black/5 dark:bg-black/30 p-1 w-full sm:w-auto sm:min-w-[280px] border-none" role="group" aria-label="Thanh điều hướng">
+                    <div className="settings-segmented-group grid grid-cols-2 gap-1 rounded-[6px] bg-black/5 dark:bg-black/30 p-1 w-full sm:w-auto sm:min-w-[200px] border-none" role="group" aria-label="Thanh điều hướng">
                       {([
                         ['sidebar', 'Side View'],
-                        ['topbar', 'Top View'],
                         ['floaty', 'Tab View'],
                       ] as const).map(([value, label]) => (
                         <button 
