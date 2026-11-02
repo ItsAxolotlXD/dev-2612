@@ -59,6 +59,7 @@ import { Channel, NewsArticle } from '../types';
 import { NEWS_DATA } from '../data/news';
 import { galleryDB, GalleryMediaItem } from '../services/galleryStorage';
 import { showAppToast } from '../utils/toast';
+import { SearchPane } from './SearchPane';
 
 function stripHtml(html: string): string {
   return (html || '').replace(/<[^>]*>?/gm, ' ').replace(/\s+/g, ' ').trim();
@@ -79,7 +80,7 @@ const DEFAULT_HISTORY_ITEMS = [
   'vtv1 hd thoi su 19h'
 ];
 
-interface SearchAspectItem {
+export interface SearchAspectItem {
   id: string;
   title: string;
   subtitle?: string;
@@ -154,6 +155,7 @@ export const TopBar: React.FC<TopBarProps> = ({
   const [logoError, setLogoError] = useState(false);
   const [searchQuery, setSearchQuery] = useState(tabSearchQuery);
   const [isSearchFlyoutOpen, setIsSearchFlyoutOpen] = useState(false);
+  const [isSearchPaneOpen, setIsSearchPaneOpen] = useState(false);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [showAllResults, setShowAllResults] = useState(false);
   const [galleryItems, setGalleryItems] = useState<GalleryMediaItem[]>([]);
@@ -297,16 +299,12 @@ export const TopBar: React.FC<TopBarProps> = ({
     setSearchQuery(tabSearchQuery || '');
   }, [tabSearchQuery, currentRoute]);
 
-  // Listen for vplay:focus-topbar-search event to open search flyout and focus input
+  // Listen for vplay:focus-topbar-search event to open and focus the right-side pane
   useEffect(() => {
     const handleFocusTopBarSearch = () => {
-      setIsSearchFlyoutOpen(true);
+      setIsSearchFlyoutOpen(false);
+      setIsSearchPaneOpen(true);
       setIsSearchFocused(true);
-      const input = searchContainerRef.current?.querySelector('input');
-      if (input) {
-        input.focus();
-        input.select();
-      }
     };
     window.addEventListener('vplay:focus-topbar-search', handleFocusTopBarSearch);
     return () => window.removeEventListener('vplay:focus-topbar-search', handleFocusTopBarSearch);
@@ -425,17 +423,21 @@ export const TopBar: React.FC<TopBarProps> = ({
     }, totalDuration);
   };
 
-  // Close flyout on click outside or Escape
+  // Close search surfaces on outside interaction or Escape
   useEffect(() => {
-    const handleClickOutside = (e: MouseEvent | TouchEvent) => {
-      if (searchContainerRef.current && !searchContainerRef.current.contains(e.target as Node)) {
-        setIsSearchFlyoutOpen(false);
-        setShowAllResults(false);
-      }
+    const handleClickOutside = (event: MouseEvent | TouchEvent) => {
+      const target = event.target;
+      const isInsidePane = target instanceof Element && Boolean(target.closest('[data-search-pane]'));
+      if (isInsidePane || (target instanceof Node && searchContainerRef.current?.contains(target))) return;
+
+      setIsSearchFlyoutOpen(false);
+      setIsSearchPaneOpen(false);
+      setShowAllResults(false);
     };
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
         setIsSearchFlyoutOpen(false);
+        setIsSearchPaneOpen(false);
         setShowAllResults(false);
       }
     };
@@ -1176,10 +1178,30 @@ export const TopBar: React.FC<TopBarProps> = ({
     return matches;
   }, [searchQuery, searchHistory, appAspects, galleryItems, notes, navigate, onTabSearchChange, setActiveNoteId]);
 
+  const handleSearchPaneQueryChange = (query: string) => {
+    setSearchQuery(query);
+    setShowAllResults(false);
+    setIsSearchFlyoutOpen(false);
+    setIsSearchPaneOpen(true);
+    if (onTabSearchChange) {
+      onTabSearchChange(query);
+    }
+  };
+
+  const handleSearchPaneSubmit = () => {
+    const trimmedQuery = searchQuery.trim();
+    if (!trimmedQuery) return;
+    saveToHistory(trimmedQuery);
+    if (onTabSearchChange) {
+      onTabSearchChange(trimmedQuery);
+    }
+  };
+
   const handleSelectSearchResult = (item: SearchAspectItem) => {
     saveToHistory(item.title, { type: item.type, logo: item.logo, subtitle: item.subtitle });
     item.onSelect();
     setIsSearchFlyoutOpen(false);
+    setIsSearchPaneOpen(false);
     setShowAllResults(false);
   };
 
@@ -1583,6 +1605,7 @@ export const TopBar: React.FC<TopBarProps> = ({
     }
     // Stay on current tab page - do not jump to /search or open spotlight modal
     setIsSearchFlyoutOpen(false);
+    setIsSearchPaneOpen(false);
     setShowAllResults(false);
   };
 
@@ -1775,20 +1798,16 @@ export const TopBar: React.FC<TopBarProps> = ({
                     const val = e.target.value;
                     setSearchQuery(val);
                     setShowAllResults(false);
-                    if (currentRoute !== '/settings') {
-                      setIsSearchFlyoutOpen(true);
-                    } else {
-                      setIsSearchFlyoutOpen(false);
-                    }
+                    setIsSearchPaneOpen(true);
+                    setIsSearchFlyoutOpen(false);
                     if (onTabSearchChange) {
                       onTabSearchChange(val);
                     }
                   }}
                   onFocus={() => {
                     setIsSearchFocused(true);
-                    if (currentRoute !== '/settings') {
-                      setIsSearchFlyoutOpen(true);
-                    }
+                    setIsSearchPaneOpen(true);
+                    setIsSearchFlyoutOpen(false);
                   }}
                   onBlur={() => {
                     setIsSearchFocused(false);
@@ -1939,7 +1958,7 @@ export const TopBar: React.FC<TopBarProps> = ({
 
             {/* Flyout Result Dropdown: Displays up to 4 items initially with slide-up animation and layout morph */}
             <AnimatePresence>
-              {isSearchFlyoutOpen && !isFindWordsMode && currentRoute !== '/settings' && (
+              {isSearchFlyoutOpen && !isSearchPaneOpen && !isFindWordsMode && currentRoute !== '/settings' && (
                 <motion.div
                 key="topbar-search-flyout"
                 layout
@@ -2268,6 +2287,21 @@ export const TopBar: React.FC<TopBarProps> = ({
         )}
 
       </div>
+
+      <SearchPane
+        isOpen={isSearchPaneOpen}
+        query={searchQuery}
+        results={searchResults}
+        onQueryChange={handleSearchPaneQueryChange}
+        onSubmit={handleSearchPaneSubmit}
+        onSelectResult={handleSelectSearchResult}
+        onClose={() => {
+          setIsSearchPaneOpen(false);
+          setIsSearchFlyoutOpen(false);
+          setShowAllResults(false);
+        }}
+        renderResultIcon={renderItemIcon}
+      />
 
       {/* Floating Tooltip for truncated search result titles */}
       {resultTitleTooltip && typeof document !== 'undefined' && createPortal(
