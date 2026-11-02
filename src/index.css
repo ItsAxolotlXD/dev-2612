@@ -508,7 +508,7 @@ html:not(.light-mode) .tab-element-slide-up-container {
   background-color: #282c31 !important;
 }
 
-/* Main tab page: bo cong 10px ở góc trên trái trang khi ở desktop, khi ����� mobile ko bo */
+/* Main tab page: bo cong 10px ở góc trên trái trang khi ở desktop, khi ������� mobile ko bo */
 @media (min-width: 768px) {
   main,
   .main-tab-page,
@@ -8266,6 +8266,38 @@ html.light-mode #topbar-search-box.search-flyout-open {
   display: block !important;
   opacity: 1 !important;
   visibility: visible !important;
+}
+
+.app-native-cursor-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483647;
+  pointer-events: none;
+}
+
+.app-native-cursor {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 18px;
+  height: 24px;
+  opacity: 0;
+  pointer-events: none;
+  transform-origin: top left;
+  transition: none;
+  will-change: transform;
+}
+
+.app-native-cursor svg {
+  display: block;
+  filter: drop-shadow(0 1px 1px rgb(0 0 0 / 45%));
+}
+
+html.missing-resolution-driver,
+html.missing-resolution-driver *,
+html.missing-resolution-driver *::before,
+html.missing-resolution-driver *::after {
+  cursor: none !important;
 }
 
 /* Fluent 3D sidebar icons must keep their original colored SVG fills in light mode. */

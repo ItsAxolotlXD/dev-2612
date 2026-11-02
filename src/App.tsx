@@ -27,6 +27,7 @@ import { NotesProvider } from './context/NotesContext';
 import { StickyNoteWidget } from './components/StickyNoteWidget';
 import { TabLoadingScreen } from './components/TabLoadingScreen';
 import { AppScrollbar } from './components/AppScrollbar';
+import { AppNativeCursor } from './components/AppNativeCursor';
 import { GlobalToast } from './components/GlobalToast';
 import { EvaluationWatermark } from './components/EvaluationWatermark';
 import { showAppToast } from './utils/toast';
@@ -879,7 +880,7 @@ export default function App() {
       <NotesProvider>
         <div
           id="sparkle-app-container-wrapper"
-          className="w-full h-screen bg-black overflow-hidden flex items-center justify-center"
+          className="relative w-full h-screen bg-black overflow-hidden flex items-center justify-center"
         >
           <div
             id="sparkle-app-root"
@@ -1197,8 +1198,9 @@ export default function App() {
         onClose={closeDriverManagementPanel}
         onOpenDriverModal={() => setIsDriverModalOpen(true)}
       />
+      </div>
+      <AppNativeCursor enabled={!isResolutionInstalled} />
     </div>
-  </div>
       </NotesProvider>
     </NativeKeyboardProvider>
   );
