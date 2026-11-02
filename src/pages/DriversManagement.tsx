@@ -10,17 +10,19 @@ import {
   AlertTriangle,
   RotateCcw,
   Layers,
-  Wand2
+  Wand2,
+  X
 } from 'lucide-react';
 import { useDrivers } from '../hooks/useDrivers';
 
 interface DriversManagementProps {
   onOpenDriverModal?: () => void;
-  navigate?: (route: string) => void;
+  onClose?: () => void;
 }
 
 export const DriversManagement: React.FC<DriversManagementProps> = ({
   onOpenDriverModal,
+  onClose,
 }) => {
   const {
     isResolutionInstalled,
@@ -36,15 +38,15 @@ export const DriversManagement: React.FC<DriversManagementProps> = ({
   const screenHeight = typeof window !== 'undefined' ? window.screen.height : 1080;
 
   return (
-    <div className="w-full max-w-5xl mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-6">
+    <div className="w-full max-w-5xl mx-auto px-4 py-6 sm:py-8 space-y-6">
       {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-black/10 dark:border-white/10">
-        <div className="flex items-center gap-3.5">
+      <div className="flex flex-col items-start justify-between gap-4 pb-2 border-b border-black/10 dark:border-white/10">
+        <div className="flex min-w-0 items-center gap-3.5">
           <div className="w-11 h-11 rounded-lg bg-[#0078d4]/10 dark:bg-[#0078d4]/20 border border-[#0078d4]/30 flex items-center justify-center text-[#0078d4] shrink-0">
             <HardDrive className="w-6 h-6" />
           </div>
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-[#111827] dark:text-white">
+          <div className="min-w-0">
+            <h1 id="driver-management-panel-title" className="text-2xl sm:text-3xl font-semibold tracking-tight text-[#111827] dark:text-white">
               Drivers Management
             </h1>
             <p className="text-xs sm:text-sm text-[#666666] dark:text-[#a0a0a0] mt-0.5">
@@ -54,7 +56,7 @@ export const DriversManagement: React.FC<DriversManagementProps> = ({
         </div>
 
         {/* Top Action buttons */}
-        <div className="flex items-center gap-2">
+        <div className="flex w-full items-center justify-end gap-2">
           {onOpenDriverModal && (
             <button
               type="button"
@@ -63,6 +65,16 @@ export const DriversManagement: React.FC<DriversManagementProps> = ({
             >
               <Wand2 className="w-3.5 h-3.5" />
               <span>Launch Driver Setup Wizard</span>
+            </button>
+          )}
+          {onClose && (
+            <button
+              type="button"
+              onClick={onClose}
+              aria-label="Close Drivers Management panel"
+              className="flex h-8 w-8 shrink-0 items-center justify-center rounded border border-black/15 text-[#4b5563] transition-colors hover:bg-black/5 hover:text-[#111827] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0078d4] dark:border-white/20 dark:text-white/75 dark:hover:bg-white/10 dark:hover:text-white"
+            >
+              <X className="h-4 w-4" aria-hidden="true" />
             </button>
           )}
         </div>
@@ -112,7 +124,7 @@ export const DriversManagement: React.FC<DriversManagementProps> = ({
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="p-5 rounded-lg border border-black/10 dark:border-white/10 bg-white/60 dark:bg-black/20 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+          className="p-5 rounded-lg border border-black/10 dark:border-white/10 bg-white/60 dark:bg-black/20 flex flex-col justify-between gap-4"
         >
           <div className="flex items-start gap-4">
             <div
@@ -147,7 +159,7 @@ export const DriversManagement: React.FC<DriversManagementProps> = ({
             </div>
           </div>
 
-          <div className="flex items-center gap-2 sm:self-center shrink-0">
+          <div className="flex items-center gap-2 self-end shrink-0">
             {isResolutionInstalled ? (
               <button
                 type="button"
@@ -175,7 +187,7 @@ export const DriversManagement: React.FC<DriversManagementProps> = ({
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.05 }}
-          className="p-5 rounded-lg border border-black/10 dark:border-white/10 bg-white/60 dark:bg-black/20 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+          className="p-5 rounded-lg border border-black/10 dark:border-white/10 bg-white/60 dark:bg-black/20 flex flex-col justify-between gap-4"
         >
           <div className="flex items-start gap-4">
             <div
@@ -210,7 +222,7 @@ export const DriversManagement: React.FC<DriversManagementProps> = ({
             </div>
           </div>
 
-          <div className="flex items-center gap-2 sm:self-center shrink-0">
+          <div className="flex items-center gap-2 self-end shrink-0">
             {isVisualInstalled ? (
               <button
                 type="button"
@@ -238,7 +250,7 @@ export const DriversManagement: React.FC<DriversManagementProps> = ({
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="p-5 rounded-lg border border-black/10 dark:border-white/10 bg-white/60 dark:bg-black/20 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+          className="p-5 rounded-lg border border-black/10 dark:border-white/10 bg-white/60 dark:bg-black/20 flex flex-col justify-between gap-4"
         >
           <div className="flex items-start gap-4">
             <div className="w-10 h-10 rounded-lg bg-emerald-500/15 text-emerald-500 flex items-center justify-center shrink-0 mt-0.5">
@@ -259,7 +271,7 @@ export const DriversManagement: React.FC<DriversManagementProps> = ({
             </div>
           </div>
 
-          <div className="text-xs text-[#888888] font-mono sm:self-center">
+          <div className="text-xs text-[#888888] font-mono self-end">
             v26.11.0-STABLE
           </div>
         </motion.div>
@@ -270,7 +282,7 @@ export const DriversManagement: React.FC<DriversManagementProps> = ({
         <h3 className="text-sm font-semibold text-[#111827] dark:text-white">
           Hardware &amp; Display Specifications
         </h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 text-xs">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
           <div className="p-3 rounded bg-black/5 dark:bg-white/5 space-y-1">
             <div className="text-[#888888]">Display Controller</div>
             <div className="font-semibold text-[#111827] dark:text-white">Sparkle Virtual SVGA-II</div>

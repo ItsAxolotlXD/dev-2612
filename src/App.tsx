@@ -20,7 +20,7 @@ import { AnimatedBootScreen } from './components/AnimatedBootScreen';
 import { SparkleSetupWizard } from './components/SparkleSetupWizard';
 import { SparkleDriverModal } from './components/SparkleDriverModal';
 import { useDrivers } from './hooks/useDrivers';
-import { DriversManagement } from './pages/DriversManagement';
+import { DriverManagementPanel } from './components/DriverManagementPanel';
 import { NativeKeyboard } from './components/NativeKeyboard';
 import { NativeKeyboardProvider } from './context/NativeKeyboardContext';
 import { NotesProvider } from './context/NotesContext';
@@ -90,9 +90,22 @@ export default function App() {
 
   // Navigation Route State (supports browser pathname or internal state)
   const [currentRoute, setCurrentRoute] = useState<string>(() => {
-    return window.location.pathname === '/' ? '/' : window.location.pathname;
+    const pathname = window.location.pathname;
+    return pathname === '/' || pathname === '/drivers' ? '/' : pathname;
   });
+  const [isDriverManagementPanelOpen, setIsDriverManagementPanelOpen] = useState(
+    () => window.location.pathname === '/drivers'
+  );
+  const closeDriverManagementPanel = useCallback(() => {
+    setIsDriverManagementPanelOpen(false);
+  }, []);
   const [routeState, setRouteState] = useState<any>(null);
+
+  useEffect(() => {
+    if (window.location.pathname === '/drivers') {
+      window.history.replaceState(null, '', '/');
+    }
+  }, []);
   const previousRouteRef = useRef<string>('/');
   const [isTabLoading, setIsTabLoading] = useState(false);
   const [tabLoadCount, setTabLoadCount] = useState(0);
@@ -487,6 +500,14 @@ export default function App() {
 
   // Navigation handler
   const navigate = useCallback((path: string, state?: any) => {
+    const targetRoute = path.split(/[?#]/)[0];
+    if (targetRoute === '/drivers') {
+      setIsDriverManagementPanelOpen(true);
+      return;
+    }
+
+    setIsDriverManagementPanelOpen(false);
+
     // If currently on settings and there are unsaved changes, prompt before leaving
     if (currentRoute === '/settings' && hasChanges) {
       const isStillSettings = path === '/settings' || path.startsWith('/settings?') || path.startsWith('/settings#');
@@ -608,6 +629,13 @@ export default function App() {
   // Handle browser back / forward navigation
   useEffect(() => {
     const handlePopState = () => {
+      const path = window.location.pathname;
+      if (path === '/drivers') {
+        window.history.replaceState(null, '', currentRoute);
+        setIsDriverManagementPanelOpen(true);
+        return;
+      }
+
       if (currentRoute === '/settings' && hasChanges) {
         window.history.pushState(null, '', '/settings');
         setPendingNavigation({ path: window.location.pathname });
@@ -620,7 +648,6 @@ export default function App() {
         setIsUnsavedNoteModalOpen(true);
         return;
       }
-      const path = window.location.pathname;
       const isTabSwitch = path !== currentRoute;
       const params = new URLSearchParams(window.location.search);
       const chSlug = params.get('channel');
@@ -628,6 +655,7 @@ export default function App() {
         const matched = channels.find((c) => c.slug === chSlug);
         if (matched) setCurrentChannel(matched);
       }
+      setIsDriverManagementPanelOpen(false);
       setCurrentRoute(path);
 
       if (isTabSwitch) {
@@ -783,9 +811,6 @@ export default function App() {
       case '/winui-3':
         return <WinUI3 />;
 
-      case '/drivers':
-        return <DriversManagement onOpenDriverModal={() => setIsDriverModalOpen(true)} navigate={navigate} />;
-
       case '/settings':
         return (
           <Settings
@@ -880,7 +905,7 @@ export default function App() {
       {/* Sidebar Navigation (Desktop + Mobile Drawer) */}
       {(settings.navigationMode === 'sidebar' || isMobileSidebarOpen || mobileDragOffset !== null) && (!isInkCanvasEditor || isInkCanvasChromeVisible) && !isGalleryViewerOpen && (
         <Sidebar
-          currentRoute={currentRoute}
+          currentRoute={isDriverManagementPanelOpen ? '/drivers' : currentRoute}
           navigate={navigate}
           onOpenSearch={handleOpenSearch}
           onSelectChannel={setCurrentChannel}
@@ -1161,6 +1186,12 @@ export default function App() {
       <SparkleDriverModal
         isOpen={isDriverModalOpen}
         onClose={() => setIsDriverModalOpen(false)}
+      />
+
+      <DriverManagementPanel
+        isOpen={isDriverManagementPanelOpen && isSplashFinished && !isSetupWizardOpen && !isDriverModalOpen}
+        onClose={closeDriverManagementPanel}
+        onOpenDriverModal={() => setIsDriverModalOpen(true)}
       />
     </div>
   </div>
