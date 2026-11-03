@@ -294,46 +294,62 @@ html.light-mode .winui3 .text-white\/30 {
 }
 
 /* ==========================================================================
-   APP-WIDE CURSOR SPECIFICATION:
-   "Toàn bộ element app (trừ các ô kênh, các ô files/media trong gallery,
-   các block và toggles trong settings) ko sử dụng cursor hand (pointer)
-   mà sử dụng cursor point thường (default)"
+   APP-WIDE NATIVE CURSOR STATES:
+   Normal uses the platform cursor, Hand select marks interactive targets,
+   and Text select appears over editable or selectable text.
    ========================================================================== */
 
-/* 1. Global default: ALL elements across the app use standard arrow cursor (default) */
 html,
 body,
-*,
-*::before,
-*::after {
-  cursor: default;
+#root {
+  cursor: auto;
 }
 
-/* 2. Explicitly prevent hand cursor (pointer) on buttons, links, tabs, menus, cards, and cursor-pointer utilities */
-button,
-a,
+/* Hand select: native controls, semantic actions, and interactive app surfaces */
+button:not(:disabled):not([aria-disabled="true"]),
+button:not(:disabled):not([aria-disabled="true"]) *,
+a[href],
+a[href] *,
 summary,
-select,
+summary *,
+select:not(:disabled),
 label,
-[role="button"],
-[role="tab"],
-[role="menuitem"],
-[role="option"],
-[role="checkbox"],
-[role="radio"],
+[role="button"]:not([aria-disabled="true"]),
+[role="button"]:not([aria-disabled="true"]) *,
+[role="link"]:not([aria-disabled="true"]),
+[role="link"]:not([aria-disabled="true"]) *,
+[role="tab"]:not([aria-disabled="true"]),
+[role="tab"]:not([aria-disabled="true"]) *,
+[role="menuitem"]:not([aria-disabled="true"]),
+[role="menuitem"]:not([aria-disabled="true"]) *,
+[role="option"]:not([aria-disabled="true"]),
+[role="option"]:not([aria-disabled="true"]) *,
+[role="checkbox"]:not([aria-disabled="true"]),
+[role="radio"]:not([aria-disabled="true"]),
+[role="switch"]:not([aria-disabled="true"]),
+input[type="button"],
+input[type="submit"],
+input[type="reset"],
+input[type="checkbox"],
+input[type="radio"],
+input[type="range"],
+input[type="file"],
+input[type="image"],
 .cursor-pointer,
+.cursor-pointer *,
 [class*="cursor-pointer"],
+[class*="cursor-pointer"] *,
 .fluent-reveal-item,
 .news-card,
 .onair-card:not(.channel-card),
 .sidebar-nav-item,
 .dock-item,
 .topbar-item,
-[tabindex] {
-  cursor: default !important;
+[tabindex]:not([tabindex="-1"]):not([aria-disabled="true"]) {
+  cursor: pointer !important;
 }
 
-/* 3. Text inputs, search fields, textareas, and contenteditable retain text selection beam */
+/* Text select: preserve the native I-beam for text inputs and editable content. */
 input:not([type="button"]):not([type="submit"]):not([type="reset"]):not([type="checkbox"]):not([type="radio"]):not([type="range"]),
 textarea,
 [contenteditable="true"],
@@ -341,7 +357,7 @@ textarea,
   cursor: text !important;
 }
 
-/* 4. Resizing controls and disabled elements retain functional cursors */
+/* Resizing controls and disabled elements retain functional cursors. */
 [style*="cursor: col-resize"], .cursor-col-resize { cursor: col-resize !important; }
 [style*="cursor: row-resize"], .cursor-row-resize { cursor: row-resize !important; }
 [style*="cursor: grab"], .cursor-grab { cursor: grab !important; }
@@ -349,13 +365,10 @@ textarea,
 :disabled, [aria-disabled="true"], button:disabled { cursor: not-allowed !important; }
 
 /* ==========================================================================
-   THE 3 AUTHORIZED EXCEPTIONS THAT USE CURSOR HAND (cursor: pointer):
-   1. Các ô kênh (Channel cards)
-   2. Các ô files/media trong gallery (Files and media cards in Gallery)
-   3. Các block và toggles trong settings (Blocks and toggles in Settings)
+   Custom interactive cards and app-specific controls retain Hand select.
    ========================================================================== */
 
-/* EXCEPTION 1: Các ô kênh (Channel cards) */
+/* Interactive channel cards */
 .channel-card,
 .channel-card *,
 .channel-card:hover,
@@ -373,7 +386,7 @@ textarea,
   cursor: pointer !important;
 }
 
-/* EXCEPTION 2: Các ô files/media trong gallery (File & media cards in Gallery) */
+/* Interactive files and media cards in Gallery */
 .gallery-media-card,
 .gallery-media-card *,
 .gallery-media-card:hover,
@@ -393,7 +406,7 @@ textarea,
   cursor: pointer !important;
 }
 
-/* EXCEPTION 3: Các block và toggles trong settings (Blocks and toggles in Settings) */
+/* Settings cards and toggles */
 #settings-page .settings-block-card,
 #settings-page .settings-block-card *,
 #settings-page .settings-block-card:hover,
@@ -433,7 +446,7 @@ button[role="switch"] *:hover {
   cursor: text !important;
 }
 
-/* EXCEPTION 4: Search UI - Search flyout results, items, buttons, and actions use cursor pointer (hand) */
+/* Search results, items, buttons, and actions use Hand select */
 .topbar-search-results-dropdown,
 .topbar-search-results-dropdown *,
 .topbar-search-results-dropdown button,
@@ -508,7 +521,7 @@ html:not(.light-mode) .tab-element-slide-up-container {
   background-color: #282c31 !important;
 }
 
-/* Main tab page: bo cong 10px ở góc trên trái trang khi ở desktop, khi ����� mobile ko bo */
+/* Main tab page: bo cong 10px ở góc trên trái trang khi ở desktop, khi ������� mobile ko bo */
 @media (min-width: 768px) {
   main,
   .main-tab-page,
@@ -3527,11 +3540,11 @@ dialog *,
 [id$="-modal-backdrop"],
 [id$="-modal-container"],
 [id$="-dialog"],
-[id$="-dialog"] * {
-  cursor: default !important;
+  [id$="-dialog"] * {
+  cursor: auto;
 }
 
-/* Hover and active states for Sidebar and Modal Dialogs: strictly cursor: default */
+/* Keep non-interactive sidebar and modal surfaces in the Normal cursor state. */
 #waves-desktop-sidebar *:hover,
 #waves-desktop-sidebar *:active,
 #waves-mobile-sidebar *:hover,
@@ -3544,7 +3557,7 @@ dialog *,
 [role="dialog"] *:active,
 .spatial-glass-modal *:hover,
 .spatial-glass-modal *:active {
-  cursor: default !important;
+  cursor: auto;
 }
 
 /* Sidebar and Modal text inputs keep text editing cursor */
@@ -3688,7 +3701,7 @@ html:not(.light-mode) .signin-flyout-panel {
 [id^="mobile-nav-"]:hover *,
 [id^="nav-item-"]:hover,
 [id^="mobile-nav-item-"]:hover {
-  cursor: default !important;
+  cursor: auto;
 }
 #waves-desktop-sidebar button:active,
 #waves-desktop-sidebar a:active,
@@ -6575,17 +6588,17 @@ html:not(.light-mode) #vplay-tools-dropdown-card svg.fill-current {
 
 
 
-/* Native Keyboard: Strict No Zoom/Scale on Hover & Default Cursor across all keys */
+/* Native Keyboard: Keep key feedback while using the app's native cursor states. */
 #vplay-native-keyboard,
 #vplay-native-keyboard *,
 #native-keyboard,
 #native-keyboard * {
-  cursor: default !important;
+  cursor: auto;
 }
 
 #vplay-native-keyboard button,
 #native-keyboard button {
-  cursor: default !important;
+  cursor: pointer !important;
   transition: transform 0.06s ease, box-shadow 0.06s ease, background-color 0.06s ease !important;
 }
 
@@ -6596,7 +6609,7 @@ html:not(.light-mode) #vplay-tools-dropdown-card svg.fill-current {
   transform: none !important;
   scale: 1 !important;
   zoom: 1 !important;
-  cursor: default !important;
+  cursor: pointer !important;
 }
 
 /* Key pressed-down tactile effect (chỉ có hiệu ứng khi nhấn phím, lún xuống nhẹ 2px) */

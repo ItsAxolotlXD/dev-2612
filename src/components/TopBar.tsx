@@ -304,15 +304,27 @@ export const TopBar: React.FC<TopBarProps> = ({
     setSearchQuery(tabSearchQuery || '');
   }, [tabSearchQuery, currentRoute]);
 
-  // Listen for vplay:focus-topbar-search event to open and focus the right-side pane
+  // Listen for search pane open and close events dispatched by the app shell.
   useEffect(() => {
     const handleFocusTopBarSearch = () => {
       setIsSearchFlyoutOpen(false);
       setIsSearchPaneOpen(true);
       setIsSearchFocused(true);
     };
+    const handleCloseTopBarSearch = () => {
+      setSearchQuery('');
+      setIsSearchFlyoutOpen(false);
+      setIsSearchPaneOpen(false);
+      setIsSearchFocused(false);
+      setShowAllResults(false);
+    };
+
     window.addEventListener('vplay:focus-topbar-search', handleFocusTopBarSearch);
-    return () => window.removeEventListener('vplay:focus-topbar-search', handleFocusTopBarSearch);
+    window.addEventListener('vplay:close-topbar-search', handleCloseTopBarSearch);
+    return () => {
+      window.removeEventListener('vplay:focus-topbar-search', handleFocusTopBarSearch);
+      window.removeEventListener('vplay:close-topbar-search', handleCloseTopBarSearch);
+    };
   }, []);
 
   // Load gallery items so TopBar search can find gallery media/documents

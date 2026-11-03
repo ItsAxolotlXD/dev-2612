@@ -18,6 +18,7 @@ import { SplashScreen } from './components/SplashScreen';
 import { SPINNING_RING_GIF_LOOP_DURATION_MS } from './components/SpinningRing';
 import { AnimatedBootScreen } from './components/AnimatedBootScreen';
 import { SparkleSetupWizard } from './components/SparkleSetupWizard';
+import { SparkverAboutWindow } from './components/SparkverAboutWindow';
 import { SparkleDriverModal } from './components/SparkleDriverModal';
 import { useDrivers } from './hooks/useDrivers';
 import { DriverManagementPanel } from './components/DriverManagementPanel';
@@ -121,8 +122,17 @@ export default function App() {
 
   // Tab-specific search state for Floating Search Bar
   const [tabSearchQueries, setTabSearchQueries] = useState<Record<string, string>>({});
+  const [isSparkverAboutOpen, setIsSparkverAboutOpen] = useState(false);
   const currentTabSearchQuery = tabSearchQueries[currentRoute] || '';
+  const closeSparkverAboutWindow = useCallback(() => setIsSparkverAboutOpen(false), []);
   const handleTabSearchChange = (query: string) => {
+    if (query.trim().toLowerCase() === 'sparkver') {
+      setTabSearchQueries((prev) => ({ ...prev, [currentRoute]: '' }));
+      setIsSparkverAboutOpen(true);
+      window.dispatchEvent(new CustomEvent('vplay:close-topbar-search'));
+      return;
+    }
+
     setTabSearchQueries((prev) => ({
       ...prev,
       [currentRoute]: query
@@ -1066,6 +1076,11 @@ export default function App() {
         onClose={() => setIsSpotlightOpen(false)}
         navigate={navigate}
         onSelectChannel={setCurrentChannel}
+      />
+
+      <SparkverAboutWindow
+        isOpen={isSparkverAboutOpen}
+        onClose={closeSparkverAboutWindow}
       />
 
       {/* Unsaved Settings Confirmation Modal */}

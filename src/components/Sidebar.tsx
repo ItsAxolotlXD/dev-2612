@@ -1340,7 +1340,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 autoCapitalize="off"
                 autoCorrect="off"
                 spellCheck={false}
-                className="min-w-0 flex-1 bg-transparent text-[13px] text-[#111827] outline-none placeholder:text-neutral-500 dark:text-white dark:placeholder:text-neutral-400"
+                className="h-full min-w-0 flex-1 self-stretch border-b border-black/30 bg-transparent text-[13px] text-[#111827] outline-none transition-colors placeholder:text-neutral-500 focus:border-[#0078d4] dark:border-white/30 dark:text-white dark:placeholder:text-neutral-400 dark:focus:border-[#4cc2ff]"
               />
               {searchQuery && (
                 <button
