@@ -28,6 +28,7 @@ import { StickyNoteWidget } from './components/StickyNoteWidget';
 import { TabLoadingScreen } from './components/TabLoadingScreen';
 import { AppScrollbar } from './components/AppScrollbar';
 import { AppNativeCursor } from './components/AppNativeCursor';
+import { SparkverAboutWindow } from './components/SparkverAboutWindow';
 import { GlobalToast } from './components/GlobalToast';
 import { EvaluationWatermark } from './components/EvaluationWatermark';
 import { showAppToast } from './utils/toast';
@@ -230,6 +231,9 @@ export default function App() {
     }
   }, [isSplashFinished, isSetupWizardOpen, isResolutionInstalled, isVisualInstalled]);
   const [isUnderConstructionOpen, setIsUnderConstructionOpen] = useState(false);
+  const [isSparkverAboutOpen, setIsSparkverAboutOpen] = useState(false);
+  const handleOpenSparkverAbout = useCallback(() => setIsSparkverAboutOpen(true), []);
+  const handleCloseSparkverAbout = useCallback(() => setIsSparkverAboutOpen(false), []);
   const [isSpotlightOpen, setIsSpotlightOpen] = useState(false);
   const [isCustomStreamModalOpen, setIsCustomStreamModalOpen] = useState(false);
   const [isHelpModalOpen, setIsHelpModalOpen] = useState(false);
@@ -909,6 +913,7 @@ export default function App() {
           currentRoute={isDriverManagementPanelOpen ? '/drivers' : currentRoute}
           navigate={navigate}
           onOpenSearch={handleOpenSearch}
+          onOpenSparkver={handleOpenSparkverAbout}
           searchQuery={currentTabSearchQuery}
           onSearchChange={handleTabSearchChange}
           onSelectChannel={setCurrentChannel}
@@ -966,6 +971,7 @@ export default function App() {
               tabSearchQuery={currentTabSearchQuery}
               onTabSearchChange={handleTabSearchChange}
               onOpenSearch={handleOpenSearch}
+              onOpenSparkver={handleOpenSparkverAbout}
               onOpenMobileMenu={() => setIsMobileSidebarOpen(true)}
               currentChannel={currentChannel}
               channels={channels}
@@ -1062,6 +1068,10 @@ export default function App() {
       )}
 
       {/* Global Modals */}
+      <SparkverAboutWindow
+        isOpen={isSparkverAboutOpen}
+        onClose={handleCloseSparkverAbout}
+      />
       <SpotlightModal
         isOpen={isSpotlightOpen}
         onClose={() => setIsSpotlightOpen(false)}
