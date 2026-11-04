@@ -395,7 +395,7 @@ export const SparkleSetupWizard: React.FC<SparkleSetupWizardProps> = ({
           }}
         >
           <AnimatePresence mode="wait">
-            {/* Phase: Just a moment (10s) on Windows Blue with user GIF */}
+            {/* Phase: Just a moment (10s) on a black background */}
             {postPhase === 'just-a-moment-10s' && (
               <motion.div
                 key="post-just-a-moment"
@@ -403,7 +403,7 @@ export const SparkleSetupWizard: React.FC<SparkleSetupWizardProps> = ({
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 1.5, ease: 'easeInOut' }}
-                className="w-full h-full flex flex-col items-center justify-center bg-[#00477e] text-white"
+                className="w-full h-full flex flex-col items-center justify-center bg-black text-white"
               >
                 <div className="flex flex-col items-center gap-6">
                   <img

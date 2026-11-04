@@ -228,6 +228,7 @@ interface SidebarProps {
   currentRoute: string;
   navigate: (route: string, state?: any) => void;
   onOpenSearch: () => void;
+  onOpenSparkver?: () => void;
   searchQuery?: string;
   onSearchChange?: (query: string) => void;
   selectedChannel?: Channel | null;
@@ -258,6 +259,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   currentRoute,
   navigate,
   onOpenSearch,
+  onOpenSparkver = () => {},
   searchQuery = '',
   onSearchChange,
   onSelectChannel,
@@ -1328,7 +1330,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 id={isMobile ? 'mobile-sidebar-search' : 'sidebar-search'}
                 type="text"
                 value={searchQuery}
-                onChange={(event) => onSearchChange?.(event.target.value)}
+                onChange={(event) => {
+                  const query = event.target.value;
+                  if (query.trim().toLowerCase() === 'sparkver') {
+                    onSearchChange?.('');
+                    onOpenSparkver();
+                    return;
+                  }
+                  onSearchChange?.(query);
+                }}
                 onKeyDown={(event) => {
                   if (event.key !== 'Enter' || event.nativeEvent.isComposing || event.keyCode === 229) return;
                   event.preventDefault();

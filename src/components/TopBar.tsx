@@ -106,6 +106,7 @@ interface TopBarProps {
   currentRoute: string;
   navigate: (route: string) => void;
   onOpenSearch: () => void;
+  onOpenSparkver?: () => void;
   onOpenMobileMenu?: () => void;
   currentChannel?: Channel;
   channels?: Channel[];
@@ -130,6 +131,7 @@ export const TopBar: React.FC<TopBarProps> = ({
   currentRoute,
   navigate,
   onOpenSearch,
+  onOpenSparkver = () => {},
   onOpenMobileMenu,
   currentChannel,
   channels = [],
@@ -1183,7 +1185,22 @@ export const TopBar: React.FC<TopBarProps> = ({
     return matches;
   }, [searchQuery, searchHistory, appAspects, galleryItems, notes, navigate, onTabSearchChange, setActiveNoteId]);
 
+  const handleSparkverCommand = (query: string) => {
+    if (query.trim().toLowerCase() !== 'sparkver') return false;
+
+    setSearchQuery('');
+    setShowAllResults(false);
+    setIsSearchFlyoutOpen(false);
+    setIsSearchPaneOpen(false);
+    setIsSearchFocused(false);
+    onTabSearchChange?.('');
+    onOpenSparkver();
+    return true;
+  };
+
   const handleSearchPaneQueryChange = (query: string) => {
+    if (handleSparkverCommand(query)) return;
+
     setSearchQuery(query);
     setShowAllResults(false);
     setIsSearchFlyoutOpen(false);
@@ -1195,7 +1212,7 @@ export const TopBar: React.FC<TopBarProps> = ({
 
   const handleSearchPaneSubmit = () => {
     const trimmedQuery = searchQuery.trim();
-    if (!trimmedQuery) return;
+    if (!trimmedQuery || handleSparkverCommand(trimmedQuery)) return;
     saveToHistory(trimmedQuery);
     if (onTabSearchChange) {
       onTabSearchChange(trimmedQuery);
@@ -1801,6 +1818,7 @@ export const TopBar: React.FC<TopBarProps> = ({
                   autoCorrect="off"
                   onChange={(e) => {
                     const val = e.target.value;
+                    if (handleSparkverCommand(val)) return;
                     setSearchQuery(val);
                     setShowAllResults(false);
                     setIsSearchPaneOpen(true);

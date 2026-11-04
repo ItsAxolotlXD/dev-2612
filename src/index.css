@@ -301,6 +301,10 @@ html.light-mode .winui3 .text-white\/30 {
    ========================================================================== */
 
 /* 1. Global default: ALL elements across the app use standard arrow cursor (default) */
+html {
+  --app-native-cursor-state: normal;
+}
+
 html,
 body,
 *,
@@ -339,6 +343,7 @@ textarea,
 [contenteditable="true"],
 [contenteditable="true"] * {
   cursor: text !important;
+  --app-native-cursor-state: text-select;
 }
 
 /* 4. Resizing controls and disabled elements retain functional cursors */
@@ -371,6 +376,7 @@ textarea,
 [id^="rec-card-ch-"],
 [id^="rec-card-ch-"] * {
   cursor: pointer !important;
+  --app-native-cursor-state: hand-select;
 }
 
 /* EXCEPTION 2: Các ô files/media trong gallery (File & media cards in Gallery) */
@@ -391,6 +397,7 @@ textarea,
 .gallery-lightbox-thumb,
 .gallery-lightbox-thumb * {
   cursor: pointer !important;
+  --app-native-cursor-state: hand-select;
 }
 
 /* EXCEPTION 3: Các block và toggles trong settings (Blocks and toggles in Settings) */
@@ -423,6 +430,7 @@ button[role="switch"] *,
 button[role="switch"]:hover,
 button[role="switch"] *:hover {
   cursor: pointer !important;
+  --app-native-cursor-state: hand-select;
 }
 
 /* Preserving text input cursors inside Settings blocks */
@@ -431,6 +439,7 @@ button[role="switch"] *:hover {
 #settings-page input[type="search"],
 #settings-page textarea {
   cursor: text !important;
+  --app-native-cursor-state: text-select;
 }
 
 /* EXCEPTION 4: Search UI - Search flyout results, items, buttons, and actions use cursor pointer (hand) */
@@ -450,6 +459,7 @@ button[role="switch"] *:hover {
 #topbar-search-box [role="button"],
 #topbar-search-box button * {
   cursor: pointer !important;
+  --app-native-cursor-state: hand-select;
 }
 
 #topbar-search-box input,
@@ -508,7 +518,7 @@ html:not(.light-mode) .tab-element-slide-up-container {
   background-color: #282c31 !important;
 }
 
-/* Main tab page: bo cong 10px ở góc trên trái trang khi ở desktop, khi ����� mobile ko bo */
+/* Main tab page: bo cong 10px ở góc trên trái trang khi ở desktop, khi ��������� mobile ko bo */
 @media (min-width: 768px) {
   main,
   .main-tab-page,
@@ -1448,6 +1458,7 @@ html.light-mode .winui3,
   .winui3 input[type="radio"] {
     accent-color: var(--ui-accent) !important;
     cursor: pointer;
+    --app-native-cursor-state: hand-select;
   }
 
   html.light-mode .winui-checkbox,
@@ -1463,6 +1474,7 @@ html.light-mode .winui3,
   .winui3 input[type="range"] {
     accent-color: var(--ui-accent) !important;
     cursor: pointer;
+    --app-native-cursor-state: hand-select;
   }
 
   html.light-mode .winui-slider,
@@ -4457,11 +4469,11 @@ html.light-mode main .text-\[\#E0E0E6\] {
 }
 
 /* Form controls synchronized with TopBar search style */
-html.light-mode input[type="text"]:not(#floating-search-input):not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input),
-html.light-mode input[type="search"]:not(#floating-search-input):not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input),
-html.light-mode input[type="url"]:not(#floating-search-input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input),
-html.light-mode input[type="email"]:not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input),
-html.light-mode input[type="password"]:not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input),
+html.light-mode input[type="text"]:not(#floating-search-input):not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(#sidebar-search):not(#mobile-sidebar-search),
+html.light-mode input[type="search"]:not(#floating-search-input):not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(#sidebar-search):not(#mobile-sidebar-search),
+html.light-mode input[type="url"]:not(#floating-search-input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(#sidebar-search):not(#mobile-sidebar-search),
+html.light-mode input[type="email"]:not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(#sidebar-search):not(#mobile-sidebar-search),
+html.light-mode input[type="password"]:not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(#sidebar-search):not(#mobile-sidebar-search),
 html.light-mode textarea:not(.fluent-search-box textarea):not(.fluent-input-box textarea),
 html.light-mode select {
   background-color: rgba(0, 0, 0, 0.05) !important;
@@ -4471,11 +4483,11 @@ html.light-mode select {
   color: #111827 !important;
 }
 
-html.light-mode input[type="text"]:focus:not(#floating-search-input):not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input),
-html.light-mode input[type="search"]:focus:not(#floating-search-input):not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input),
-html.light-mode input[type="url"]:focus:not(#floating-search-input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input),
-html.light-mode input[type="email"]:focus:not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input),
-html.light-mode input[type="password"]:focus:not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input),
+html.light-mode input[type="text"]:focus:not(#floating-search-input):not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(#sidebar-search):not(#mobile-sidebar-search),
+html.light-mode input[type="search"]:focus:not(#floating-search-input):not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(#sidebar-search):not(#mobile-sidebar-search),
+html.light-mode input[type="url"]:focus:not(#floating-search-input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(#sidebar-search):not(#mobile-sidebar-search),
+html.light-mode input[type="email"]:focus:not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(#sidebar-search):not(#mobile-sidebar-search),
+html.light-mode input[type="password"]:focus:not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(#sidebar-search):not(#mobile-sidebar-search),
 html.light-mode textarea:focus:not(.fluent-search-box textarea):not(.fluent-input-box textarea) {
   background-color: #ffffff !important;
   border-bottom: 2px solid var(--ui-accent, #0078d4) !important;
@@ -5175,11 +5187,11 @@ html.light-mode .fluent-btn-secondary:active {
 #channels-search-box,
 #settings-search-box,
 #find-words-bar > div,
-input[type="text"]:not(#spotlight-search-container input):not(#immersive-search-capsule input):not(#sidebar-search-box input):not(#settings-search-box input):not(#channels-search-box input):not(#topbar-search-box input):not(.winui-search-input input):not(#find-words-bar input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(.fluent-modal-dialog input),
-input[type="email"]:not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(.fluent-modal-dialog input),
-input[type="url"]:not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(.fluent-modal-dialog input),
-input[type="password"]:not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(.fluent-modal-dialog input),
-input[type="number"]:not([data-no-line]):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(.fluent-modal-dialog input) {
+input[type="text"]:not(#spotlight-search-container input):not(#immersive-search-capsule input):not(#sidebar-search-box input):not(#settings-search-box input):not(#channels-search-box input):not(#topbar-search-box input):not(.winui-search-input input):not(#find-words-bar input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(#sidebar-search):not(#mobile-sidebar-search):not(.fluent-modal-dialog input),
+input[type="email"]:not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(#sidebar-search):not(#mobile-sidebar-search):not(.fluent-modal-dialog input),
+input[type="url"]:not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(#sidebar-search):not(#mobile-sidebar-search):not(.fluent-modal-dialog input),
+input[type="password"]:not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(#sidebar-search):not(#mobile-sidebar-search):not(.fluent-modal-dialog input),
+input[type="number"]:not([data-no-line]):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(#sidebar-search):not(#mobile-sidebar-search):not(.fluent-modal-dialog input) {
   border-bottom: 1.5px solid #777777 !important;
   transition: border-bottom-color 0.15s ease-in-out, border-color 0.15s ease-in-out !important;
 }
@@ -5218,11 +5230,11 @@ input[type="number"]:not([data-no-line]):not(.fluent-search-box input):not(.flue
 #channels-search-box:focus-within,
 #settings-search-box:focus-within,
 #find-words-bar > div:focus-within,
-input[type="text"]:not(#spotlight-search-container input):not(#immersive-search-capsule input):not(#sidebar-search-box input):not(#settings-search-box input):not(#channels-search-box input):not(#topbar-search-box input):not(.winui-search-input input):not(#find-words-bar input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(.fluent-modal-dialog input):focus,
-input[type="email"]:not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(.fluent-modal-dialog input):focus,
-input[type="url"]:not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(.fluent-modal-dialog input):focus,
-input[type="password"]:not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(.fluent-modal-dialog input):focus,
-input[type="number"]:not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(.fluent-modal-dialog input):focus {
+input[type="text"]:not(#spotlight-search-container input):not(#immersive-search-capsule input):not(#sidebar-search-box input):not(#settings-search-box input):not(#channels-search-box input):not(#topbar-search-box input):not(.winui-search-input input):not(#find-words-bar input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(#sidebar-search):not(#mobile-sidebar-search):not(.fluent-modal-dialog input):focus,
+input[type="email"]:not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(#sidebar-search):not(#mobile-sidebar-search):not(.fluent-modal-dialog input):focus,
+input[type="url"]:not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(#sidebar-search):not(#mobile-sidebar-search):not(.fluent-modal-dialog input):focus,
+input[type="password"]:not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(#sidebar-search):not(#mobile-sidebar-search):not(.fluent-modal-dialog input):focus,
+input[type="number"]:not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(#sidebar-search):not(#mobile-sidebar-search):not(.fluent-modal-dialog input):focus {
   border-bottom: 1.5px solid #4cc2ff !important;
   outline: none !important;
 }
@@ -5236,11 +5248,11 @@ html.light-mode #sidebar-search-box,
 html.light-mode #channels-search-box,
 html.light-mode #settings-search-box,
 html.light-mode #find-words-bar > div,
-html.light-mode input[type="text"]:not(#spotlight-search-container input):not(#immersive-search-capsule input):not(#sidebar-search-box input):not(#settings-search-box input):not(#channels-search-box input):not(#topbar-search-box input):not(.winui-search-input input):not(#find-words-bar input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(.fluent-modal-dialog input),
-html.light-mode input[type="email"]:not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(.fluent-modal-dialog input),
-html.light-mode input[type="url"]:not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(.fluent-modal-dialog input),
-html.light-mode input[type="password"]:not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(.fluent-modal-dialog input),
-html.light-mode input[type="number"]:not([data-no-line]):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(.fluent-modal-dialog input) {
+html.light-mode input[type="text"]:not(#spotlight-search-container input):not(#immersive-search-capsule input):not(#sidebar-search-box input):not(#settings-search-box input):not(#channels-search-box input):not(#topbar-search-box input):not(.winui-search-input input):not(#find-words-bar input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(#sidebar-search):not(#mobile-sidebar-search):not(.fluent-modal-dialog input),
+html.light-mode input[type="email"]:not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(#sidebar-search):not(#mobile-sidebar-search):not(.fluent-modal-dialog input),
+html.light-mode input[type="url"]:not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(#sidebar-search):not(#mobile-sidebar-search):not(.fluent-modal-dialog input),
+html.light-mode input[type="password"]:not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(#sidebar-search):not(#mobile-sidebar-search):not(.fluent-modal-dialog input),
+html.light-mode input[type="number"]:not([data-no-line]):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(#sidebar-search):not(#mobile-sidebar-search):not(.fluent-modal-dialog input) {
   border-bottom: 1.5px solid #8e8e93 !important;
 }
 
@@ -5254,11 +5266,11 @@ html.light-mode #sidebar-search-box:focus-within,
 html.light-mode #channels-search-box:focus-within,
 html.light-mode #settings-search-box:focus-within,
 html.light-mode #find-words-bar > div:focus-within,
-html.light-mode input[type="text"]:not(#spotlight-search-container input):not(#immersive-search-capsule input):not(#sidebar-search-box input):not(#settings-search-box input):not(#channels-search-box input):not(#topbar-search-box input):not(.winui-search-input input):not(#find-words-bar input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(.fluent-modal-dialog input):focus,
-html.light-mode input[type="email"]:not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(.fluent-modal-dialog input):focus,
-html.light-mode input[type="url"]:not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(.fluent-modal-dialog input):focus,
-html.light-mode input[type="password"]:not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(.fluent-modal-dialog input):focus,
-html.light-mode input[type="number"]:not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(.fluent-modal-dialog input):focus {
+html.light-mode input[type="text"]:not(#spotlight-search-container input):not(#immersive-search-capsule input):not(#sidebar-search-box input):not(#settings-search-box input):not(#channels-search-box input):not(#topbar-search-box input):not(.winui-search-input input):not(#find-words-bar input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(#sidebar-search):not(#mobile-sidebar-search):not(.fluent-modal-dialog input):focus,
+html.light-mode input[type="email"]:not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(#sidebar-search):not(#mobile-sidebar-search):not(.fluent-modal-dialog input):focus,
+html.light-mode input[type="url"]:not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(#sidebar-search):not(#mobile-sidebar-search):not(.fluent-modal-dialog input):focus,
+html.light-mode input[type="password"]:not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(#sidebar-search):not(#mobile-sidebar-search):not(.fluent-modal-dialog input):focus,
+html.light-mode input[type="number"]:not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(#sidebar-search):not(#mobile-sidebar-search):not(.fluent-modal-dialog input):focus {
   border-bottom: 1.5px solid #005fb8 !important;
 }
 
@@ -8268,6 +8280,44 @@ html.light-mode #topbar-search-box.search-flyout-open {
   visibility: visible !important;
 }
 
+.app-native-cursor-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483647;
+  pointer-events: none;
+}
+
+.app-native-cursor {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 22px;
+  height: 26px;
+  opacity: 0;
+  pointer-events: none;
+  transform-origin: top left;
+  transition: none;
+  will-change: transform;
+}
+
+.app-native-cursor svg {
+  display: none;
+  filter: drop-shadow(0 1px 1px rgb(0 0 0 / 45%));
+}
+
+.app-native-cursor[data-cursor-state="normal"] .app-native-cursor-normal,
+.app-native-cursor[data-cursor-state="hand-select"] .app-native-cursor-hand,
+.app-native-cursor[data-cursor-state="text-select"] .app-native-cursor-text {
+  display: block;
+}
+
+html.missing-resolution-driver,
+html.missing-resolution-driver *,
+html.missing-resolution-driver *::before,
+html.missing-resolution-driver *::after {
+  cursor: none !important;
+}
+
 /* Fluent 3D sidebar icons must keep their original colored SVG fills in light mode. */
 html.light-mode #waves-desktop-sidebar .fluent-3d-icon,
 html.light-mode #waves-mobile-sidebar .fluent-3d-icon,
@@ -8465,10 +8515,10 @@ html.light-mode .fluent-input-box::before {
 }
 
 /* Standalone input elements across the app synchronized with TopBar search style */
-input[type="text"]:not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not([type="range"]):not([type="checkbox"]):not([type="radio"]):not(#floating-search-input),
-input[type="email"]:not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input),
-input[type="password"]:not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input),
-input[type="search"]:not(#floating-search-input):not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input),
+input[type="text"]:not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(#sidebar-search):not(#mobile-sidebar-search):not([type="range"]):not([type="checkbox"]):not([type="radio"]):not(#floating-search-input),
+input[type="email"]:not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(#sidebar-search):not(#mobile-sidebar-search),
+input[type="password"]:not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(#sidebar-search):not(#mobile-sidebar-search),
+input[type="search"]:not(#floating-search-input):not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(#sidebar-search):not(#mobile-sidebar-search),
 input[type="url"]:not(#floating-search-input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input) {
   background-color: #282c31 !important;
   border: none !important;
@@ -8480,20 +8530,20 @@ input[type="url"]:not(#floating-search-input):not(.fluent-search-box input):not(
   transition: background-color 0.2s ease, border-bottom-color 0.2s ease !important;
 }
 
-input[type="text"]:focus:not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not([type="range"]):not([type="checkbox"]):not([type="radio"]):not(#floating-search-input),
-input[type="email"]:focus:not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input),
-input[type="password"]:focus:not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input),
-input[type="search"]:focus:not(#floating-search-input):not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input),
+input[type="text"]:focus:not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(#sidebar-search):not(#mobile-sidebar-search):not([type="range"]):not([type="checkbox"]):not([type="radio"]):not(#floating-search-input),
+input[type="email"]:focus:not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(#sidebar-search):not(#mobile-sidebar-search),
+input[type="password"]:focus:not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(#sidebar-search):not(#mobile-sidebar-search),
+input[type="search"]:focus:not(#floating-search-input):not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(#sidebar-search):not(#mobile-sidebar-search),
 input[type="url"]:focus:not(#floating-search-input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input) {
   background-color: #282c31 !important;
   border-bottom: 2px solid var(--ui-accent, #4cc2ff) !important;
   outline: none !important;
 }
 
-html.light-mode input[type="text"]:not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not([type="range"]):not([type="checkbox"]):not([type="radio"]):not(#floating-search-input),
-html.light-mode input[type="email"]:not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input),
-html.light-mode input[type="password"]:not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input),
-html.light-mode input[type="search"]:not(#floating-search-input):not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input),
+html.light-mode input[type="text"]:not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(#sidebar-search):not(#mobile-sidebar-search):not([type="range"]):not([type="checkbox"]):not([type="radio"]):not(#floating-search-input),
+html.light-mode input[type="email"]:not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(#sidebar-search):not(#mobile-sidebar-search),
+html.light-mode input[type="password"]:not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(#sidebar-search):not(#mobile-sidebar-search),
+html.light-mode input[type="search"]:not(#floating-search-input):not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(#sidebar-search):not(#mobile-sidebar-search),
 html.light-mode input[type="url"]:not(#floating-search-input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input) {
   background-color: #fbfbfb !important;
   background: #fbfbfb !important;
@@ -8505,10 +8555,10 @@ html.light-mode input[type="url"]:not(#floating-search-input):not(.fluent-search
   outline: none !important;
 }
 
-html.light-mode input[type="text"]:focus:not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not([type="range"]):not([type="checkbox"]):not([type="radio"]):not(#floating-search-input),
-html.light-mode input[type="email"]:focus:not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input),
-html.light-mode input[type="password"]:focus:not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input),
-html.light-mode input[type="search"]:focus:not(#floating-search-input):not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input),
+html.light-mode input[type="text"]:focus:not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(#sidebar-search):not(#mobile-sidebar-search):not([type="range"]):not([type="checkbox"]):not([type="radio"]):not(#floating-search-input),
+html.light-mode input[type="email"]:focus:not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(#sidebar-search):not(#mobile-sidebar-search),
+html.light-mode input[type="password"]:focus:not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(#sidebar-search):not(#mobile-sidebar-search),
+html.light-mode input[type="search"]:focus:not(#floating-search-input):not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(#sidebar-search):not(#mobile-sidebar-search),
 html.light-mode input[type="url"]:focus:not(#floating-search-input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input) {
   background-color: #ffffff !important;
   background: #ffffff !important;
@@ -8802,5 +8852,33 @@ html.light-mode .no-visual-drivers div[role="dialog"] {
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
   background-color: #f3f3f3 !important;
+}
+
+#sparkver-about-window #sparkver-about-titlebar {
+  background: #fafafa !important;
+  background-color: #fafafa !important;
+  color: #171717 !important;
+}
+
+#sparkver-about-window #sparkver-about-titlebar button {
+  background: transparent !important;
+  background-color: transparent !important;
+  color: #171717 !important;
+}
+
+#sparkver-about-window #sparkver-about-titlebar button:hover {
+  background: #e81123 !important;
+  background-color: #e81123 !important;
+  color: #ffffff !important;
+}
+
+#sparkver-about-window #sparkver-about-ok {
+  border-color: #0078d4 !important;
+}
+
+#sparkver-about-window #sparkver-about-ok:focus-visible {
+  outline: 2px solid #0078d4 !important;
+  outline-offset: 1px !important;
+  box-shadow: 0 0 0 2px #f2f2f2 !important;
 }
 
