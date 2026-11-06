@@ -131,12 +131,12 @@ export default function App() {
   // Keep search state independent for each browser-like app tab.
   const [tabSearchQueries, setTabSearchQueries] = useState<Record<string, string>>({});
   const currentTabSearchQuery = tabSearchQueries[String(activeAppTabId)] || '';
-  const handleTabSearchChange = (query: string) => {
+  const handleTabSearchChange = useCallback((query: string) => {
     setTabSearchQueries((prev) => ({
       ...prev,
       [String(activeAppTabId)]: query
     }));
-  };
+  }, [activeAppTabId]);
 
   // Channels State (base channels + imported channels from localStorage)
   const [channels, setChannels] = useState<Channel[]>(() => {
@@ -296,7 +296,7 @@ export default function App() {
 
   const [mobileDragOffset, setMobileDragOffset] = useState<number | null>(null);
 
-  // Edge swipe gesture: vuốt từ cạnh trái sang để mở sidebar - follow finger trong thời gian thực
+  // Edge swipe gesture: vuốt từ cạnh trái sang đ�� mở sidebar - follow finger trong thời gian thực
   useEffect(() => {
     let startX = 0;
     let startY = 0;
@@ -628,6 +628,10 @@ export default function App() {
     window.dispatchEvent(new CustomEvent('vplay:focus-topbar-search'));
   }, []);
 
+  const handleCommandSearch = useCallback((query: string) => {
+    window.dispatchEvent(new CustomEvent('vplay:search-command', { detail: { query } }));
+  }, []);
+
   // Global search shortcut: Ctrl+K / Cmd+K vẫn mở page spotlight search (/search)
   useEffect(() => {
     const handleGlobalSearchKey = (e: KeyboardEvent) => {
@@ -861,7 +865,7 @@ export default function App() {
         return <WinUI3 />;
 
       case '/command-prompt':
-        return <CommandPrompt />;
+        return <CommandPrompt onSearch={handleCommandSearch} />;
 
       case '/settings':
         return (

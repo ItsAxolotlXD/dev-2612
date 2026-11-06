@@ -3,6 +3,7 @@ import type { FormEvent } from 'react';
 import { ArrowUp, Terminal } from 'lucide-react';
 import { useSettings } from '../hooks/useSettings';
 import type { SystemSettings } from '../hooks/useSettings';
+import { useDrivers } from '../hooks/useDrivers';
 
 type ExperimentSettingKey =
   | 'nativeKeyboard'
@@ -48,7 +49,7 @@ const EXPERIMENTS: Experiment[] = [
 ];
 
 const commandUsage =
-  'Usage: /vivetool /enable /id:123456789 | /vivetool /disable /id:123456789 | /vivetool /list';
+  'Commands: /vivetool /enable|/disable /id:<9-digit-id> or /vivetool /list; /drivers /install|/uninstall /visuals|/resolution; /search <keyword>.';
 
 const readExperimentRows = (settings: SystemSettings): ExperimentRow[] =>
   EXPERIMENTS.map(({ id, name, settingKey }) => ({
@@ -57,8 +58,20 @@ const readExperimentRows = (settings: SystemSettings): ExperimentRow[] =>
     enabled: settings[settingKey],
   }));
 
-export const CommandPrompt: React.FC = () => {
+interface CommandPromptProps {
+  onSearch: (query: string) => void;
+}
+
+export const CommandPrompt: React.FC<CommandPromptProps> = ({ onSearch }) => {
   const { settings, updateSetting } = useSettings();
+  const {
+    resolutionStatus,
+    visualStatus,
+    installResolutionDriver,
+    rollbackResolutionDriver,
+    installVisualDriver,
+    rollbackVisualDriver,
+  } = useDrivers();
   const [command, setCommand] = useState('');
   const [entries, setEntries] = useState<TranscriptEntry[]>([]);
   const nextEntryId = useRef(0);
@@ -89,17 +102,76 @@ export const CommandPrompt: React.FC = () => {
     setCommand('');
     const tokens = rawCommand.split(/\s+/);
     const executable = tokens[0]?.replace(/^\/+/, '').toLowerCase();
+    const action = tokens[1]?.replace(/^\/+/, '').replace(/:$/, '').toLowerCase();
 
-    if (executable !== 'vivetool' && executable !== 'vivetool.exe') {
+    if (executable === 'search') {
+      const query = tokens.slice(1).join(' ').trim();
+      if (!query) {
+        appendEntry(rawCommand, {
+          kind: 'message',
+          message: 'Usage: /search <keyword>',
+          tone: 'error',
+        });
+        return;
+      }
+
+      onSearch(query);
       appendEntry(rawCommand, {
         kind: 'message',
-        message: `Command not recognized: ${tokens[0]}. Use ${commandUsage}`,
-        tone: 'error',
+        message: `Searching Sparkle for "${query}".`,
+        tone: 'neutral',
       });
       return;
     }
 
-    const action = tokens[1]?.replace(/^\/+/, '').replace(/:$/, '').toLowerCase();
+    if (executable === 'drivers') {
+      const driverType = tokens[2]?.replace(/^\/+/, '').toLowerCase();
+      if ((action !== 'install' && action !== 'uninstall') || (driverType !== 'visuals' && driverType !== 'resolution')) {
+        appendEntry(rawCommand, {
+          kind: 'message',
+          message: 'Usage: /drivers /install|/uninstall /visuals|/resolution',
+          tone: 'error',
+        });
+        return;
+      }
+
+      const isVisualDriver = driverType === 'visuals';
+      const driverName = isVisualDriver ? 'Visual effects' : 'Resolution';
+      const status = isVisualDriver ? visualStatus : resolutionStatus;
+      const shouldInstall = action === 'install';
+      const isAlreadyInRequestedState = shouldInstall
+        ? status === 'installed'
+        : status !== 'installed';
+
+      if (!isAlreadyInRequestedState) {
+        if (isVisualDriver) {
+          if (shouldInstall) installVisualDriver();
+          else rollbackVisualDriver();
+        } else if (shouldInstall) {
+          installResolutionDriver();
+        } else {
+          rollbackResolutionDriver();
+        }
+      }
+
+      appendEntry(rawCommand, {
+        kind: 'message',
+        message: isAlreadyInRequestedState
+          ? `${driverName} driver is already ${shouldInstall ? 'installed' : 'uninstalled'}.`
+          : `${driverName} driver is now ${shouldInstall ? 'installed' : 'uninstalled'}.`,
+        tone: isAlreadyInRequestedState ? 'neutral' : 'success',
+      });
+      return;
+    }
+
+    if (executable !== 'vivetool' && executable !== 'vivetool.exe') {
+      appendEntry(rawCommand, {
+        kind: 'message',
+        message: `Command not recognized: ${tokens[0]}. ${commandUsage}`,
+        tone: 'error',
+      });
+      return;
+    }
 
     if (action === 'list') {
       appendEntry(rawCommand, {
@@ -154,20 +226,6 @@ export const CommandPrompt: React.FC = () => {
 
   return (
     <div className="mx-auto flex w-full max-w-5xl flex-col gap-5 pb-10 pt-2">
-      <header className="flex items-start gap-3">
-        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#0078d4]/10 font-mono text-lg font-semibold leading-none text-[#0078d4] dark:bg-[#4cc2ff]/15 dark:text-[#4cc2ff]" aria-hidden="true" style={{ color: '#111827', WebkitTextFillColor: '#111827' }}>
-          &gt;_
-        </div>
-        <div className="min-w-0">
-          <h1 className="text-2xl font-bold tracking-tight text-[#111827] dark:text-white sm:text-3xl">
-            Command Prompt
-          </h1>
-          <p className="mt-1 text-sm text-[#6B7280] dark:text-[#9CA3AF]">
-            Manage experimental features with viVeTool commands.
-          </p>
-        </div>
-      </header>
-
       <section
         aria-label="Command Prompt terminal"
         className="flex min-h-[420px] flex-col overflow-hidden rounded-xl border border-[#263241] bg-[#090d12] shadow-xl shadow-black/10 dark:shadow-black/25"
@@ -192,12 +250,14 @@ export const CommandPrompt: React.FC = () => {
           <div className="space-y-1 text-slate-400">
             <p>Sparkle Command Prompt</p>
             <p>Type /vivetool /list to show all available experimental features.</p>
+            <p>Manage display drivers with /drivers /install|/uninstall /visuals|/resolution.</p>
+            <p>{'Search Sparkle with /search <keyword>.'}</p>
           </div>
 
           {entries.map((entry) => (
             <div key={entry.id} className="space-y-2.5">
               <div className="flex flex-wrap gap-x-2">
-                <span className="shrink-0 text-[#77c8ff]">C:\Windows\System32&gt;</span>
+                <span className="shrink-0 text-[#77c8ff]">Sparkle\Services\Users&gt;</span>
                 <span className="break-all text-slate-100">{entry.command}</span>
               </div>
 
@@ -259,7 +319,7 @@ export const CommandPrompt: React.FC = () => {
         >
           <label htmlFor="command-prompt-input" className="sr-only">Enter a command</label>
           <span aria-hidden="true" className="hidden shrink-0 font-mono text-xs text-[#77c8ff] sm:inline">
-            C:\Windows\System32&gt;
+            Sparkle\Services\Users&gt;
           </span>
           <input
             id="command-prompt-input"

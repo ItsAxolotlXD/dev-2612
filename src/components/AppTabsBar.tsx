@@ -87,7 +87,7 @@ export const AppTabsBar: React.FC<AppTabsBarProps> = ({
             <div
               key={tab.id}
               role="presentation"
-              className={`group flex h-9 w-[min(220px,42vw)] min-w-[104px] max-w-[220px] shrink-0 items-center rounded-md transition-colors ${
+              className={`group flex h-9 min-w-[96px] max-w-[220px] flex-1 basis-0 items-center rounded-md transition-colors ${
                 isActive
                   ? 'bg-white text-[#111827] shadow-sm dark:bg-[#282c31] dark:text-white'
                   : 'text-[#5f6368] hover:bg-black/[0.05] dark:text-[#b5bbc4] dark:hover:bg-white/[0.06]'
