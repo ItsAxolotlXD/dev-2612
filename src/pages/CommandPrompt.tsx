@@ -49,7 +49,7 @@ const EXPERIMENTS: Experiment[] = [
 ];
 
 const commandUsage =
-  'Commands: /vivetool /enable|/disable /id:<9-digit-id> or /vivetool /list; /drivers /install|/uninstall /visuals|/resolution; /search <keyword>.';
+  'Commands: /vivetool /enable|/disable /id:<9-digit-id> or /vivetool /list; /drivers /install|/uninstall /visuals|/resolution; /search <keyword>; /sparkver.';
 
 const readExperimentRows = (settings: SystemSettings): ExperimentRow[] =>
   EXPERIMENTS.map(({ id, name, settingKey }) => ({
@@ -60,9 +60,10 @@ const readExperimentRows = (settings: SystemSettings): ExperimentRow[] =>
 
 interface CommandPromptProps {
   onSearch: (query: string) => void;
+  onOpenAbout: () => void;
 }
 
-export const CommandPrompt: React.FC<CommandPromptProps> = ({ onSearch }) => {
+export const CommandPrompt: React.FC<CommandPromptProps> = ({ onSearch, onOpenAbout }) => {
   const { settings, updateSetting } = useSettings();
   const {
     resolutionStatus,
@@ -103,6 +104,16 @@ export const CommandPrompt: React.FC<CommandPromptProps> = ({ onSearch }) => {
     const tokens = rawCommand.split(/\s+/);
     const executable = tokens[0]?.replace(/^\/+/, '').toLowerCase();
     const action = tokens[1]?.replace(/^\/+/, '').replace(/:$/, '').toLowerCase();
+
+    if (executable === 'sparkver') {
+      onOpenAbout();
+      appendEntry(rawCommand, {
+        kind: 'message',
+        message: 'Opening About Sparkle.',
+        tone: 'neutral',
+      });
+      return;
+    }
 
     if (executable === 'search') {
       const query = tokens.slice(1).join(' ').trim();
@@ -252,6 +263,7 @@ export const CommandPrompt: React.FC<CommandPromptProps> = ({ onSearch }) => {
             <p>Type /vivetool /list to show all available experimental features.</p>
             <p>Manage display drivers with /drivers /install|/uninstall /visuals|/resolution.</p>
             <p>{'Search Sparkle with /search <keyword>.'}</p>
+            <p>Open About Sparkle with /sparkver.</p>
           </div>
 
           {entries.map((entry) => (

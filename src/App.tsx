@@ -865,7 +865,12 @@ export default function App() {
         return <WinUI3 />;
 
       case '/command-prompt':
-        return <CommandPrompt onSearch={handleCommandSearch} />;
+        return (
+          <CommandPrompt
+            onSearch={handleCommandSearch}
+            onOpenAbout={handleOpenSparkverAbout}
+          />
+        );
 
       case '/settings':
         return (
