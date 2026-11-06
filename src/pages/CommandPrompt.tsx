@@ -11,7 +11,8 @@ type ExperimentSettingKey =
   | 'newWatchTab'
   | 'dynamicSidebarIcons'
   | 'animatedBootScreen'
-  | 'triangleExperiment';
+  | 'triangleExperiment'
+  | 'tabsExperiment';
 
 type Experiment = {
   id: string;
@@ -36,17 +37,18 @@ type TranscriptEntry = {
 };
 
 const EXPERIMENTS: Experiment[] = [
-  { id: '4715032', name: 'Native keyboard', settingKey: 'nativeKeyboard' },
-  { id: '8246901', name: 'Immersive search experience', settingKey: 'immersiveSearch' },
-  { id: '3065174', name: 'Fluent icons', settingKey: 'fluentIcons' },
-  { id: '9182436', name: 'New Watch Tab', settingKey: 'newWatchTab' },
-  { id: '5726381', name: 'Dynamic sidebar icons', settingKey: 'dynamicSidebarIcons' },
-  { id: '1439750', name: 'Animated boot screen', settingKey: 'animatedBootScreen' },
-  { id: '6892147', name: 'Triangle loading experiment', settingKey: 'triangleExperiment' },
+  { id: '471503201', name: 'Native keyboard', settingKey: 'nativeKeyboard' },
+  { id: '824690102', name: 'Immersive search experience', settingKey: 'immersiveSearch' },
+  { id: '306517403', name: 'Fluent icons', settingKey: 'fluentIcons' },
+  { id: '918243604', name: 'New Watch Tab', settingKey: 'newWatchTab' },
+  { id: '572638105', name: 'Dynamic sidebar icons', settingKey: 'dynamicSidebarIcons' },
+  { id: '143975006', name: 'Animated boot screen', settingKey: 'animatedBootScreen' },
+  { id: '689214707', name: 'Triangle loading experiment', settingKey: 'triangleExperiment' },
+  { id: '385104729', name: 'Tabs', settingKey: 'tabsExperiment' },
 ];
 
 const commandUsage =
-  'Usage: /vivetool /enable /id:1234567 | /vivetool /disable /id:1234567 | /vivetool /list';
+  'Usage: /vivetool /enable /id:123456789 | /vivetool /disable /id:123456789 | /vivetool /list';
 
 const readExperimentRows = (settings: SystemSettings): ExperimentRow[] =>
   EXPERIMENTS.map(({ id, name, settingKey }) => ({
@@ -111,10 +113,10 @@ export const CommandPrompt: React.FC = () => {
       const idToken = tokens.slice(2).find((token) => /^\/?id:\d+$/i.test(token));
       const featureId = idToken?.replace(/^\/?id:/i, '');
 
-      if (!featureId || !/^\d{7}$/.test(featureId)) {
+      if (!featureId || !/^\d{9}$/.test(featureId)) {
         appendEntry(rawCommand, {
           kind: 'message',
-          message: `A 7-digit feature ID is required. ${commandUsage}`,
+          message: `A 9-digit feature ID is required. ${commandUsage}`,
           tone: 'error',
         });
         return;
@@ -282,7 +284,7 @@ export const CommandPrompt: React.FC = () => {
       </section>
 
       <p className="text-xs text-[#6B7280] dark:text-[#9CA3AF]">
-        Example: <code className="rounded bg-black/[0.05] px-1.5 py-0.5 font-mono dark:bg-white/[0.08]">/vivetool /enable /id:4715032</code>
+        Example: <code className="rounded bg-black/[0.05] px-1.5 py-0.5 font-mono dark:bg-white/[0.08]">/vivetool /enable /id:471503201</code>
       </p>
     </div>
   );

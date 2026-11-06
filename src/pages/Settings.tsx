@@ -35,6 +35,7 @@ const SETTING_LABELS: Partial<Record<keyof SystemSettings, string>> = {
   keyboardSoundEnabled: 'Keyboard sound',
   customKeybinds: 'Keybinds',
   newWatchTab: 'Watch tab layout',
+  tabsExperiment: 'Tabs experiment',
   fluentIcons: 'Fluent icons',
   dynamicSidebarIcons: 'Dynamic sidebar icons',
   pageAnimation: 'Page animation',

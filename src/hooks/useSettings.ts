@@ -46,6 +46,7 @@ export interface SystemSettings {
   triangleExperiment: boolean;
   triangleExperimentVersion?: number;
   newWatchTab: boolean;
+  tabsExperiment: boolean;
   fluentIcons: boolean;
   dynamicSidebarIcons: boolean;
   pageAnimation: 'slideUp' | 'zoomIn';
@@ -102,6 +103,7 @@ export const DEFAULT_SETTINGS: SystemSettings = {
   triangleExperiment: true,
   triangleExperimentVersion: 1,
   newWatchTab: false,
+  tabsExperiment: false,
   fluentIcons: false,
   dynamicSidebarIcons: true,
   pageAnimation: 'slideUp',
@@ -192,6 +194,7 @@ export const getStoredSettings = (): SystemSettings => {
           : true,
         triangleExperimentVersion: 1,
         newWatchTab: typeof parsed.newWatchTab === 'boolean' ? parsed.newWatchTab : DEFAULT_SETTINGS.newWatchTab,
+        tabsExperiment: typeof parsed.tabsExperiment === 'boolean' ? parsed.tabsExperiment : DEFAULT_SETTINGS.tabsExperiment,
         fluentIcons: typeof parsed.fluentIcons === 'boolean' ? parsed.fluentIcons : DEFAULT_SETTINGS.fluentIcons,
         dynamicSidebarIcons: typeof parsed.dynamicSidebarIcons === 'boolean' ? parsed.dynamicSidebarIcons : true,
         pageAnimation: parsed.pageAnimation === 'zoomIn' ? 'zoomIn' : 'slideUp',
