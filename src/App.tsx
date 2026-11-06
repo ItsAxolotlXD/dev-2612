@@ -54,6 +54,7 @@ import { Camera } from './pages/Camera';
 import { Auth } from './pages/Auth';
 import { Feedback } from './pages/Feedback';
 import { WinUI3 } from './pages/WinUI3';
+import { CommandPrompt } from './pages/CommandPrompt';
 import { CHANNELS_DATA } from './data/channels';
 import { NEWS_DATA } from './data/news';
 import { Channel, NewsArticle } from './types';
@@ -815,6 +816,9 @@ export default function App() {
 
       case '/winui-3':
         return <WinUI3 />;
+
+      case '/command-prompt':
+        return <CommandPrompt />;
 
       case '/settings':
         return (

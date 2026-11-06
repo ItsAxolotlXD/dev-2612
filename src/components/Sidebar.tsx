@@ -30,7 +30,8 @@ import {
   Music,
   FileText,
   FolderPlus,
-  HardDrive
+  HardDrive,
+  Terminal
 } from 'lucide-react';
 import { galleryDB, GalleryFolder, GalleryMediaItem } from '../services/galleryStorage';
 import { 
@@ -1927,7 +1928,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <span className="truncate text-[13.5px]">Feedback</span>
           </button>
 
-          {/* Manage Drivers tab item placed directly above Settings */}
+          {/* Manage Drivers tab item; Command Prompt follows below */}
           <button
             type="button"
             id={isMobile ? 'mobile-nav-drivers' : 'sidebar-nav-drivers'}
@@ -1948,6 +1949,28 @@ export const Sidebar: React.FC<SidebarProps> = ({
             )}
             <HardDrive className="w-5 h-5 shrink-0 text-black dark:text-white" />
             <span className="truncate text-[13.5px]">Manage Drivers</span>
+          </button>
+
+          <button
+            type="button"
+            id={isMobile ? 'mobile-nav-command-prompt' : 'sidebar-nav-command-prompt'}
+            data-nav-active={isCurrentActive('/command-prompt') ? 'true' : undefined}
+            onClick={() => handleNavClick('/command-prompt')}
+            aria-label="Command Prompt"
+            className={`sidebar-nav-item w-full h-[38px] flex items-center gap-3.5 px-3 cursor-pointer relative text-left rounded-[6px] transition-colors ${
+              isCurrentActive('/command-prompt')
+                ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white font-medium shadow-xs'
+                : 'text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white'
+            }`}
+          >
+            {isCurrentActive('/command-prompt') && (
+              <span
+                aria-hidden="true"
+                className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-[16px] bg-[#4cc2ff] rounded-full z-30 pointer-events-none"
+              />
+            )}
+            <Terminal className="w-5 h-5 shrink-0 text-black dark:text-white" />
+            <span className="truncate text-[13.5px]">Command Prompt</span>
           </button>
 
           {/* Bottom Settings Tab Item - icon thường khi dynamic */}
@@ -2380,7 +2403,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   <FluentPersonFeedbackIcon className="w-5 h-5 text-[#111827] dark:text-white shrink-0" />
                 </button>
 
-                {/* Collapsed Manage Drivers button placed directly above Settings */}
+                {/* Collapsed Manage Drivers and Command Prompt buttons */}
                 <button
                   type="button"
                   id="sidebar-collapsed-drivers"
@@ -2402,6 +2425,29 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     />
                   )}
                   <HardDrive className="w-5 h-5 text-[#111827] dark:text-white shrink-0" />
+                </button>
+
+                <button
+                  type="button"
+                  id="sidebar-collapsed-command-prompt"
+                  data-nav-active={isCurrentActive('/command-prompt') ? 'true' : undefined}
+                  onClick={() => handleNavClick('/command-prompt')}
+                  onMouseEnter={(e) => showTooltip('Command Prompt', e)}
+                  onMouseLeave={hideTooltip}
+                  aria-label="Command Prompt"
+                  className={`sidebar-nav-item w-10 h-[38px] rounded-[6px] shrink-0 flex items-center justify-center relative transition-colors cursor-pointer ${
+                    isCurrentActive('/command-prompt')
+                      ? 'bg-black/10 dark:bg-white/[0.12] text-[#111827] dark:text-white shadow-xs'
+                      : 'text-[#4b5563] dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-[#111827] dark:hover:text-white'
+                  }`}
+                >
+                  {isCurrentActive('/command-prompt') && (
+                    <span
+                      aria-hidden="true"
+                      className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-[16px] bg-[#4cc2ff] rounded-full z-30 pointer-events-none"
+                    />
+                  )}
+                  <Terminal className="w-5 h-5 text-[#111827] dark:text-white shrink-0" />
                 </button>
 
                 {/* Bottom Settings Icon */}
