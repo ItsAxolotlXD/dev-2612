@@ -162,7 +162,7 @@ export const TopBar: React.FC<TopBarProps> = ({
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [showAllResults, setShowAllResults] = useState(false);
   const isSearchExperimentActive = settings.searchExperiments;
-  const isSearchExperimentOpen = isSearchExperimentActive && isSearchFlyoutOpen;
+  const isSearchExperimentOpen = isSearchExperimentActive && (isSearchFlyoutOpen || isSearchFocused);
   const [galleryItems, setGalleryItems] = useState<GalleryMediaItem[]>([]);
   const searchContainerRef = useRef<HTMLDivElement>(null);
   const [resultTitleTooltip, setResultTitleTooltip] = useState<{
@@ -312,7 +312,7 @@ export const TopBar: React.FC<TopBarProps> = ({
   useEffect(() => {
     const handleFocusTopBarSearch = () => {
       setIsSearchFlyoutOpen(false);
-      setIsSearchPaneOpen(true);
+      if (!isSearchExperimentActive) setIsSearchPaneOpen(true);
       setIsSearchFocused(true);
     };
     window.addEventListener('vplay:focus-topbar-search', handleFocusTopBarSearch);
@@ -1206,7 +1206,7 @@ export const TopBar: React.FC<TopBarProps> = ({
     setSearchQuery(query);
     setShowAllResults(false);
     setIsSearchFlyoutOpen(false);
-    setIsSearchPaneOpen(true);
+    if (!isSearchExperimentActive) setIsSearchPaneOpen(true);
     if (onTabSearchChange) {
       onTabSearchChange(query);
     }
@@ -1786,7 +1786,7 @@ export const TopBar: React.FC<TopBarProps> = ({
                 aria-label="Open search"
                 onClick={() => {
                   setIsSearchFocused(true);
-                  setIsSearchPaneOpen(true);
+                  if (!isSearchExperimentActive) setIsSearchPaneOpen(true);
                   setIsSearchFlyoutOpen(true);
                 }}
                 className={`flex size-6 shrink-0 items-center justify-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0078d4] dark:focus-visible:ring-[#4cc2ff] ${
@@ -1838,7 +1838,7 @@ export const TopBar: React.FC<TopBarProps> = ({
                     if (handleSparkverCommand(val)) return;
                     setSearchQuery(val);
                     setShowAllResults(false);
-                    setIsSearchPaneOpen(true);
+                    if (!isSearchExperimentActive) setIsSearchPaneOpen(true);
                     setIsSearchFlyoutOpen(false);
                     if (onTabSearchChange) {
                       onTabSearchChange(val);
@@ -1846,7 +1846,7 @@ export const TopBar: React.FC<TopBarProps> = ({
                   }}
                   onFocus={() => {
                     setIsSearchFocused(true);
-                    setIsSearchPaneOpen(true);
+                    if (!isSearchExperimentActive) setIsSearchPaneOpen(true);
                     setIsSearchFlyoutOpen(false);
                   }}
                   onBlur={() => {
