@@ -231,6 +231,7 @@ interface SidebarProps {
   onOpenSparkver?: () => void;
   searchQuery?: string;
   onSearchChange?: (query: string) => void;
+  searchExperiments?: boolean;
   selectedChannel?: Channel | null;
   onSelectChannel?: (channel: Channel) => void;
   isCollapsed?: boolean;
@@ -262,6 +263,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onOpenSparkver = () => {},
   searchQuery = '',
   onSearchChange,
+  searchExperiments = false,
   onSelectChannel,
   isCollapsed = false,
   onToggleCollapse,
@@ -304,6 +306,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const [isFavoritesExpanded, setIsFavoritesExpanded] = useState(false);
   const [isDiscordModalOpen, setIsDiscordModalOpen] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [galleryFolders, setGalleryFolders] = useState<GalleryFolder[]>([]);
   const [galleryItems, setGalleryItems] = useState<GalleryMediaItem[]>([]);
   const [isGalleryTreeExpanded, setIsGalleryTreeExpanded] = useState<boolean>(false);
@@ -1324,7 +1327,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 title="Open global search"
                 className="flex h-7 w-6 shrink-0 items-center justify-center text-neutral-500 transition-colors hover:text-[#0078d4] dark:text-neutral-300 dark:hover:text-[#4cc2ff]"
               >
-                <FluentSearchIcon className="h-4 w-4" />
+                {searchExperiments ? (
+                  <picture>
+                    <source media="(prefers-color-scheme: dark)" srcSet="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Dark.ico-3IhPwx2SaMxnTetBPF0U8ENf3T0nAA.x-icon" />
+                    <img
+                      src={isSearchFocused ? 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Medium.ico-0Tz0qlF3D1nIDDcLOvgJsH7a2IXqW5.x-icon' : 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Light.ico-XTH1C45gf8NiG4v4Lp7AqrP0Fa1H34.x-icon'}
+                      alt=""
+                      className="h-4 w-4 object-contain"
+                    />
+                  </picture>
+                ) : <FluentSearchIcon className="h-4 w-4" />}
               </button>
               <input
                 id={isMobile ? 'mobile-sidebar-search' : 'sidebar-search'}
@@ -1344,8 +1356,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   event.preventDefault();
                   onOpenSearch();
                 }}
+                onFocus={() => setIsSearchFocused(true)}
+                onBlur={() => setIsSearchFocused(false)}
                 aria-label="Search current page"
-                placeholder="Search"
+                placeholder={searchExperiments ? 'Type here to search' : 'Search'}
                 autoComplete="off"
                 autoCapitalize="off"
                 autoCorrect="off"
