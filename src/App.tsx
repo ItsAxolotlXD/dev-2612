@@ -916,6 +916,7 @@ export default function App() {
           onOpenSparkver={handleOpenSparkverAbout}
           searchQuery={currentTabSearchQuery}
           onSearchChange={handleTabSearchChange}
+          searchExperiments={settings.searchExperiments}
           onSelectChannel={setCurrentChannel}
           isCollapsed={isSidebarCollapsed}
           onToggleCollapse={toggleSidebarCollapse}
