@@ -535,6 +535,15 @@ export const SparkleSetupWizard: React.FC<SparkleSetupWizardProps> = ({
       id="sparkle-setup-wizard-overlay"
       className="fixed inset-0 z-[2147483646] flex items-center justify-center select-none overflow-hidden bg-black text-white"
     >
+      <button
+        type="button"
+        onClick={handleQuickSkip}
+        aria-label="Skip setup"
+        className="fixed right-3 top-3 z-20 border border-white/50 bg-[#00477e] px-3 py-1.5 text-xs text-white shadow-sm transition-colors hover:bg-[#005a9e] active:bg-[#003c6b] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white sm:right-6 sm:top-6 sm:px-3.5 sm:py-2 sm:text-sm"
+      >
+        Skip
+      </button>
+
       {/* 4:3 native ratio stretched to 16:9 fullscreen (width: 75% scaled horizontally by 4/3 = 1.333333x) */}
       <div
         className="w-full h-full flex flex-col justify-between overflow-hidden bg-[#00477e] text-white"
@@ -572,16 +581,6 @@ export const SparkleSetupWizard: React.FC<SparkleSetupWizardProps> = ({
             <div className="w-28 h-[2px] bg-white mt-0.5 rounded-full" />
           </div>
 
-          <div className="w-24 flex items-center justify-end">
-            <button
-              type="button"
-              onClick={handleQuickSkip}
-              aria-label="Skip setup"
-              className="px-2.5 py-1 bg-[#00477e] hover:bg-[#005a9e] active:bg-[#003c6b] border border-white/40 text-white text-xs font-normal transition-colors cursor-pointer shadow-xs"
-            >
-              Skip
-            </button>
-          </div>
         </div>
 
       {/* 2. MAIN CENTER CONTENT AREA */}
