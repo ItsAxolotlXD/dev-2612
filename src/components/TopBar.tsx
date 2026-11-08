@@ -162,7 +162,7 @@ export const TopBar: React.FC<TopBarProps> = ({
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [showAllResults, setShowAllResults] = useState(false);
   const isSearchExperimentActive = settings.searchExperiments;
-  const isSearchExperimentOpen = isSearchExperimentActive && (isSearchFlyoutOpen || isSearchFocused || isSearchPaneOpen);
+  const isSearchExperimentOpen = isSearchExperimentActive && isSearchFlyoutOpen;
   const [galleryItems, setGalleryItems] = useState<GalleryMediaItem[]>([]);
   const searchContainerRef = useRef<HTMLDivElement>(null);
   const [resultTitleTooltip, setResultTitleTooltip] = useState<{
@@ -1787,7 +1787,7 @@ export const TopBar: React.FC<TopBarProps> = ({
                 onClick={() => {
                   setIsSearchFocused(true);
                   setIsSearchPaneOpen(true);
-                  setIsSearchFlyoutOpen(false);
+                  setIsSearchFlyoutOpen(true);
                 }}
                 className={`flex size-6 shrink-0 items-center justify-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0078d4] dark:focus-visible:ring-[#4cc2ff] ${
                   isSearchFocused
