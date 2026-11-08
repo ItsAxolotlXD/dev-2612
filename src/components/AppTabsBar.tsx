@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Heart, Info, PanelsTopLeft, Plus, Terminal, X } from 'lucide-react';
+import { Heart, Info, PanelsTopLeft, Plus, Search, Terminal, X } from 'lucide-react';
 import {
   FluentCameraIcon,
   FluentCraftmineIcon,
@@ -11,7 +11,6 @@ import {
   FluentNotesIcon,
   FluentPhotopeaIcon,
   FluentScreenbugIcon,
-  FluentSearchIcon,
   FluentSettingsIcon,
   FluentUpdatesIcon,
   FluentWatchIcon,
@@ -139,21 +138,26 @@ export const AppTabsBar: React.FC<AppTabsBarProps> = ({
       <div
         role="search"
         aria-label="Search current page"
-        className={`flex h-9 shrink-0 items-center overflow-hidden rounded-md border transition-[width,background-color] duration-200 ${
+        className={`flex h-10 shrink-0 items-center overflow-hidden border transition-[width,background-color] duration-200 ${
           isSearchExpanded
-            ? 'w-[min(280px,45vw)] border-black/[0.08] bg-white dark:border-white/[0.08] dark:bg-[#282c31]'
-            : 'w-9 border-transparent bg-transparent'
+            ? 'w-[min(280px,45vw)] rounded-md border-black/[0.08] bg-white dark:border-white/[0.08] dark:bg-[#282c31]'
+            : 'w-[148px] rounded-full border-transparent bg-[#263970] shadow-sm shadow-black/10'
         }`}
       >
         <button
           type="button"
-          aria-label={isSearchExpanded ? 'Open global search' : 'Expand tab search'}
-          title={isSearchExpanded ? 'Open global search' : 'Expand tab search'}
+          aria-label={isSearchExpanded ? 'Open global search' : 'Search'}
+          title={isSearchExpanded ? 'Open global search' : 'Search'}
           onClick={() => isSearchExpanded ? onOpenSearch() : setIsSearchExpanded(true)}
-          className="relative inline-flex size-9 shrink-0 items-center justify-center rounded-md text-[#5f6368] outline-none transition-colors hover:bg-black/[0.06] hover:text-[#111827] focus-visible:ring-2 focus-visible:ring-[#0078d4] dark:text-[#b5bbc4] dark:hover:bg-white/[0.08] dark:hover:text-white dark:focus-visible:ring-[#4cc2ff]"
+          className={`relative inline-flex h-full shrink-0 items-center justify-center outline-none transition-colors focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#4cc2ff] ${
+            isSearchExpanded
+              ? 'size-9 rounded-md text-[#5f6368] hover:bg-black/[0.06] hover:text-[#111827] dark:text-[#b5bbc4] dark:hover:bg-white/[0.08] dark:hover:text-white'
+              : 'w-full gap-2 rounded-full px-5 text-white hover:bg-[#304785]'
+          }`}
         >
-          <FluentSearchIcon className="size-4" />
-          {searchQuery && !isSearchExpanded && <span className="absolute right-1.5 top-1.5 size-1.5 rounded-full bg-[#0078d4] dark:bg-[#4cc2ff]" aria-hidden="true" />}
+          <Search className="size-5 shrink-0" aria-hidden="true" />
+          {!isSearchExpanded && <span className="text-[15px] font-medium leading-none no-underline decoration-transparent">Search</span>}
+          {searchQuery && !isSearchExpanded && <span className="absolute right-3 top-2.5 size-1.5 rounded-full bg-[#4cc2ff]" aria-hidden="true" />}
         </button>
         {isSearchExpanded && (
           <>
