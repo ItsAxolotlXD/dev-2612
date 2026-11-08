@@ -361,6 +361,38 @@ export const Settings: React.FC<SettingsProps> = ({
                   </motion.div>
                 )}
 
+                {/* SearchExperiments */}
+                {matchesSearch(['SearchExperiments', 'search experiments', 'vivetool', 'velocity']) && (
+                  <motion.div
+                    variants={slideUpVariant}
+                    initial="hidden"
+                    animate="visible"
+                    custom={elementIndex++}
+                    id="setting-experimental-search-experiments"
+                    onClick={() => updateDraft('searchExperiments', !draftSettings.searchExperiments)}
+                    className="settings-block-card rounded-[6px] bg-white dark:bg-[#2c3037] shadow-xs px-4 py-3 sm:py-3.5 flex items-center justify-between gap-4 settings-block-card cursor-pointer hover:bg-black/[0.02] dark:hover:bg-[#363b43] transition-colors border-none"
+                  >
+                    <div className="min-w-0 flex-1 pr-2">
+                      <div className="font-normal text-sm text-[#111827] dark:text-white" style={{ fontWeight: 400 }}>
+                        SearchExperiments
+                      </div>
+                    </div>
+                    <button
+                      id="toggle-search-experiments"
+                      type="button"
+                      role="switch"
+                      aria-checked={draftSettings.searchExperiments}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        updateDraft('searchExperiments', !draftSettings.searchExperiments);
+                      }}
+                      className="toggle-switch-btn focus:outline-none shrink-0 border-none"
+                    >
+                      <span className="toggle-switch-thumb" />
+                    </button>
+                  </motion.div>
+                )}
+
                 {/* 3. Fluent icons */}
                 {matchesSearch(['Fluent icons', '3d icons', 'bi��u tượng 3d']) && (
                   <motion.div 
