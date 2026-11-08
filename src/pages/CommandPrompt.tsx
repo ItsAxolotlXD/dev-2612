@@ -49,7 +49,7 @@ const EXPERIMENTS: Experiment[] = [
 ];
 
 const commandUsage =
-  'Commands: /vivetool /enable|/disable /id:<9-digit-id> or /vivetool /list; /drivers /install|/uninstall /visuals|/resolution; /search <keyword>; /sparkver.';
+  'Commands: /vivetool /enable|/disable /id:<9-digit-id> or /vivetool /list; /drivers /install|/uninstall /visuals|/resolution; /search <keyword>; /debug legacysearch; /sparkver.';
 
 const readExperimentRows = (settings: SystemSettings): ExperimentRow[] =>
   EXPERIMENTS.map(({ id, name, settingKey }) => ({
@@ -61,9 +61,16 @@ const readExperimentRows = (settings: SystemSettings): ExperimentRow[] =>
 interface CommandPromptProps {
   onSearch: (query: string) => void;
   onOpenAbout: () => void;
+  onOpenLegacySearch: () => void;
+  isWindowContent?: boolean;
 }
 
-export const CommandPrompt: React.FC<CommandPromptProps> = ({ onSearch, onOpenAbout }) => {
+export const CommandPrompt: React.FC<CommandPromptProps> = ({
+  onSearch,
+  onOpenAbout,
+  onOpenLegacySearch,
+  isWindowContent = false,
+}) => {
   const { settings, updateSetting } = useSettings();
   const {
     resolutionStatus,
@@ -111,6 +118,26 @@ export const CommandPrompt: React.FC<CommandPromptProps> = ({ onSearch, onOpenAb
         kind: 'message',
         message: 'Opening About Sparkle.',
         tone: 'neutral',
+      });
+      return;
+    }
+
+    if (executable === 'debug') {
+      const debugCommand = tokens[1]?.replace(/^\/+/, '').toLowerCase();
+      if (debugCommand === 'legacysearch' && tokens.length === 2) {
+        onOpenLegacySearch();
+        appendEntry(rawCommand, {
+          kind: 'message',
+          message: 'Opening the legacy search page.',
+          tone: 'neutral',
+        });
+        return;
+      }
+
+      appendEntry(rawCommand, {
+        kind: 'message',
+        message: 'Usage: /debug legacysearch',
+        tone: 'error',
       });
       return;
     }
@@ -236,20 +263,26 @@ export const CommandPrompt: React.FC<CommandPromptProps> = ({ onSearch, onOpenAb
   };
 
   return (
-    <div className="mx-auto flex w-full max-w-5xl flex-col gap-5 pb-10 pt-2">
+    <div className={isWindowContent ? 'flex h-full min-h-0 w-full flex-col' : 'mx-auto flex w-full max-w-5xl flex-col gap-5 pb-10 pt-2'}>
       <section
         aria-label="Command Prompt terminal"
-        className="flex min-h-[420px] flex-col overflow-hidden rounded-xl border border-[#263241] bg-[#090d12] shadow-xl shadow-black/10 dark:shadow-black/25"
+        className={`flex flex-col overflow-hidden bg-[#090d12] ${
+          isWindowContent
+            ? 'h-full min-h-0 w-full rounded-none border-0 shadow-none'
+            : 'min-h-[420px] rounded-xl border border-[#263241] shadow-xl shadow-black/10 dark:shadow-black/25'
+        }`}
       >
-        <div className="flex h-11 shrink-0 items-center justify-between border-b border-white/[0.08] bg-[#111821] px-4">
-          <div className="flex items-center gap-2.5 text-xs font-medium text-slate-200">
-            <Terminal className="h-4 w-4 text-[#4cc2ff]" aria-hidden="true" />
-            <span>Command Prompt</span>
+        {!isWindowContent && (
+          <div className="flex h-11 shrink-0 items-center justify-between border-b border-white/[0.08] bg-[#111821] px-4">
+            <div className="flex items-center gap-2.5 text-xs font-medium text-slate-200">
+              <Terminal className="h-4 w-4 text-[#4cc2ff]" aria-hidden="true" />
+              <span>Command Prompt</span>
+            </div>
+            <span className="rounded-full border border-white/10 px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.12em] text-slate-400">
+              viVeTool
+            </span>
           </div>
-          <span className="rounded-full border border-white/10 px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.12em] text-slate-400">
-            viVeTool
-          </span>
-        </div>
+        )}
 
         <div
           ref={transcriptRef}
@@ -264,6 +297,7 @@ export const CommandPrompt: React.FC<CommandPromptProps> = ({ onSearch, onOpenAb
             <p>Manage display drivers with /drivers /install|/uninstall /visuals|/resolution.</p>
             <p>{'Search Sparkle with /search <keyword>.'}</p>
             <p>Open About Sparkle with /sparkver.</p>
+            <p>{'Open the legacy search page with /debug legacysearch.'}</p>
           </div>
 
           {entries.map((entry) => (
@@ -338,7 +372,13 @@ export const CommandPrompt: React.FC<CommandPromptProps> = ({ onSearch, onOpenAb
             type="text"
             value={command}
             onChange={(event) => setCommand(event.target.value)}
+            onKeyDown={(event) => {
+              if (event.key === 'Enter' && (event.nativeEvent.isComposing || event.keyCode === 229)) {
+                event.preventDefault();
+              }
+            }}
             placeholder="/vivetool /list"
+            autoFocus={isWindowContent}
             autoComplete="off"
             autoCapitalize="off"
             spellCheck={false}
@@ -355,9 +395,11 @@ export const CommandPrompt: React.FC<CommandPromptProps> = ({ onSearch, onOpenAb
         </form>
       </section>
 
-      <p className="text-xs text-[#6B7280] dark:text-[#9CA3AF]">
-        Example: <code className="rounded bg-black/[0.05] px-1.5 py-0.5 font-mono dark:bg-white/[0.08]">/vivetool /enable /id:471503201</code>
-      </p>
+      {!isWindowContent && (
+        <p className="text-xs text-[#6B7280] dark:text-[#9CA3AF]">
+          Example: <code className="rounded bg-black/[0.05] px-1.5 py-0.5 font-mono dark:bg-white/[0.08]">/vivetool /enable /id:471503201</code>
+        </p>
+      )}
     </div>
   );
 };

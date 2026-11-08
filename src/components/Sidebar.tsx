@@ -228,10 +228,7 @@ const MorphingVerticalIndicator: React.FC<MorphingIndicatorProps> = ({
 interface SidebarProps {
   currentRoute: string;
   navigate: (route: string, state?: any) => void;
-  onOpenSearch: () => void;
-  onOpenSparkver?: () => void;
-  searchQuery?: string;
-  onSearchChange?: (query: string) => void;
+  onOpenCommandPrompt?: () => void;
   selectedChannel?: Channel | null;
   onSelectChannel?: (channel: Channel) => void;
   isCollapsed?: boolean;
@@ -259,10 +256,7 @@ interface SidebarProps {
 export const Sidebar: React.FC<SidebarProps> = ({
   currentRoute,
   navigate,
-  onOpenSearch,
-  onOpenSparkver = () => {},
-  searchQuery = '',
-  onSearchChange,
+  onOpenCommandPrompt = () => {},
   onSelectChannel,
   isCollapsed = false,
   onToggleCollapse,
@@ -484,6 +478,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
   const handleNavClick = (route: string, state?: any) => {
     navigate(route, state);
+    if (onCloseMobile) onCloseMobile();
+  };
+
+  const handleOpenCommandPrompt = () => {
+    onOpenCommandPrompt();
     if (onCloseMobile) onCloseMobile();
   };
 
@@ -1312,61 +1311,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
             dependencyKey={`${navItems.length}-${isLiveTvExpanded}-${currentRoute}`}
           />
 
-          <div className="shrink-0 pb-1">
-            <div
-              role="search"
-              aria-label="Search this page"
-              className="flex h-9 w-full items-center gap-2 rounded-[6px] border border-black/[0.06] bg-white/70 px-2.5 dark:border-white/[0.06] dark:bg-[#282c31]"
-            >
-              <button
-                type="button"
-                onClick={onOpenSearch}
-                aria-label="Open global search"
-                title="Open global search"
-                className="flex h-7 w-6 shrink-0 items-center justify-center text-neutral-500 transition-colors hover:text-[#0078d4] dark:text-neutral-300 dark:hover:text-[#4cc2ff]"
-              >
-                <FluentSearchIcon className="h-4 w-4" />
-              </button>
-              <input
-                id={isMobile ? 'mobile-sidebar-search' : 'sidebar-search'}
-                type="text"
-                value={searchQuery}
-                onChange={(event) => {
-                  const query = event.target.value;
-                  if (query.trim().toLowerCase() === 'sparkver') {
-                    onSearchChange?.('');
-                    onOpenSparkver();
-                    return;
-                  }
-                  onSearchChange?.(query);
-                }}
-                onKeyDown={(event) => {
-                  if (event.key !== 'Enter' || event.nativeEvent.isComposing || event.keyCode === 229) return;
-                  event.preventDefault();
-                  onOpenSearch();
-                }}
-                aria-label="Search current page"
-                placeholder="Search"
-                autoComplete="off"
-                autoCapitalize="off"
-                autoCorrect="off"
-                spellCheck={false}
-                className="min-w-0 flex-1 bg-transparent text-[13px] text-[#111827] outline-none placeholder:text-neutral-500 dark:text-white dark:placeholder:text-neutral-400"
-              />
-              {searchQuery && (
-                <button
-                  type="button"
-                  onClick={() => onSearchChange?.('')}
-                  aria-label="Clear search"
-                  title="Clear search"
-                  className="flex h-6 w-6 shrink-0 items-center justify-center rounded text-neutral-500 transition-colors hover:bg-black/5 hover:text-[#111827] dark:text-neutral-300 dark:hover:bg-white/10 dark:hover:text-white"
-                >
-                  <X className="h-3.5 w-3.5" />
-                </button>
-              )}
-            </div>
-          </div>
-
           {/* 1. Home */}
           <div className="shrink-0">
             <button
@@ -1955,7 +1899,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             type="button"
             id={isMobile ? 'mobile-nav-command-prompt' : 'sidebar-nav-command-prompt'}
             data-nav-active={isCurrentActive('/command-prompt') ? 'true' : undefined}
-            onClick={() => handleNavClick('/command-prompt')}
+            onClick={handleOpenCommandPrompt}
             aria-label="Command Prompt"
             className={`sidebar-nav-item w-full h-[38px] flex items-center gap-3.5 px-3 cursor-pointer relative text-left rounded-[6px] transition-colors ${
               isCurrentActive('/command-prompt')
@@ -2092,18 +2036,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   currentRoute={currentRoute}
                   dependencyKey={`${navItems.length}-${currentRoute}`}
                 />
-
-                <button
-                  type="button"
-                  id="sidebar-collapsed-search"
-                  onClick={onOpenSearch}
-                  onMouseEnter={(event) => showTooltip('Search', event)}
-                  onMouseLeave={hideTooltip}
-                  aria-label="Open global search"
-                  className="sidebar-nav-item w-10 h-[38px] rounded-[6px] shrink-0 flex items-center justify-center relative transition-colors cursor-pointer text-black dark:text-white hover:bg-black/5 dark:hover:bg-white/[0.05]"
-                >
-                  <FluentSearchIcon className="w-5 h-5 text-black dark:text-white" />
-                </button>
 
                 {/* 1. Home Icon */}
                 <button
@@ -2431,7 +2363,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   type="button"
                   id="sidebar-collapsed-command-prompt"
                   data-nav-active={isCurrentActive('/command-prompt') ? 'true' : undefined}
-                  onClick={() => handleNavClick('/command-prompt')}
+                  onClick={handleOpenCommandPrompt}
                   onMouseEnter={(e) => showTooltip('Command Prompt', e)}
                   onMouseLeave={hideTooltip}
                   aria-label="Command Prompt"

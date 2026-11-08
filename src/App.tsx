@@ -30,6 +30,7 @@ import { TabLoadingScreen } from './components/TabLoadingScreen';
 import { AppScrollbar } from './components/AppScrollbar';
 import { AppNativeCursor } from './components/AppNativeCursor';
 import { SparkverAboutWindow } from './components/SparkverAboutWindow';
+import { CommandPromptWindow } from './components/CommandPromptWindow';
 import { GlobalToast } from './components/GlobalToast';
 import { EvaluationWatermark } from './components/EvaluationWatermark';
 import { showAppToast } from './utils/toast';
@@ -95,8 +96,8 @@ export default function App() {
   // Navigation Route State (supports browser pathname or internal state)
   const getInitialAppRoute = () => {
     const pathname = window.location.pathname;
-    const route = pathname === '/' || pathname === '/drivers' ? '/' : pathname;
-    return `${route}${pathname === '/drivers' ? '' : window.location.search}`;
+    const route = pathname === '/' || pathname === '/drivers' || pathname === '/command-prompt' ? '/' : pathname;
+    return `${route}${pathname === '/drivers' || pathname === '/command-prompt' ? '' : window.location.search}`;
   };
   const [currentRoute, setCurrentRouteState] = useState<string>(() => getInitialAppRoute().split(/[?#]/)[0] || '/');
   const [appTabs, setAppTabs] = useState<AppTab[]>(() => [{ id: 1, route: getInitialAppRoute() }]);
@@ -111,7 +112,7 @@ export default function App() {
   const [routeState, setRouteState] = useState<any>(null);
 
   useEffect(() => {
-    if (window.location.pathname === '/drivers') {
+    if (window.location.pathname === '/drivers' || window.location.pathname === '/command-prompt') {
       window.history.replaceState(null, '', '/');
     }
   }, []);
@@ -241,6 +242,9 @@ export default function App() {
   const [isSparkverAboutOpen, setIsSparkverAboutOpen] = useState(false);
   const handleOpenSparkverAbout = useCallback(() => setIsSparkverAboutOpen(true), []);
   const handleCloseSparkverAbout = useCallback(() => setIsSparkverAboutOpen(false), []);
+  const [isCommandPromptOpen, setIsCommandPromptOpen] = useState(() => window.location.pathname === '/command-prompt');
+  const handleOpenCommandPrompt = useCallback(() => setIsCommandPromptOpen(true), []);
+  const handleCloseCommandPrompt = useCallback(() => setIsCommandPromptOpen(false), []);
   const [isSpotlightOpen, setIsSpotlightOpen] = useState(false);
   const [isCustomStreamModalOpen, setIsCustomStreamModalOpen] = useState(false);
   const [isHelpModalOpen, setIsHelpModalOpen] = useState(false);
@@ -549,6 +553,11 @@ export default function App() {
     executeNavigation(path, state, targetTabId, closeTabId);
   }, [activeAppTabId, currentRoute, executeNavigation, hasChanges, unsavedNoteState]);
 
+  const handleCommandLegacySearch = useCallback(() => {
+    setIsCommandPromptOpen(false);
+    navigate('/search');
+  }, [navigate]);
+
   const handleSelectAppTab = useCallback((tabId: number) => {
     const selectedTab = appTabs.find((tab) => tab.id === tabId);
     if (!selectedTab || tabId === activeAppTabId) return;
@@ -631,6 +640,14 @@ export default function App() {
   const handleCommandSearch = useCallback((query: string) => {
     window.dispatchEvent(new CustomEvent('vplay:search-command', { detail: { query } }));
   }, []);
+  const handleCommandSearchFromWindow = useCallback((query: string) => {
+    setIsCommandPromptOpen(false);
+    handleCommandSearch(query);
+  }, [handleCommandSearch]);
+  const handleCommandAboutFromWindow = useCallback(() => {
+    setIsCommandPromptOpen(false);
+    handleOpenSparkverAbout();
+  }, [handleOpenSparkverAbout]);
 
   // Global search shortcut: Ctrl+K / Cmd+K vẫn mở page spotlight search (/search)
   useEffect(() => {
@@ -869,6 +886,7 @@ export default function App() {
           <CommandPrompt
             onSearch={handleCommandSearch}
             onOpenAbout={handleOpenSparkverAbout}
+            onOpenLegacySearch={handleCommandLegacySearch}
           />
         );
 
@@ -968,10 +986,7 @@ export default function App() {
         <Sidebar
           currentRoute={isDriverManagementPanelOpen ? '/drivers' : currentRoute}
           navigate={navigate}
-          onOpenSearch={handleOpenSearch}
-          onOpenSparkver={handleOpenSparkverAbout}
-          searchQuery={currentTabSearchQuery}
-          onSearchChange={handleTabSearchChange}
+          onOpenCommandPrompt={handleOpenCommandPrompt}
           onSelectChannel={setCurrentChannel}
           isCollapsed={isSidebarCollapsed}
           onToggleCollapse={toggleSidebarCollapse}
@@ -1056,10 +1071,15 @@ export default function App() {
           </div>
         )}
 
-        {settings.tabsExperiment && (!isInkCanvasEditor || isInkCanvasChromeVisible) && !isGalleryViewerOpen && (
+        {(!isInkCanvasEditor || isInkCanvasChromeVisible) && !isGalleryViewerOpen && (
           <AppTabsBar
-            tabs={appTabs}
+            showTabs={settings.tabsExperiment}
+            tabs={settings.tabsExperiment ? appTabs : []}
             activeTabId={activeAppTabId}
+            searchQuery={currentTabSearchQuery}
+            onSearchChange={handleTabSearchChange}
+            onOpenSearch={handleOpenSearch}
+            onOpenAbout={handleOpenSparkverAbout}
             onSelectTab={handleSelectAppTab}
             onCreateTab={handleCreateAppTab}
             onCloseTab={handleCloseAppTab}
@@ -1141,6 +1161,13 @@ export default function App() {
       <SparkverAboutWindow
         isOpen={isSparkverAboutOpen}
         onClose={handleCloseSparkverAbout}
+      />
+      <CommandPromptWindow
+        isOpen={isCommandPromptOpen}
+        onClose={handleCloseCommandPrompt}
+        onSearch={handleCommandSearchFromWindow}
+        onOpenAbout={handleCommandAboutFromWindow}
+        onOpenLegacySearch={handleCommandLegacySearch}
       />
       <SpotlightModal
         isOpen={isSpotlightOpen}
