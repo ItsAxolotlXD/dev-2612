@@ -245,6 +245,8 @@ interface SidebarProps {
   onOpenAddStream?: () => void;
   onImportChannels?: (channels: Channel[]) => void;
   onOpenNotifications?: () => void;
+  onOpenWidgets?: () => void;
+  isWidgetsOpen?: boolean;
   fontSize?: number;
   onChangeFontSize?: (size: number) => void;
   onOpenUpdate?: () => void;
@@ -272,6 +274,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onOpenAddStream = () => {},
   onImportChannels = (_channels: Channel[]) => {},
   onOpenNotifications = () => {},
+  onOpenWidgets = () => {},
+  isWidgetsOpen = false,
   fontSize = 16,
   onChangeFontSize = (_size: number) => {},
   onOpenUpdate = () => {},
@@ -1357,6 +1361,29 @@ export const Sidebar: React.FC<SidebarProps> = ({
             </button>
           </div>
 
+          {settings.widgetsFeed && (
+            <div className="shrink-0">
+              <button
+                type="button"
+                id={isMobile ? 'mobile-nav-widgets' : 'sidebar-nav-widgets'}
+                data-nav-active={isWidgetsOpen ? 'true' : undefined}
+                onClick={() => {
+                  onOpenWidgets();
+                  onCloseMobile?.();
+                }}
+                aria-label="Widgets"
+                className={`sidebar-nav-item w-full h-[38px] flex items-center gap-3.5 px-3 cursor-pointer relative text-left rounded-[6px] transition-colors ${
+                  isWidgetsOpen
+                    ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white font-medium shadow-xs'
+                    : 'text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white'
+                }`}
+              >
+                <PanelsTopLeft className="w-5 h-5 shrink-0 text-[#0078d4] dark:text-[#4cc2ff]" aria-hidden="true" />
+                <span className="truncate text-[13.5px]">Widgets</span>
+              </button>
+            </div>
+          )}
+
           {/* Divider & Category Heading: Apps */}
           <div className="my-2 mx-1 h-[1px] bg-black/10 dark:bg-white/10" />
           <div className="px-1.5 pt-0.5 pb-1 shrink-0">
@@ -2080,6 +2107,25 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     <FluentArticlesIcon className="w-5 h-5 text-black dark:text-white" />
                   )}
                 </button>
+
+                {settings.widgetsFeed && (
+                  <button
+                    type="button"
+                    id="sidebar-collapsed-widgets"
+                    data-nav-active={isWidgetsOpen ? 'true' : undefined}
+                    onClick={() => onOpenWidgets()}
+                    onMouseEnter={(event) => showTooltip('Widgets', event)}
+                    onMouseLeave={hideTooltip}
+                    aria-label="Widgets"
+                    className={`sidebar-nav-item w-10 h-[38px] rounded-[6px] shrink-0 flex items-center justify-center relative transition-colors cursor-pointer ${
+                      isWidgetsOpen
+                        ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white shadow-xs'
+                        : 'text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white'
+                    }`}
+                  >
+                    <PanelsTopLeft className="h-5 w-5 text-[#0078d4] dark:text-[#4cc2ff]" aria-hidden="true" />
+                  </button>
+                )}
 
                 {/* Divider: Apps */}
                 <div className="w-6 h-[1px] bg-black/10 dark:bg-white/10 my-2 shrink-0" />

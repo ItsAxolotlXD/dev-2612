@@ -39,6 +39,7 @@ const SETTING_LABELS: Partial<Record<keyof SystemSettings, string>> = {
   newWatchTab: 'Watch tab layout',
   tabsExperiment: 'Tabs experiment',
   searchColorfulExperiment: 'Search experience upgrades',
+  widgetsFeed: 'Widgets Feed',
   fluentIcons: 'Fluent icons',
   dynamicSidebarIcons: 'Dynamic sidebar icons',
   pageAnimation: 'Page animation',
@@ -422,6 +423,41 @@ export const Settings: React.FC<SettingsProps> = ({
                       onClick={(event) => {
                         event.stopPropagation();
                         updateDraft('searchColorfulExperiment', !draftSettings.searchColorfulExperiment);
+                      }}
+                      className="toggle-switch-btn focus:outline-none shrink-0 border-none"
+                    >
+                      <span className="toggle-switch-thumb" />
+                    </button>
+                  </motion.div>
+                )}
+
+                {/* Widgets Feed */}
+                {matchesSearch(['Widgets Feed', 'widgets', 'velocity', 'sidebar widgets']) && (
+                  <motion.div
+                    variants={slideUpVariant}
+                    initial="hidden"
+                    animate="visible"
+                    custom={elementIndex++}
+                    id="setting-experimental-widgets-feed"
+                    onClick={() => updateDraft('widgetsFeed', !draftSettings.widgetsFeed)}
+                    className="settings-block-card rounded-[6px] bg-white dark:bg-[#2c3037] shadow-xs px-4 py-3 sm:py-3.5 flex items-center justify-between gap-4 cursor-pointer hover:bg-black/[0.02] dark:hover:bg-[#363b43] transition-colors border-none"
+                  >
+                    <div className="min-w-0 flex-1 pr-2">
+                      <div className="font-normal text-sm text-[#111827] dark:text-white" style={{ fontWeight: 400 }}>
+                        Widgets Feed
+                      </div>
+                      <p className="mt-1 text-xs text-[#6b7280] dark:text-[#9ca3af]">
+                        Adds a widget board flyout to the sidebar.
+                      </p>
+                    </div>
+                    <button
+                      id="toggle-widgets-feed"
+                      type="button"
+                      role="switch"
+                      aria-checked={draftSettings.widgetsFeed}
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        updateDraft('widgetsFeed', !draftSettings.widgetsFeed);
                       }}
                       className="toggle-switch-btn focus:outline-none shrink-0 border-none"
                     >

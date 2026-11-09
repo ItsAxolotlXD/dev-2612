@@ -30,6 +30,7 @@ import { TabLoadingScreen } from './components/TabLoadingScreen';
 import { AppScrollbar } from './components/AppScrollbar';
 import { AppNativeCursor } from './components/AppNativeCursor';
 import { SparkverAboutWindow } from './components/SparkverAboutWindow';
+import { WidgetsFeed } from './components/WidgetsFeed';
 import { CommandPromptWindow } from './components/CommandPromptWindow';
 import { GlobalToast } from './components/GlobalToast';
 import { EvaluationWatermark } from './components/EvaluationWatermark';
@@ -239,6 +240,12 @@ export default function App() {
     }
   }, [isSplashFinished, isSetupWizardOpen, isResolutionInstalled, isVisualInstalled]);
   const [isUnderConstructionOpen, setIsUnderConstructionOpen] = useState(false);
+  const [isWidgetsFeedOpen, setIsWidgetsFeedOpen] = useState(false);
+  const handleOpenWidgetsFeed = useCallback(() => setIsWidgetsFeedOpen(true), []);
+  const handleCloseWidgetsFeed = useCallback(() => setIsWidgetsFeedOpen(false), []);
+  useEffect(() => {
+    if (!settings.widgetsFeed) setIsWidgetsFeedOpen(false);
+  }, [settings.widgetsFeed]);
   const [isSparkverAboutOpen, setIsSparkverAboutOpen] = useState(false);
   const handleOpenSparkverAbout = useCallback(() => setIsSparkverAboutOpen(true), []);
   const handleCloseSparkverAbout = useCallback(() => setIsSparkverAboutOpen(false), []);
@@ -1009,6 +1016,8 @@ export default function App() {
           onOpenAddStream={() => setIsAddStreamOpen(true)}
           onImportChannels={handleImportPlaylist}
           onOpenNotifications={() => setIsUnderConstructionOpen(true)}
+          onOpenWidgets={handleOpenWidgetsFeed}
+          isWidgetsOpen={isWidgetsFeedOpen}
           fontSize={articleFontSize}
           onChangeFontSize={handleFontSizeChange}
           onOpenUpdate={() => setIsUpdating(true)}
@@ -1160,6 +1169,7 @@ export default function App() {
       )}
 
       {/* Global Modals */}
+      <WidgetsFeed isOpen={settings.widgetsFeed && isWidgetsFeedOpen} onClose={handleCloseWidgetsFeed} />
       <SparkverAboutWindow
         isOpen={isSparkverAboutOpen}
         onClose={handleCloseSparkverAbout}
@@ -1264,7 +1274,7 @@ export default function App() {
       <GlobalToast />
 
       {/* In-App Insider Evaluation Watermark (30s on / 30s off cycle) */}
-      {isSplashFinished && <EvaluationWatermark />}
+      {isSplashFinished && !(settings.widgetsFeed && isWidgetsFeedOpen) && <EvaluationWatermark />}
 
       {/* Animated Boot Screen (if enabled via Insider experiments and not running setup wizard) */}
       {!isSetupWizardOpen && !isBootVideoFinished && settings.animatedBootScreen && (
