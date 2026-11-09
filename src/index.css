@@ -455,9 +455,11 @@ button[role="switch"] *:hover {
 #search-page button,
 #search-page [role="button"],
 #search-page .cursor-pointer,
-#topbar-search-box button,
-#topbar-search-box [role="button"],
-#topbar-search-box button * {
+  #topbar-search-box button,
+  #topbar-search-box [role="button"],
+  #topbar-search-box button *,
+  [data-search-experience="true"] button,
+  [data-search-experience="true"] button * {
   cursor: pointer !important;
   --app-native-cursor-state: hand-select;
 }
@@ -2947,7 +2949,7 @@ html.light-mode #floating-search-build-info .build-info-line-2 {
    Áp dụng đồng nhất cho các nút, ô kênh, banner trong toàn bộ ứng dụng
    ========================================================================== */
 
-/* 1. Base container styling: Đảm bảo relative, overflow hidden v�� border-box */
+/* 1. Base container styling: Đảm b��o relative, overflow hidden v�� border-box */
 [id^="recommended-channel-"],
 [id^="livetv-channel-card-"],
 [id^="home-channel-card-"],

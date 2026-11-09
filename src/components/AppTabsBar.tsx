@@ -14,6 +14,7 @@ import {
   FluentSettingsIcon,
   FluentUpdatesIcon,
   FluentWatchIcon,
+  SEARCH_EXPERIENCE_ICON_URLS,
 } from './FluentIcons';
 
 export interface AppTab {
@@ -172,16 +173,14 @@ export const AppTabsBar: React.FC<AppTabsBarProps> = ({
           {searchColorfulExperiment ? (
             <span className="relative size-5 shrink-0" aria-hidden="true">
               <img
-                src={theme === 'light'
-                  ? 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Light.ico-Fenah9WyRyImaXgFRfu1C5uTdSOF6B.x-icon'
-                  : 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Dark.ico-ZX1Lx4C3PDgO2CnpVbmZJb0HFdFMrV.x-icon'}
+                src={theme === 'light' ? SEARCH_EXPERIENCE_ICON_URLS.light : SEARCH_EXPERIENCE_ICON_URLS.dark}
                 alt=""
                 draggable={false}
                 referrerPolicy="no-referrer"
                 className={`absolute inset-0 size-full object-contain ${isSearchExpanded ? 'hidden' : 'group-hover:hidden group-active:hidden group-focus-visible:hidden'}`}
               />
               <img
-                src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Medium.ico-9kn2ef8RPiiYjf5yxF1PCo0VGeexm8.x-icon"
+                src={SEARCH_EXPERIENCE_ICON_URLS.hover}
                 alt=""
                 draggable={false}
                 referrerPolicy="no-referrer"
@@ -192,7 +191,7 @@ export const AppTabsBar: React.FC<AppTabsBarProps> = ({
             <Search className="size-5 shrink-0" aria-hidden="true" />
           )}
           {!isSearchExpanded && <span className="whitespace-nowrap text-[15px] font-medium leading-none no-underline decoration-transparent">{searchColorfulExperiment ? 'Search here' : 'Search'}</span>}
-          {searchQuery && !isSearchExpanded && <span className="absolute right-3 top-2.5 size-1.5 rounded-full bg-[#4cc2ff]" aria-hidden="true" />}
+          {searchQuery && !isSearchExpanded && !searchColorfulExperiment && <span className="absolute right-3 top-2.5 size-1.5 rounded-full bg-[#4cc2ff]" aria-hidden="true" />}
         </button>
         {isSearchExpanded && (
           <>

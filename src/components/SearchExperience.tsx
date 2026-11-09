@@ -5,7 +5,7 @@ import { ArrowUpRight, Award, Camera, ChevronRight, CircleUserRound, Gamepad2, H
 import type { LucideIcon } from 'lucide-react';
 import { getAppPortalTarget } from '../utils/appPortal';
 import type { SearchAspectItem } from './TopBar';
-import { Fluent3DSearchIcon } from './Fluent3DIcons';
+import { SEARCH_EXPERIENCE_ICON_URLS } from './FluentIcons';
 
 interface SearchExperienceProps {
   isOpen: boolean;
@@ -152,7 +152,7 @@ export const SearchExperience: React.FC<SearchExperienceProps> = ({
       type="button"
       aria-label={item.title}
       onClick={() => onSelectResult(item)}
-      className="group flex min-h-[56px] min-w-0 flex-col items-center justify-center gap-1 rounded-xl border border-white/[0.06] bg-white/[0.035] px-1.5 py-1 text-center transition-colors hover:bg-white/[0.1] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#93d7ff]"
+      className="group flex min-h-[56px] min-w-0 cursor-pointer flex-col items-center justify-center gap-1 rounded-xl border border-white/[0.06] bg-white/[0.035] px-1.5 py-1 text-center transition-colors hover:bg-white/[0.1] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#93d7ff]"
     >
       <span className="flex size-9 items-center justify-center rounded-xl bg-white/[0.08] [&>div]:!h-8 [&>div]:!w-8 [&>div>svg]:!h-7 [&>div>svg]:!w-7 [&>div>img]:!h-7 [&>div>img]:!w-7">
         {renderDashboardIcon(item, true)}
@@ -195,7 +195,14 @@ export const SearchExperience: React.FC<SearchExperienceProps> = ({
                 onSubmit={handleSubmit}
                 className="flex h-12 shrink-0 items-center gap-3 rounded-full border border-white/[0.1] bg-[#30343a] px-4 shadow-sm shadow-black/20 sm:h-14 sm:px-5"
               >
-                <Fluent3DSearchIcon className="size-6 shrink-0" aria-hidden="true" />
+                <img
+                  src={SEARCH_EXPERIENCE_ICON_URLS.hover}
+                  alt=""
+                  aria-hidden="true"
+                  draggable={false}
+                  referrerPolicy="no-referrer"
+                  className="size-6 shrink-0 object-contain"
+                />
                 <label htmlFor="search-experience-input" className="sr-only">Search apps, settings, files, and the web</label>
                 <input
                   ref={inputRef}
@@ -216,7 +223,7 @@ export const SearchExperience: React.FC<SearchExperienceProps> = ({
                     type="button"
                     onClick={() => onQueryChange('')}
                     aria-label="Clear search"
-                    className="inline-flex size-8 shrink-0 items-center justify-center rounded-full text-white/65 transition-colors hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-300"
+                    className="inline-flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-full text-white/65 transition-colors hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-300"
                   >
                     <X className="size-4" aria-hidden="true" />
                   </button>
@@ -226,7 +233,7 @@ export const SearchExperience: React.FC<SearchExperienceProps> = ({
                   onClick={onClose}
                   aria-label="Close search"
                   title="Close search"
-                  className="inline-flex size-8 shrink-0 items-center justify-center rounded-full text-white/65 transition-colors hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-300"
+                  className="inline-flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-full text-white/65 transition-colors hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-300"
                 >
                   <X className="size-4" aria-hidden="true" />
                 </button>
@@ -241,7 +248,7 @@ export const SearchExperience: React.FC<SearchExperienceProps> = ({
                         key={item.id}
                         type="button"
                         onClick={() => onSelectResult(item)}
-                        className="flex min-h-10 w-full items-center gap-3 rounded-lg px-2 py-1.5 text-left text-[13px] font-medium text-white/90 transition-colors hover:bg-white/[0.09] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-sky-300"
+                        className="flex min-h-10 w-full cursor-pointer items-center gap-3 rounded-lg px-2 py-1.5 text-left text-[13px] font-medium text-white/90 transition-colors hover:bg-white/[0.09] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-sky-300"
                       >
                         <span className="flex size-7 shrink-0 items-center justify-center [&>div]:!h-7 [&>div]:!w-7 [&>div>svg]:!h-6 [&>div>svg]:!w-6 [&>div>img]:!h-6 [&>div>img]:!w-6">
                           {renderDashboardIcon(item)}
@@ -282,7 +289,7 @@ export const SearchExperience: React.FC<SearchExperienceProps> = ({
                               key={item.id}
                               type="button"
                               onClick={() => onSelectResult(item)}
-                              className="flex min-h-[64px] w-full items-center gap-3 border-b border-white/[0.07] px-3 text-left last:border-b-0 hover:bg-white/[0.08] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-sky-300 sm:px-4"
+                              className="flex min-h-[64px] w-full cursor-pointer items-center gap-3 border-b border-white/[0.07] px-3 text-left last:border-b-0 hover:bg-white/[0.08] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-sky-300 sm:px-4"
                             >
                               <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-white/[0.08] [&>div]:!h-9 [&>div]:!w-9 [&>div>svg]:!h-8 [&>div>svg]:!w-8 [&>div>img]:!h-8 [&>div>img]:!w-8">
                                 {renderResultIcon(item)}
@@ -339,7 +346,7 @@ export const SearchExperience: React.FC<SearchExperienceProps> = ({
                                   type="button"
                                   onClick={() => setSelectedAnswer(answer)}
                                   aria-pressed={isSelected}
-                                  className={`min-h-9 rounded-full border px-3 text-left text-[12px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-300 ${
+                                  className={`min-h-9 cursor-pointer rounded-full border px-3 text-left text-[12px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-300 ${
                                     isSelected
                                       ? isCorrectAnswer
                                         ? 'border-emerald-200/60 bg-emerald-300/20 text-white'
@@ -398,7 +405,7 @@ export const SearchExperience: React.FC<SearchExperienceProps> = ({
                               key={item.id}
                               type="button"
                               onClick={() => onSelectResult(item)}
-                              className="flex min-h-11 items-center gap-2.5 rounded-full border border-white/[0.08] bg-white/[0.04] px-3 text-left text-[12px] text-white/85 transition-colors hover:bg-white/[0.1] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-300"
+                              className="flex min-h-11 cursor-pointer items-center gap-2.5 rounded-full border border-white/[0.08] bg-white/[0.04] px-3 text-left text-[12px] text-white/85 transition-colors hover:bg-white/[0.1] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-300"
                             >
                               <span className="flex size-7 shrink-0 items-center justify-center [&>div]:!h-7 [&>div]:!w-7 [&>div>svg]:!h-6 [&>div>svg]:!w-6 [&>div>img]:!h-6 [&>div>img]:!w-6">
                                 {renderDashboardIcon(item)}
