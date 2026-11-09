@@ -47,6 +47,8 @@ export interface SystemSettings {
   triangleExperimentVersion?: number;
   searchExperiments: boolean;
   searchExperimentsVersion?: number;
+  searchColorfulExperiment: boolean;
+  searchColorfulExperimentVersion?: number;
   newWatchTab: boolean;
   tabsExperiment: boolean;
   fluentIcons: boolean;
@@ -106,6 +108,8 @@ export const DEFAULT_SETTINGS: SystemSettings = {
   triangleExperimentVersion: 1,
   searchExperiments: false,
   searchExperimentsVersion: 1,
+  searchColorfulExperiment: false,
+  searchColorfulExperimentVersion: 1,
   newWatchTab: false,
   tabsExperiment: false,
   fluentIcons: false,
@@ -201,6 +205,10 @@ export const getStoredSettings = (): SystemSettings => {
           ? (typeof parsed.searchExperiments === 'boolean' ? parsed.searchExperiments : DEFAULT_SETTINGS.searchExperiments)
           : DEFAULT_SETTINGS.searchExperiments,
         searchExperimentsVersion: 1,
+        searchColorfulExperiment: typeof parsed.searchColorfulExperiment === 'boolean'
+          ? parsed.searchColorfulExperiment
+          : DEFAULT_SETTINGS.searchColorfulExperiment,
+        searchColorfulExperimentVersion: 1,
         newWatchTab: typeof parsed.newWatchTab === 'boolean' ? parsed.newWatchTab : DEFAULT_SETTINGS.newWatchTab,
         tabsExperiment: typeof parsed.tabsExperiment === 'boolean' ? parsed.tabsExperiment : DEFAULT_SETTINGS.tabsExperiment,
         fluentIcons: typeof parsed.fluentIcons === 'boolean' ? parsed.fluentIcons : DEFAULT_SETTINGS.fluentIcons,

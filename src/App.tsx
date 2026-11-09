@@ -1080,6 +1080,8 @@ export default function App() {
             onSearchChange={handleTabSearchChange}
             onOpenSearch={handleOpenSearch}
             onOpenAbout={handleOpenSparkverAbout}
+            searchColorfulExperiment={settings.searchColorfulExperiment}
+            theme={settings.theme}
             onSelectTab={handleSelectAppTab}
             onCreateTab={handleCreateAppTab}
             onCloseTab={handleCloseAppTab}
