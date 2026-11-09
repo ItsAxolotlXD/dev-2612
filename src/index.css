@@ -459,7 +459,13 @@ button[role="switch"] *:hover {
   #topbar-search-box [role="button"],
   #topbar-search-box button *,
   [data-search-experience="true"] button,
-  [data-search-experience="true"] button * {
+  [data-search-experience="true"] button *,
+  [data-search-experience="true"] [role="button"],
+  [data-search-experience="true"] [role="option"],
+  [data-search-experience="true"] a,
+  [data-search-experience="true"] .group,
+  [data-search-experience="true"] .cursor-pointer,
+  [data-search-experience="true"] :not(input):not(textarea):not([contenteditable="true"]):hover {
   cursor: pointer !important;
   --app-native-cursor-state: hand-select;
 }
