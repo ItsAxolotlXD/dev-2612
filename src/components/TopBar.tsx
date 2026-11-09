@@ -161,6 +161,8 @@ export const TopBar: React.FC<TopBarProps> = ({
   const [isSearchPaneOpen, setIsSearchPaneOpen] = useState(false);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [showAllResults, setShowAllResults] = useState(false);
+  const isSearchExperimentActive = settings.searchExperiments;
+  const isSearchExperimentOpen = isSearchExperimentActive && (isSearchFlyoutOpen || isSearchFocused);
   const [galleryItems, setGalleryItems] = useState<GalleryMediaItem[]>([]);
   const searchContainerRef = useRef<HTMLDivElement>(null);
   const [resultTitleTooltip, setResultTitleTooltip] = useState<{
@@ -310,7 +312,7 @@ export const TopBar: React.FC<TopBarProps> = ({
   useEffect(() => {
     const handleFocusTopBarSearch = () => {
       setIsSearchFlyoutOpen(false);
-      setIsSearchPaneOpen(true);
+      if (!isSearchExperimentActive) setIsSearchPaneOpen(true);
       setIsSearchFocused(true);
     };
     const handleCommandSearch = (event: Event) => {
@@ -1221,7 +1223,7 @@ export const TopBar: React.FC<TopBarProps> = ({
     setSearchQuery(query);
     setShowAllResults(false);
     setIsSearchFlyoutOpen(false);
-    setIsSearchPaneOpen(true);
+    if (!isSearchExperimentActive) setIsSearchPaneOpen(true);
     if (onTabSearchChange) {
       onTabSearchChange(query);
     }
@@ -1688,7 +1690,7 @@ export const TopBar: React.FC<TopBarProps> = ({
           </motion.button>
         )}
 
-        {isTopBarMode && (
+        {isTopBarMode && !isSearchExperimentOpen && (
           <nav className="hidden xl:flex items-center gap-1 shrink-0" aria-label="Main Navigation">
             {/* Home */}
             <button
@@ -1758,8 +1760,8 @@ export const TopBar: React.FC<TopBarProps> = ({
         ref={searchContainerRef}
         id="topbar-search-container"
         className={`flex-1 flex items-center justify-center min-w-0 transition-all ${
-          isSearchFlyoutOpen || isSearchFocused
-            ? 'fixed md:absolute inset-x-0 top-0 h-14 md:h-auto md:top-auto px-2.5 sm:px-4 z-[2147483647] bg-[#f3f3f3] dark:bg-[#1b1f24] md:bg-transparent md:left-1/2 md:-translate-x-1/2 md:w-full md:max-w-[460px]'
+          isSearchExperimentOpen || isSearchFlyoutOpen || isSearchFocused
+            ? 'fixed inset-x-0 top-0 h-14 px-2.5 sm:px-4 z-[2147483647] bg-[#f3f3f3] dark:bg-[#1b1f24] md:left-1/2 md:-translate-x-1/2 md:w-full md:max-w-[460px]'
             : 'px-1 sm:px-4 z-40 md:absolute md:left-1/2 md:-translate-x-1/2 md:w-full md:max-w-[460px]'
         }`}
       >
@@ -1796,7 +1798,22 @@ export const TopBar: React.FC<TopBarProps> = ({
                   : 'bg-[#fbfbfb] dark:bg-[#282c31]'
               } ${isFindWordsMode ? 'ring-2 ring-[#0078d4] dark:ring-[#4cc2ff]' : ''} ${currentRoute === '/search' || currentRoute.startsWith('/search') ? 'topbar-search-box-spotlight-glow' : ''}`}
             >
-              <FluentSearchIcon className="w-[16px] h-[16px] text-black dark:text-white shrink-0 pointer-events-none select-none" />
+              <button
+                type="button"
+                aria-label="Open search"
+                onClick={() => {
+                  setIsSearchFocused(true);
+                  if (!isSearchExperimentActive) setIsSearchPaneOpen(true);
+                  setIsSearchFlyoutOpen(true);
+                }}
+                className={`flex size-6 shrink-0 items-center justify-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0078d4] dark:focus-visible:ring-[#4cc2ff] ${
+                  isSearchFocused
+                    ? 'bg-black/10 text-[#0078d4] dark:bg-white/15 dark:text-[#4cc2ff]'
+                    : 'text-black dark:text-white hover:bg-black/5 dark:hover:bg-white/10 active:bg-black/15 dark:active:bg-white/20'
+                }`}
+              >
+                <FluentSearchIcon className="w-[16px] h-[16px] pointer-events-none select-none" />
+              </button>
 
               {isFindWordsMode ? (
                 <input
@@ -1838,7 +1855,7 @@ export const TopBar: React.FC<TopBarProps> = ({
                     if (handleSparkverCommand(val)) return;
                     setSearchQuery(val);
                     setShowAllResults(false);
-                    setIsSearchPaneOpen(true);
+                    if (!isSearchExperimentActive) setIsSearchPaneOpen(true);
                     setIsSearchFlyoutOpen(false);
                     if (onTabSearchChange) {
                       onTabSearchChange(val);
@@ -1846,13 +1863,13 @@ export const TopBar: React.FC<TopBarProps> = ({
                   }}
                   onFocus={() => {
                     setIsSearchFocused(true);
-                    setIsSearchPaneOpen(true);
+                    if (!isSearchExperimentActive) setIsSearchPaneOpen(true);
                     setIsSearchFlyoutOpen(false);
                   }}
                   onBlur={() => {
                     setIsSearchFocused(false);
                   }}
-                  placeholder={(() => {
+                  placeholder={isSearchExperimentActive ? 'Type here to search' : (() => {
                     if (currentRoute === '/search' || currentRoute.startsWith('/search')) return 'Try new search here!';
                     if (currentRoute === '/' || currentRoute === '/home') return 'Search Home';
                     if (currentRoute.startsWith('/live-tv') || currentRoute.startsWith('/watch-preview')) return 'Search Watch';

@@ -7,8 +7,10 @@ import {
   Tv,
   ChevronDown,
   Sun,
-  Moon
+  Moon,
+  Play
 } from 'lucide-react';
+import { AnimatedBootScreen } from '../components/AnimatedBootScreen';
 import { SparkleRecoveryModal } from '../components/SparkleRecoveryModal';
 import { motion, AnimatePresence } from 'motion/react';
 import { useSettings, FONT_SCALE_CONFIG, SystemSettings } from '../hooks/useSettings';
@@ -49,6 +51,7 @@ const SETTING_LABELS: Partial<Record<keyof SystemSettings, string>> = {
 };
 
 export type SettingsCategoryId = 
+  | 'settings-section-experimental'
   | 'settings-section-interface'
   | 'settings-section-keyboard'
   | 'settings-section-tools'
@@ -100,6 +103,7 @@ export const Settings: React.FC<SettingsProps> = ({
   const [lightModeUnlockError, setLightModeUnlockError] = useState('');
   const [editingKeybindId, setEditingKeybindId] = useState<KeybindAction | null>(null);
   const [keybindError, setKeybindError] = useState<{ id: KeybindAction; message: string } | null>(null);
+  const [isPreviewBootScreen, setIsPreviewBootScreen] = useState(false);
 
   useEffect(() => {
     if (!isLightModeUnlockOpen) return;
@@ -186,6 +190,8 @@ export const Settings: React.FC<SettingsProps> = ({
     });
   };
 
+  const matchesExperimental =
+    matchesSearch(['Insider experiments', 'Insider Flags', 'thử nghiệm', 'native keyboard', 'bàn phím ảo', 'immersive search', 'fluent icons', '3d icons', 'animated boot screen', 'boot screen', 'khởi động', 'video khởi động']);
   const matchesInterface = 
     matchesSearch(['Appearance', 'Interface', 'giao diện', 'chế độ ứng dụng', 'ban ngày', 'ban đêm', 'light', 'dark', 'thanh điều hướng', 'navigation', 'side view', 'top view', 'tab view', 'thu phóng giao diện', 'font', 'vị trí thanh bên', 'siêu chế độ tối', 'super dark']);
   const matchesAccessibility = matchesSearch(['Accessibility', 'trợ năng', 'hover to expand']);
@@ -196,6 +202,7 @@ export const Settings: React.FC<SettingsProps> = ({
 
   const hasAnyMatch = 
     !query || 
+    matchesExperimental ||
     matchesInterface || 
     matchesKeyboard ||
     matchesTools ||
@@ -248,6 +255,323 @@ export const Settings: React.FC<SettingsProps> = ({
 
       {/* Settings Sections Container */}
       <div className="flex flex-col gap-8 bg-transparent">
+        {/* 2. SECTION: INSIDER FLAGS */}
+        {matchesExperimental && (
+          <section id="settings-section-experimental" className="order-2 space-y-3 bg-transparent">
+            {/* Category Header */}
+            <motion.div
+              variants={slideUpVariant}
+              initial="hidden"
+              animate="visible"
+              custom={elementIndex++}
+            >
+              <button
+                type="button"
+                onClick={() => toggleCategoryCollapse('settings-section-experimental')}
+                className="fluent-category-header settings-block-card w-full flex items-center justify-between py-2 px-1 text-left bg-transparent hover:opacity-85 transition-opacity cursor-pointer select-none border-none"
+              >
+                <div className="flex items-center gap-2.5">
+                  <img src="/icons/settings/insider.png" alt="" aria-hidden="true" draggable={false} className="fluent-3d-icon w-6 h-6 object-contain shrink-0" />
+                  <h2 className="text-base sm:text-lg font-bold text-[#111827] dark:text-white tracking-tight">
+                    Insider experiments
+                  </h2>
+                </div>
+                <ChevronDown
+                  className={`w-4 h-4 text-white transition-transform duration-200 ${
+                    isCategoryCollapsed('settings-section-experimental') ? '-rotate-90' : 'rotate-0'
+                  }`}
+                />
+              </button>
+            </motion.div>
+
+            {/* Individual Option Blocks */}
+            <motion.div
+              key="content-settings-section-experimental"
+              initial={isCategoryCollapsed('settings-section-experimental') ? { height: 0, opacity: 0 } : false}
+              animate={{
+                height: isCategoryCollapsed('settings-section-experimental') ? 0 : 'auto',
+                opacity: isCategoryCollapsed('settings-section-experimental') ? 0 : 1,
+              }}
+              transition={{ duration: 0.32, ease: [0.16, 1, 0.3, 1] }}
+              className="overflow-hidden"
+            >
+              <div className="space-y-2.5 bg-transparent pt-0.5">
+                {/* 1. Native keyboard */}
+                {matchesSearch(['Native keyboard', 'bàn phím', 'cảm ứng']) && (
+                  <motion.div
+                    variants={slideUpVariant}
+                    initial="hidden"
+                    animate="visible"
+                    custom={elementIndex++}
+                    id="setting-experimental-native-keyboard"
+                    onClick={() => updateDraft('nativeKeyboard', !draftSettings.nativeKeyboard)}
+                    className="settings-block-card rounded-[6px] bg-white dark:bg-[#2c3037] shadow-xs px-4 py-3 sm:py-3.5 flex items-center justify-between gap-4 settings-block-card cursor-pointer hover:bg-black/[0.02] dark:hover:bg-[#363b43] transition-colors border-none"
+                  >
+                    <div className="min-w-0 flex-1 pr-2">
+                      <div className="font-normal text-sm text-[#111827] dark:text-white" style={{ fontWeight: 400 }}>
+                        Native keyboard
+                      </div>
+                    </div>
+
+                    <button
+                      id="toggle-native-keyboard"
+                      type="button"
+                      role="switch"
+                      aria-checked={draftSettings.nativeKeyboard}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        updateDraft('nativeKeyboard', !draftSettings.nativeKeyboard);
+                      }}
+                      className="toggle-switch-btn focus:outline-none shrink-0 border-none"
+                    >
+                      <span className="toggle-switch-thumb" />
+                    </button>
+                  </motion.div>
+                )}
+
+                {/* 2. Immersive search experience */}
+                {matchesSearch(['Immersive search experience', 'tìm kiếm', 'immersive']) && (
+                  <motion.div
+                    variants={slideUpVariant}
+                    initial="hidden"
+                    animate="visible"
+                    custom={elementIndex++}
+                    id="setting-experimental-immersive-search"
+                    onClick={() => updateDraft('immersiveSearch', !draftSettings.immersiveSearch)}
+                    className="settings-block-card rounded-[6px] bg-white dark:bg-[#2c3037] shadow-xs px-4 py-3 sm:py-3.5 flex items-center justify-between gap-4 settings-block-card cursor-pointer hover:bg-black/[0.02] dark:hover:bg-[#363b43] transition-colors border-none"
+                  >
+                    <div className="min-w-0 flex-1 pr-2">
+                      <div className="font-normal text-sm text-[#111827] dark:text-white" style={{ fontWeight: 400 }}>
+                        Immersive search experience
+                      </div>
+                    </div>
+
+                    <button
+                      id="toggle-immersive-search"
+                      type="button"
+                      role="switch"
+                      aria-checked={draftSettings.immersiveSearch}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        updateDraft('immersiveSearch', !draftSettings.immersiveSearch);
+                      }}
+                      className="toggle-switch-btn focus:outline-none shrink-0 border-none"
+                    >
+                      <span className="toggle-switch-thumb" />
+                    </button>
+                  </motion.div>
+                )}
+
+                {/* SearchExperiments */}
+                {matchesSearch(['SearchExperiments', 'search experiments', 'vivetool', 'velocity']) && (
+                  <motion.div
+                    variants={slideUpVariant}
+                    initial="hidden"
+                    animate="visible"
+                    custom={elementIndex++}
+                    id="setting-experimental-search-experiments"
+                    onClick={() => updateDraft('searchExperiments', !draftSettings.searchExperiments)}
+                    className="settings-block-card rounded-[6px] bg-white dark:bg-[#2c3037] shadow-xs px-4 py-3 sm:py-3.5 flex items-center justify-between gap-4 settings-block-card cursor-pointer hover:bg-black/[0.02] dark:hover:bg-[#363b43] transition-colors border-none"
+                  >
+                    <div className="min-w-0 flex-1 pr-2">
+                      <div className="font-normal text-sm text-[#111827] dark:text-white" style={{ fontWeight: 400 }}>
+                        SearchExperiments
+                      </div>
+                    </div>
+                    <button
+                      id="toggle-search-experiments"
+                      type="button"
+                      role="switch"
+                      aria-checked={draftSettings.searchExperiments}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        updateDraft('searchExperiments', !draftSettings.searchExperiments);
+                      }}
+                      className="toggle-switch-btn focus:outline-none shrink-0 border-none"
+                    >
+                      <span className="toggle-switch-thumb" />
+                    </button>
+                  </motion.div>
+                )}
+
+                {/* 3. Fluent icons */}
+                {matchesSearch(['Fluent icons', '3d icons', 'bi��u tượng 3d']) && (
+                  <motion.div
+                    variants={slideUpVariant}
+                    initial="hidden"
+                    animate="visible"
+                    custom={elementIndex++}
+                    id="setting-experimental-fluent-icons"
+                    onClick={() => updateDraft('fluentIcons', !draftSettings.fluentIcons)}
+                    className="settings-block-card rounded-[6px] bg-white dark:bg-[#2c3037] shadow-xs px-4 py-3 sm:py-3.5 flex items-center justify-between gap-4 settings-block-card cursor-pointer hover:bg-black/[0.02] dark:hover:bg-[#363b43] transition-colors border-none"
+                  >
+                    <div className="flex items-center gap-3 min-w-0 flex-1 pr-2">
+                      <div className="w-9 h-9 flex items-center justify-center shrink-0">
+                        <img
+                          src="https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/Leaf%20fluttering%20in%20wind/3D/leaf_fluttering_in_wind_3d.png"
+                          alt=""
+                          aria-hidden="true"
+                          referrerPolicy="no-referrer"
+                          className="w-7 h-7 object-contain"
+                        />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="font-normal text-sm text-[#111827] dark:text-white flex items-center gap-2" style={{ fontWeight: 400 }}>
+                          <span>Fluent icons</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <button
+                      id="toggle-fluent-icons"
+                      type="button"
+                      role="switch"
+                      aria-checked={draftSettings.fluentIcons}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        updateDraft('fluentIcons', !draftSettings.fluentIcons);
+                      }}
+                      className="toggle-switch-btn focus:outline-none shrink-0 border-none"
+                    >
+                      <span className="toggle-switch-thumb" />
+                    </button>
+                  </motion.div>
+                )}
+
+                {/* New Watch Tab */}
+                {matchesSearch(['New Watch Tab', 'watch', 'preview', 'tab xem']) && (
+                  <motion.div
+                    variants={slideUpVariant}
+                    initial="hidden"
+                    animate="visible"
+                    custom={elementIndex++}
+                    id="setting-experimental-new-watch-tab"
+                    onClick={() => updateDraft('newWatchTab', !draftSettings.newWatchTab)}
+                    className="settings-block-card rounded-[6px] bg-white dark:bg-[#2c3037] shadow-xs px-4 py-3 sm:py-3.5 flex items-center justify-between gap-4 settings-block-card cursor-pointer hover:bg-black/[0.02] dark:hover:bg-[#363b43] transition-colors border-none"
+                  >
+                    <div className="min-w-0 flex-1 pr-2">
+                      <div className="font-normal text-sm text-[#111827] dark:text-white flex items-center gap-2">
+                        <span>New Watch Tab</span>
+                        <span className="text-[10px] px-1.5 py-0.5 rounded-[6px] uppercase tracking-wider bg-[#0078d4]/10 dark:bg-[#4cc2ff]/20 text-[#0078d4] dark:text-[#4cc2ff]">New</span>
+                      </div>
+                    </div>
+                    <button id="toggle-new-watch-tab" type="button" role="switch" aria-checked={draftSettings.newWatchTab} onClick={(e) => { e.stopPropagation(); updateDraft('newWatchTab', !draftSettings.newWatchTab); }} className="toggle-switch-btn focus:outline-none shrink-0 border-none"><span className="toggle-switch-thumb" /></button>
+                  </motion.div>
+                )}
+
+                {/* Dynamic sidebar icons */}
+                {matchesSearch(['Dynamic sidebar icons', 'dynamic icons', 'sidebar icons', 'icon thanh bên']) && (
+                  <motion.div
+                    variants={slideUpVariant}
+                    initial="hidden"
+                    animate="visible"
+                    custom={elementIndex++}
+                    id="setting-dynamic-sidebar-icons"
+                    onClick={() => updateDraft('dynamicSidebarIcons', !draftSettings.dynamicSidebarIcons)}
+                    className="settings-block-card rounded-[6px] bg-white dark:bg-[#2c3037] shadow-xs px-4 py-3 sm:py-3.5 flex items-center justify-between gap-4 settings-block-card cursor-pointer hover:bg-black/[0.02] dark:hover:bg-[#363b43] transition-colors border-none"
+                  >
+                    <div className="flex items-center gap-3 min-w-0 flex-1 pr-2">
+                      <div className="w-9 h-9 flex items-center justify-center shrink-0">
+                        <img
+                          src="https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/Sparkles/3D/sparkles_3d.png"
+                          alt=""
+                          aria-hidden="true"
+                          referrerPolicy="no-referrer"
+                          className="w-7 h-7 object-contain"
+                        />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="font-normal text-sm text-[#111827] dark:text-white flex items-center gap-2" style={{ fontWeight: 400 }}>
+                          <span>Dynamic sidebar icons</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <button
+                      id="toggle-dynamic-sidebar-icons"
+                      type="button"
+                      role="switch"
+                      aria-checked={draftSettings.dynamicSidebarIcons}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        updateDraft('dynamicSidebarIcons', !draftSettings.dynamicSidebarIcons);
+                      }}
+                      className="toggle-switch-btn focus:outline-none shrink-0 border-none"
+                    >
+                      <span className="toggle-switch-thumb" />
+                    </button>
+                  </motion.div>
+                )}
+
+                {/* Animated boot screen */}
+                {matchesSearch(['Animated boot screen', 'boot screen', 'animated splash', 'khởi động', 'video khởi động', 'splash screen']) && (
+                  <motion.div
+                    variants={slideUpVariant}
+                    initial="hidden"
+                    animate="visible"
+                    custom={elementIndex++}
+                    id="setting-animated-boot-screen"
+                    onClick={() => updateDraft('animatedBootScreen', !draftSettings.animatedBootScreen)}
+                    className="settings-block-card rounded-[6px] bg-white dark:bg-[#2c3037] shadow-xs px-4 py-3 sm:py-3.5 flex items-center justify-between gap-4 settings-block-card cursor-pointer hover:bg-black/[0.02] dark:hover:bg-[#363b43] transition-colors border-none"
+                  >
+                    <div className="flex items-center gap-3 min-w-0 flex-1 pr-2">
+                      <div className="w-9 h-9 flex items-center justify-center shrink-0">
+                        <img
+                          src="https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/Film%20projector/3D/film_projector_3d.png"
+                          alt=""
+                          aria-hidden="true"
+                          referrerPolicy="no-referrer"
+                          className="w-7 h-7 object-contain"
+                          onError={(e) => {
+                            (e.currentTarget as HTMLImageElement).src = '/icons/sidebar/watch.png';
+                          }}
+                        />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="font-normal text-sm text-[#111827] dark:text-white flex items-center gap-2" style={{ fontWeight: 400 }}>
+                          <span>Animated boot screen</span>
+                          <span className="text-[10px] px-1.5 py-0.5 rounded-[6px] uppercase tracking-wider bg-[#0078d4]/10 dark:bg-[#4cc2ff]/20 text-[#0078d4] dark:text-[#4cc2ff] font-medium">
+                            Insider
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setIsPreviewBootScreen(true);
+                        }}
+                        className="px-2.5 py-1 text-xs font-medium rounded-[4px] bg-black/5 hover:bg-black/10 dark:bg-white/10 dark:hover:bg-white/15 text-[#111827] dark:text-white transition-colors flex items-center gap-1.5 shrink-0"
+                        title="Xem thử video khởi động"
+                      >
+                        <Play className="w-3 h-3 fill-current" />
+                        <span className="hidden sm:inline">Xem thử</span>
+                      </button>
+
+                      <button
+                        id="toggle-animated-boot-screen"
+                        type="button"
+                        role="switch"
+                        aria-checked={draftSettings.animatedBootScreen}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          updateDraft('animatedBootScreen', !draftSettings.animatedBootScreen);
+                        }}
+                        className="toggle-switch-btn focus:outline-none shrink-0 border-none"
+                      >
+                        <span className="toggle-switch-thumb" />
+                      </button>
+                    </div>
+                  </motion.div>
+                )}
+                  </div>
+            </motion.div>
+          </section>
+        )}
+
         {/* 2. SECTION: INTERFACE */}
         {matchesInterface && (
           <section id="settings-section-interface" className="order-3 space-y-3 bg-transparent">
@@ -342,7 +666,7 @@ export const Settings: React.FC<SettingsProps> = ({
 
                 {/* 2. Thanh điều hướng */}
                 {matchesSearch(['Thanh điều hướng', 'side view', 'tab view', 'navigation']) && (
-                  <motion.div 
+                  <motion.div
                     variants={slideUpVariant}
                     initial="hidden"
                     animate="visible"
@@ -373,7 +697,8 @@ export const Settings: React.FC<SettingsProps> = ({
                             draftSettings.navigationMode === value
                               ? 'bg-[#0078d4] dark:bg-[#4cc2ff] text-white dark:text-black shadow-xs font-normal'
                               : 'text-[#6B7280] dark:text-[#9CA3AF] hover:text-[#111827] dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 font-normal'
-                          }`} 
+                  }`}
+
                           aria-pressed={draftSettings.navigationMode === value}
                           title={label}
                         >
@@ -386,7 +711,7 @@ export const Settings: React.FC<SettingsProps> = ({
 
                 {/* 3. Thu phóng giao diện */}
                 {matchesSearch(['Thu phóng giao diện', 'font', 'scale', 'kích cỡ']) && (
-                  <motion.div 
+                  <motion.div
                     variants={slideUpVariant}
                     initial="hidden"
                     animate="visible"
@@ -591,7 +916,7 @@ export const Settings: React.FC<SettingsProps> = ({
               <div className="space-y-2.5 bg-transparent pt-0.5">
                 {/* 1. Hover to expand */}
                 {matchesSearch(['Hover to expand', 'sidebar', 'di chuột', 'mở rộng']) && (
-                  <motion.div 
+                  <motion.div
                     variants={slideUpVariant}
                     initial="hidden"
                     animate="visible"
@@ -627,7 +952,7 @@ export const Settings: React.FC<SettingsProps> = ({
 
                 {/* 2. Page loading */}
                 {matchesSearch(['Page loading', 'tải trang', 'vòng xoay']) && (
-                  <motion.div 
+                  <motion.div
                     variants={slideUpVariant}
                     initial="hidden"
                     animate="visible"
@@ -663,7 +988,7 @@ export const Settings: React.FC<SettingsProps> = ({
 
                 {/* 3. Load pages sequentially */}
                 {matchesSearch(['Load pages sequentially', 'tải tuần tự', 'cuộn trang']) && (
-                  <motion.div 
+                  <motion.div
                     variants={slideUpVariant}
                     initial="hidden"
                     animate="visible"
@@ -699,7 +1024,7 @@ export const Settings: React.FC<SettingsProps> = ({
 
                 {/* 4. Bàn phím số */}
                 {matchesSearch(['Bàn phím số', 'keyboard number', 'số 0-9']) && (
-                  <motion.div 
+                  <motion.div
                     variants={slideUpVariant}
                     initial="hidden"
                     animate="visible"
@@ -735,7 +1060,7 @@ export const Settings: React.FC<SettingsProps> = ({
 
                 {/* 5. Clipboard */}
                 {matchesSearch(['Clipboard', 'lịch sử sao chép', 'bộ nhớ tạm']) && (
-                  <motion.div 
+                  <motion.div
                     variants={slideUpVariant}
                     initial="hidden"
                     animate="visible"
@@ -771,7 +1096,7 @@ export const Settings: React.FC<SettingsProps> = ({
 
                 {/* 6. Âm bàn phím */}
                 {matchesSearch(['Âm bàn phím', 'keyboard sound', 'âm thanh']) && (
-                  <motion.div 
+                  <motion.div
                     variants={slideUpVariant}
                     initial="hidden"
                     animate="visible"
@@ -807,7 +1132,7 @@ export const Settings: React.FC<SettingsProps> = ({
 
                 <div className="px-1 pt-4 text-xs font-semibold uppercase tracking-wider text-[#6B7280] dark:text-[#9CA3AF]">Keybinds</div>
                 {matchesSearch(['Keyboard and Mouse', 'Tổ hợp phím', 'keybinds', 'phím tắt', 'ctrl', 'alt', 'keyboard sound', 'b��n phím']) && (
-                  <motion.div 
+                  <motion.div
                     variants={slideUpVariant}
                     initial="hidden"
                     animate="visible"
@@ -1022,7 +1347,7 @@ export const Settings: React.FC<SettingsProps> = ({
               <div className="space-y-2.5 bg-transparent pt-0.5">
                 {/* 1. Tỉ lệ khung hình */}
                 {matchesSearch(['Tỉ lệ khung hình', 'aspect ratio', '16:9', '4:3']) && (
-                  <motion.div 
+                  <motion.div
                     variants={slideUpVariant}
                     initial="hidden"
                     animate="visible"
@@ -1066,7 +1391,7 @@ export const Settings: React.FC<SettingsProps> = ({
 
                 {/* 2. Sparkle Notes */}
                 {matchesSearch(['Sparkle Notes', 'ghi chú', 'notes']) && (
-                  <motion.div 
+                  <motion.div
                     variants={slideUpVariant}
                     initial="hidden"
                     animate="visible"
@@ -1315,6 +1640,10 @@ export const Settings: React.FC<SettingsProps> = ({
           </div>
         )}
       </AnimatePresence>
+
+      {isPreviewBootScreen && (
+        <AnimatedBootScreen onFinish={() => setIsPreviewBootScreen(false)} />
+      )}
 
       {/* Sparkle Recovery Modal */}
       <SparkleRecoveryModal
