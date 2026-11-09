@@ -1032,7 +1032,7 @@ export default function App() {
         className={`flex-1 flex flex-col min-w-0 h-screen overflow-y-auto overflow-x-hidden no-scrollbar transition-[padding] duration-[160ms] ease-[cubic-bezier(0.34,1.45,0.64,1)] bg-[#f3f3f3] dark:bg-[#1b1f24] ${
         isInkCanvasEditor || isGalleryViewerOpen
           ? 'md:pl-0 md:pr-0 pb-0'
-          : !settings.dockToSidebar || settings.navigationMode === 'floaty'
+          : !settings.dockToSidebar || settings.navigationMode === 'floaty' || settings.navigationMode === 'taskbar'
           ? 'md:pl-0 md:pr-0 pb-20'
             : settings.sidebarPosition === 'right'
               ? isEffectiveCollapsed

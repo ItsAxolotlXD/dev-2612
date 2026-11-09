@@ -36,7 +36,7 @@ export interface SystemSettings {
   keyboardSoundEnabled: boolean;
   immersiveSidebar: boolean;
   sidebarPosition: 'left' | 'right';
-  navigationMode: 'sidebar' | 'topbar' | 'floaty';
+  navigationMode: 'sidebar' | 'topbar' | 'floaty' | 'taskbar';
   navModeVersion?: number;
   floatingSearchBar: boolean;
   floatingSearchBarVersion?: number;
@@ -257,6 +257,7 @@ export const applySystemSettings = (settings: SystemSettings) => {
   }
   document.documentElement.dataset.immersiveSidebar = String(settings.immersiveSidebar);
   document.documentElement.dataset.sidebarPosition = settings.sidebarPosition;
+  document.documentElement.dataset.navigationMode = settings.navigationMode;
 
   // Super Dark Mode
   if (settings.superDarkMode) {

@@ -1990,7 +1990,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           onTouchMove={clearSidebarHold}
           onTouchCancel={clearSidebarHold}
           className={`hidden md:flex flex-col h-screen bg-[#f3f3f3] dark:bg-[#1b1f24] text-[#111827] dark:text-white select-none shrink-0 fixed top-0 overflow-visible border-r border-[#e5e5e5] dark:border-[#2e2e2e] ${
-            settings.sidebarPosition === 'right' ? 'right-0 border-l' : 'left-0 border-r'
+            settings.navigationMode === 'taskbar' ? 'left-0' : settings.sidebarPosition === 'right' ? 'right-0 border-l' : 'left-0 border-r'
           } ${
             shouldAnimateSidebar ? 'transition-[width,box-shadow] duration-[160ms] ease-[cubic-bezier(0.34,1.45,0.64,1)]' : 'transition-none'
           } ${

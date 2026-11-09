@@ -470,6 +470,43 @@ button[role="switch"] *:hover {
   cursor: text !important;
 }
 
+/* Windows 11-inspired bottom taskbar mode */
+html[data-navigation-mode="taskbar"] #waves-desktop-sidebar {
+  top: auto !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 64px !important;
+  flex-direction: row !important;
+  border-top: 1px solid rgba(255,255,255,.12) !important;
+  border-right: 0 !important;
+  border-left: 0 !important;
+  background: rgba(31, 35, 40, .88) !important;
+  backdrop-filter: blur(24px) saturate(140%) !important;
+  box-shadow: 0 -8px 28px rgba(0,0,0,.24) !important;
+}
+html[data-navigation-mode="taskbar"] #waves-desktop-sidebar > * {
+  flex-direction: row !important;
+  height: 100% !important;
+  width: auto !important;
+  min-width: 0 !important;
+}
+html[data-navigation-mode="taskbar"] #main-content-scroll-container {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  padding-bottom: 64px !important;
+}
+html[data-navigation-mode="taskbar"] .sticky.top-0 {
+  position: fixed !important;
+  z-index: 190 !important;
+  bottom: 64px !important;
+  top: auto !important;
+  left: 0 !important;
+  width: 100% !important;
+  opacity: .94;
+}
+
 /* Light Mode Global Overrides: Main tab page is #f9f9f9, Sidebar & TopBar are #f3f3f3 */
 html.light-mode,
 html.light-mode body,

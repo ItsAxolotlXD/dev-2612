@@ -140,7 +140,7 @@ export const AppTabsBar: React.FC<AppTabsBarProps> = ({
   };
 
   return (
-    <div className="sticky top-0 z-30 flex h-11 w-full shrink-0 items-center gap-1 border-b border-black/[0.08] bg-[#f3f3f3]/95 px-2 backdrop-blur-xl dark:border-white/[0.08] dark:bg-[#1b1f24]/95">
+    <div data-search-experience="true" className="sticky top-0 z-30 flex h-11 w-full shrink-0 items-center gap-1 border-b border-black/[0.08] bg-[#f3f3f3]/95 px-2 backdrop-blur-xl dark:border-white/[0.08] dark:bg-[#1b1f24]/95">
       <div
         role="search"
         aria-label="Search current page"
