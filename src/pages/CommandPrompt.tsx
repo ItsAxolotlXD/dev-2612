@@ -13,7 +13,8 @@ type ExperimentSettingKey =
   | 'dynamicSidebarIcons'
   | 'animatedBootScreen'
   | 'triangleExperiment'
-  | 'tabsExperiment';
+  | 'tabsExperiment'
+  | 'searchColorfulExperiment';
 
 type Experiment = {
   id: string;
@@ -46,6 +47,7 @@ const EXPERIMENTS: Experiment[] = [
   { id: '143975006', name: 'Animated boot screen', settingKey: 'animatedBootScreen' },
   { id: '689214707', name: 'Triangle loading experiment', settingKey: 'triangleExperiment' },
   { id: '385104729', name: 'Tabs', settingKey: 'tabsExperiment' },
+  { id: '742839516', name: 'Search colorful experiment', settingKey: 'searchColorfulExperiment' },
 ];
 
 const commandUsage =
