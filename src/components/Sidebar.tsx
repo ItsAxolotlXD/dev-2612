@@ -1245,7 +1245,21 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const containerRef = isMobile ? mobileNavRef : desktopNavRef;
   
   return (
-  <div className="relative flex flex-col h-full select-none text-[13.5px] font-sans" onContextMenu={handleSidebarContextMenu} onTouchStart={handleSidebarTouchStart} onTouchEnd={clearSidebarHold} onTouchMove={clearSidebarHold} onTouchCancel={clearSidebarHold}>
+  <div className={`taskbar-shell relative flex flex-col h-full select-none text-[13.5px] font-sans ${settings.navigationMode === 'taskbar' ? 'is-taskbar-shell' : ''}`} onContextMenu={handleSidebarContextMenu} onTouchStart={handleSidebarTouchStart} onTouchEnd={clearSidebarHold} onTouchMove={clearSidebarHold} onTouchCancel={clearSidebarHold}>
+        {settings.navigationMode === 'taskbar' && (
+          <div className="taskbar-chrome" aria-label="Taskbar">
+            <div className="taskbar-weather" aria-label="Weather in Hanoi"><span className="taskbar-weather-icon">☁</span><span><strong>15°C</strong><small>Cloudy</small></span></div>
+            <div className="taskbar-apps">
+              <button type="button" className="taskbar-app taskbar-start" aria-label="Start" onClick={() => handleNavClick('/')}><Sparkles aria-hidden="true" /></button>
+              <button type="button" className="taskbar-search" aria-label="Search" onClick={() => handleNavClick('/search')}><FluentSearchIcon className="h-4 w-4" /><span>Search here</span><img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-YLGOThs3qN3BChqC41kL940RgI9R59.png" alt="" /></button>
+              <button type="button" className="taskbar-app" aria-label="Watch" onClick={() => handleNavClick('/live-tv')}><FluentWatchIcon /></button>
+              <button type="button" className="taskbar-app" aria-label="Gallery" onClick={() => handleNavClick('/gallery')}><FluentGalleryIcon /></button>
+              <button type="button" className="taskbar-app" aria-label="Command Prompt" onClick={handleOpenCommandPrompt}><Terminal /></button>
+              <button type="button" className="taskbar-app" aria-label="Settings" onClick={() => handleNavClick('/settings')}><FluentSettingsIcon /></button>
+            </div>
+            <div className="taskbar-tray" aria-label="System tray"><span>⌃</span><span>⌁</span><span>⌕</span><span className="taskbar-clock"><strong>8:10 PM</strong><small>11/9/2026</small></span></div>
+          </div>
+        )}
         {/* Hidden M3U file input */}
         <input
           ref={fileInputRef}
@@ -1990,7 +2004,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           onTouchMove={clearSidebarHold}
           onTouchCancel={clearSidebarHold}
           className={`hidden md:flex flex-col h-screen bg-[#f3f3f3] dark:bg-[#1b1f24] text-[#111827] dark:text-white select-none shrink-0 fixed top-0 overflow-visible border-r border-[#e5e5e5] dark:border-[#2e2e2e] ${
-            settings.sidebarPosition === 'right' ? 'right-0 border-l' : 'left-0 border-r'
+            settings.navigationMode === 'taskbar' ? 'left-0' : settings.sidebarPosition === 'right' ? 'right-0 border-l' : 'left-0 border-r'
           } ${
             shouldAnimateSidebar ? 'transition-[width,box-shadow] duration-[160ms] ease-[cubic-bezier(0.34,1.45,0.64,1)]' : 'transition-none'
           } ${

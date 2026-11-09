@@ -53,7 +53,7 @@ const CardHeader = ({ icon, title, iconClass = 'text-white/80' }: { icon: ReactN
 
 const WeatherWidget = () => (
   <article className="min-h-[380px] rounded-[10px] border border-white/[0.035] bg-[#293126] p-4 shadow-sm">
-    <CardHeader icon={<Sun className="h-4 w-4 fill-amber-400 text-amber-400" />} title="Sơn Dương" />
+    <CardHeader icon={<Sun className="h-4 w-4 fill-amber-400 text-amber-400" />} title="Hanoi" />
     <div className="flex items-center gap-3 py-2">
       <CloudSun className="h-14 w-14 shrink-0 text-sky-200" strokeWidth={1.4} aria-hidden="true" />
       <div className="flex items-start gap-1">
