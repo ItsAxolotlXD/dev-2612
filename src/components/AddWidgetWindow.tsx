@@ -69,10 +69,10 @@ export const AddWidgetWindow = ({ isOpen, onClose, onAddWidget }: AddWidgetWindo
             role="dialog"
             aria-modal="true"
             aria-labelledby="add-widget-window-title"
-            initial={{ opacity: 0, scale: prefersReducedMotion ? 1 : 0.96, y: prefersReducedMotion ? 0 : 8 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: prefersReducedMotion ? 1 : 0.97, y: prefersReducedMotion ? 0 : 6 }}
-            transition={{ duration: prefersReducedMotion ? 0 : 0.18, ease: 'easeOut' }}
+            initial={{ opacity: 0, scale: prefersReducedMotion ? 1 : 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: prefersReducedMotion ? 1 : 0.92 }}
+            transition={{ duration: prefersReducedMotion ? 0 : 0.2, ease: 'easeOut' }}
             className="flex max-h-[calc(100dvh-24px)] w-full max-w-[900px] flex-col overflow-hidden rounded-[10px] border border-white/15 bg-[#20231f] text-white shadow-[0_28px_90px_rgba(0,0,0,0.58)] sm:max-h-[min(620px,calc(100dvh-48px))]"
           >
             <header className="flex h-11 shrink-0 items-center justify-between border-b border-white/[0.08] bg-[#191c19] pl-4">

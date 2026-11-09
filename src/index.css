@@ -455,9 +455,11 @@ button[role="switch"] *:hover {
 #search-page button,
 #search-page [role="button"],
 #search-page .cursor-pointer,
-#topbar-search-box button,
-#topbar-search-box [role="button"],
-#topbar-search-box button * {
+  #topbar-search-box button,
+  #topbar-search-box [role="button"],
+  #topbar-search-box button *,
+  [data-search-experience="true"] button,
+  [data-search-experience="true"] button * {
   cursor: pointer !important;
   --app-native-cursor-state: hand-select;
 }
@@ -2947,7 +2949,7 @@ html.light-mode #floating-search-build-info .build-info-line-2 {
    Áp dụng đồng nhất cho các nút, ô kênh, banner trong toàn bộ ứng dụng
    ========================================================================== */
 
-/* 1. Base container styling: Đảm bảo relative, overflow hidden v�� border-box */
+/* 1. Base container styling: Đảm b��o relative, overflow hidden v�� border-box */
 [id^="recommended-channel-"],
 [id^="livetv-channel-card-"],
 [id^="home-channel-card-"],
@@ -4475,7 +4477,7 @@ html.light-mode main .text-\[\#E0E0E6\] {
 }
 
 /* Form controls synchronized with TopBar search style */
-html.light-mode input[type="text"]:not(#floating-search-input):not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(#sidebar-search):not(#mobile-sidebar-search),
+html.light-mode input[type="text"]:not(#floating-search-input):not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(#sidebar-search):not(#mobile-sidebar-search):not(#search-experience-input),
 html.light-mode input[type="search"]:not(#floating-search-input):not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(#sidebar-search):not(#mobile-sidebar-search),
 html.light-mode input[type="url"]:not(#floating-search-input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(#sidebar-search):not(#mobile-sidebar-search),
 html.light-mode input[type="email"]:not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(#sidebar-search):not(#mobile-sidebar-search),
@@ -4489,7 +4491,7 @@ html.light-mode select {
   color: #111827 !important;
 }
 
-html.light-mode input[type="text"]:focus:not(#floating-search-input):not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(#sidebar-search):not(#mobile-sidebar-search),
+html.light-mode input[type="text"]:focus:not(#floating-search-input):not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(#sidebar-search):not(#mobile-sidebar-search):not(#search-experience-input),
 html.light-mode input[type="search"]:focus:not(#floating-search-input):not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(#sidebar-search):not(#mobile-sidebar-search),
 html.light-mode input[type="url"]:focus:not(#floating-search-input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(#sidebar-search):not(#mobile-sidebar-search),
 html.light-mode input[type="email"]:focus:not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(#sidebar-search):not(#mobile-sidebar-search),
@@ -5193,7 +5195,7 @@ html.light-mode .fluent-btn-secondary:active {
 #channels-search-box,
 #settings-search-box,
 #find-words-bar > div,
-input[type="text"]:not(#spotlight-search-container input):not(#immersive-search-capsule input):not(#sidebar-search-box input):not(#settings-search-box input):not(#channels-search-box input):not(#topbar-search-box input):not(.winui-search-input input):not(#find-words-bar input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(#sidebar-search):not(#mobile-sidebar-search):not(.fluent-modal-dialog input),
+input[type="text"]:not(#spotlight-search-container input):not(#immersive-search-capsule input):not(#sidebar-search-box input):not(#settings-search-box input):not(#channels-search-box input):not(#topbar-search-box input):not(.winui-search-input input):not(#find-words-bar input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(#sidebar-search):not(#mobile-sidebar-search):not(#search-experience-input):not(.fluent-modal-dialog input),
 input[type="email"]:not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(#sidebar-search):not(#mobile-sidebar-search):not(.fluent-modal-dialog input),
 input[type="url"]:not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(#sidebar-search):not(#mobile-sidebar-search):not(.fluent-modal-dialog input),
 input[type="password"]:not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(#sidebar-search):not(#mobile-sidebar-search):not(.fluent-modal-dialog input),
@@ -5236,7 +5238,7 @@ input[type="number"]:not([data-no-line]):not(.fluent-search-box input):not(.flue
 #channels-search-box:focus-within,
 #settings-search-box:focus-within,
 #find-words-bar > div:focus-within,
-input[type="text"]:not(#spotlight-search-container input):not(#immersive-search-capsule input):not(#sidebar-search-box input):not(#settings-search-box input):not(#channels-search-box input):not(#topbar-search-box input):not(.winui-search-input input):not(#find-words-bar input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(#sidebar-search):not(#mobile-sidebar-search):not(.fluent-modal-dialog input):focus,
+input[type="text"]:not(#spotlight-search-container input):not(#immersive-search-capsule input):not(#sidebar-search-box input):not(#settings-search-box input):not(#channels-search-box input):not(#topbar-search-box input):not(.winui-search-input input):not(#find-words-bar input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(#sidebar-search):not(#mobile-sidebar-search):not(#search-experience-input):not(.fluent-modal-dialog input):focus,
 input[type="email"]:not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(#sidebar-search):not(#mobile-sidebar-search):not(.fluent-modal-dialog input):focus,
 input[type="url"]:not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(#sidebar-search):not(#mobile-sidebar-search):not(.fluent-modal-dialog input):focus,
 input[type="password"]:not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(#sidebar-search):not(#mobile-sidebar-search):not(.fluent-modal-dialog input):focus,
@@ -5254,7 +5256,7 @@ html.light-mode #sidebar-search-box,
 html.light-mode #channels-search-box,
 html.light-mode #settings-search-box,
 html.light-mode #find-words-bar > div,
-html.light-mode input[type="text"]:not(#spotlight-search-container input):not(#immersive-search-capsule input):not(#sidebar-search-box input):not(#settings-search-box input):not(#channels-search-box input):not(#topbar-search-box input):not(.winui-search-input input):not(#find-words-bar input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(#sidebar-search):not(#mobile-sidebar-search):not(.fluent-modal-dialog input),
+html.light-mode input[type="text"]:not(#spotlight-search-container input):not(#immersive-search-capsule input):not(#sidebar-search-box input):not(#settings-search-box input):not(#channels-search-box input):not(#topbar-search-box input):not(.winui-search-input input):not(#find-words-bar input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(#sidebar-search):not(#mobile-sidebar-search):not(#search-experience-input):not(.fluent-modal-dialog input),
 html.light-mode input[type="email"]:not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(#sidebar-search):not(#mobile-sidebar-search):not(.fluent-modal-dialog input),
 html.light-mode input[type="url"]:not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(#sidebar-search):not(#mobile-sidebar-search):not(.fluent-modal-dialog input),
 html.light-mode input[type="password"]:not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(#sidebar-search):not(#mobile-sidebar-search):not(.fluent-modal-dialog input),
@@ -5272,7 +5274,7 @@ html.light-mode #sidebar-search-box:focus-within,
 html.light-mode #channels-search-box:focus-within,
 html.light-mode #settings-search-box:focus-within,
 html.light-mode #find-words-bar > div:focus-within,
-html.light-mode input[type="text"]:not(#spotlight-search-container input):not(#immersive-search-capsule input):not(#sidebar-search-box input):not(#settings-search-box input):not(#channels-search-box input):not(#topbar-search-box input):not(.winui-search-input input):not(#find-words-bar input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(#sidebar-search):not(#mobile-sidebar-search):not(.fluent-modal-dialog input):focus,
+html.light-mode input[type="text"]:not(#spotlight-search-container input):not(#immersive-search-capsule input):not(#sidebar-search-box input):not(#settings-search-box input):not(#channels-search-box input):not(#topbar-search-box input):not(.winui-search-input input):not(#find-words-bar input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(#sidebar-search):not(#mobile-sidebar-search):not(#search-experience-input):not(.fluent-modal-dialog input):focus,
 html.light-mode input[type="email"]:not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(#sidebar-search):not(#mobile-sidebar-search):not(.fluent-modal-dialog input):focus,
 html.light-mode input[type="url"]:not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(#sidebar-search):not(#mobile-sidebar-search):not(.fluent-modal-dialog input):focus,
 html.light-mode input[type="password"]:not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(#sidebar-search):not(#mobile-sidebar-search):not(.fluent-modal-dialog input):focus,
@@ -8521,7 +8523,7 @@ html.light-mode .fluent-input-box::before {
 }
 
 /* Standalone input elements across the app synchronized with TopBar search style */
-input[type="text"]:not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(#sidebar-search):not(#mobile-sidebar-search):not([type="range"]):not([type="checkbox"]):not([type="radio"]):not(#floating-search-input),
+input[type="text"]:not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(#sidebar-search):not(#mobile-sidebar-search):not([type="range"]):not([type="checkbox"]):not([type="radio"]):not(#floating-search-input):not(#search-experience-input),
 input[type="email"]:not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(#sidebar-search):not(#mobile-sidebar-search),
 input[type="password"]:not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(#sidebar-search):not(#mobile-sidebar-search),
 input[type="search"]:not(#floating-search-input):not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(#sidebar-search):not(#mobile-sidebar-search),
@@ -8536,7 +8538,7 @@ input[type="url"]:not(#floating-search-input):not(.fluent-search-box input):not(
   transition: background-color 0.2s ease, border-bottom-color 0.2s ease !important;
 }
 
-input[type="text"]:focus:not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(#sidebar-search):not(#mobile-sidebar-search):not([type="range"]):not([type="checkbox"]):not([type="radio"]):not(#floating-search-input),
+input[type="text"]:focus:not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(#sidebar-search):not(#mobile-sidebar-search):not([type="range"]):not([type="checkbox"]):not([type="radio"]):not(#floating-search-input):not(#search-experience-input),
 input[type="email"]:focus:not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(#sidebar-search):not(#mobile-sidebar-search),
 input[type="password"]:focus:not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(#sidebar-search):not(#mobile-sidebar-search),
 input[type="search"]:focus:not(#floating-search-input):not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(#sidebar-search):not(#mobile-sidebar-search),
@@ -8546,7 +8548,7 @@ input[type="url"]:focus:not(#floating-search-input):not(.fluent-search-box input
   outline: none !important;
 }
 
-html.light-mode input[type="text"]:not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(#sidebar-search):not(#mobile-sidebar-search):not([type="range"]):not([type="checkbox"]):not([type="radio"]):not(#floating-search-input),
+html.light-mode input[type="text"]:not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(#sidebar-search):not(#mobile-sidebar-search):not([type="range"]):not([type="checkbox"]):not([type="radio"]):not(#floating-search-input):not(#search-experience-input),
 html.light-mode input[type="email"]:not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(#sidebar-search):not(#mobile-sidebar-search),
 html.light-mode input[type="password"]:not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(#sidebar-search):not(#mobile-sidebar-search),
 html.light-mode input[type="search"]:not(#floating-search-input):not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(#sidebar-search):not(#mobile-sidebar-search),
@@ -8561,7 +8563,7 @@ html.light-mode input[type="url"]:not(#floating-search-input):not(.fluent-search
   outline: none !important;
 }
 
-html.light-mode input[type="text"]:focus:not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(#sidebar-search):not(#mobile-sidebar-search):not([type="range"]):not([type="checkbox"]):not([type="radio"]):not(#floating-search-input),
+html.light-mode input[type="text"]:focus:not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(#sidebar-search):not(#mobile-sidebar-search):not([type="range"]):not([type="checkbox"]):not([type="radio"]):not(#floating-search-input):not(#search-experience-input),
 html.light-mode input[type="email"]:focus:not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(#sidebar-search):not(#mobile-sidebar-search),
 html.light-mode input[type="password"]:focus:not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(#sidebar-search):not(#mobile-sidebar-search),
 html.light-mode input[type="search"]:focus:not(#floating-search-input):not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input):not(#search-pane-input):not(#sidebar-search):not(#mobile-sidebar-search),

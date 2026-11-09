@@ -4,6 +4,12 @@ export const SEARCH_SPARKLE_ICON_URL = '/icons/search_sparkle.png';
 export const SEARCH_SPARKLE_REMOTE_URL =
   'https://static.wikia.nocookie.net/ep-deo/images/6/6c/Search_sparkle.png/revision/latest/scale-to-width-down/1000?cb=20261015133722';
 
+export const SEARCH_EXPERIENCE_ICON_URLS = {
+  light: 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Light.ico-Fenah9WyRyImaXgFRfu1C5uTdSOF6B.x-icon',
+  dark: 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Dark.ico-ZX1Lx4C3PDgO2CnpVbmZJb0HFdFMrV.x-icon',
+  hover: 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Medium.ico-9kn2ef8RPiiYjf5yxF1PCo0VGeexm8.x-icon',
+} as const;
+
 export const INK_CANVAS_ICON_URL = 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-fEvkjm5oELvCI8unT4JL0LhTiPYN3Q.png';
 
 export const FluentInkCanvasIcon: React.FC<{ className?: string; style?: React.CSSProperties }> = ({ className = 'w-5 h-5', style }) => (

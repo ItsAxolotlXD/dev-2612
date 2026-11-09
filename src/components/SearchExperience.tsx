@@ -5,6 +5,7 @@ import { ArrowUpRight, Award, Camera, ChevronRight, CircleUserRound, Gamepad2, H
 import type { LucideIcon } from 'lucide-react';
 import { getAppPortalTarget } from '../utils/appPortal';
 import type { SearchAspectItem } from './TopBar';
+import { SEARCH_EXPERIENCE_ICON_URLS } from './FluentIcons';
 
 interface SearchExperienceProps {
   isOpen: boolean;
@@ -151,7 +152,7 @@ export const SearchExperience: React.FC<SearchExperienceProps> = ({
       type="button"
       aria-label={item.title}
       onClick={() => onSelectResult(item)}
-      className="group flex min-h-[56px] min-w-0 flex-col items-center justify-center gap-1 rounded-xl border border-white/[0.06] bg-white/[0.035] px-1.5 py-1 text-center transition-colors hover:bg-white/[0.1] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#93d7ff]"
+      className="group flex min-h-[56px] min-w-0 cursor-pointer flex-col items-center justify-center gap-1 rounded-xl border border-white/[0.06] bg-white/[0.035] px-1.5 py-1 text-center transition-colors hover:bg-white/[0.1] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#93d7ff]"
     >
       <span className="flex size-9 items-center justify-center rounded-xl bg-white/[0.08] [&>div]:!h-8 [&>div]:!w-8 [&>div>svg]:!h-7 [&>div>svg]:!w-7 [&>div>img]:!h-7 [&>div>img]:!w-7">
         {renderDashboardIcon(item, true)}
@@ -167,10 +168,10 @@ export const SearchExperience: React.FC<SearchExperienceProps> = ({
           key="search-experience-backdrop"
           data-search-experience="true"
           className="fixed inset-0 z-[2147483647] flex items-center justify-center bg-black/40 p-2.5 backdrop-blur-[3px] sm:p-3"
-          initial={{ opacity: 0 }}
+          initial={{ opacity: 1 }}
           animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: shouldReduceMotion ? 0.1 : 0.18 }}
+          exit={{ opacity: 1 }}
+          transition={{ duration: 0 }}
           onMouseDown={(event) => {
             if (event.target === event.currentTarget) onClose();
           }}
@@ -181,29 +182,27 @@ export const SearchExperience: React.FC<SearchExperienceProps> = ({
             aria-modal="true"
             aria-labelledby="search-experience-title"
             onKeyDown={handleDialogKeyDown}
-            initial={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, scale: 0.985, y: 8 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, scale: 0.99, y: 5 }}
-            transition={{ duration: shouldReduceMotion ? 0.1 : 0.22, ease: [0.2, 0.8, 0.2, 1] }}
-            className="relative flex h-[min(820px,calc(100dvh-20px))] w-[min(1240px,calc(100vw-20px))] flex-col overflow-hidden rounded-[22px] border border-white/20 bg-[#172216]/90 text-white shadow-[0_32px_100px_rgba(0,0,0,0.6)]"
+            initial={shouldReduceMotion ? { y: 0 } : { y: '100%' }}
+            animate={{ y: 0 }}
+            exit={shouldReduceMotion ? { y: 0 } : { y: '100%' }}
+            transition={{ duration: shouldReduceMotion ? 0 : 0.36, ease: [0.2, 0.8, 0.2, 1] }}
+            className="relative flex h-[min(820px,calc(100dvh-20px))] w-[min(1240px,calc(100vw-20px))] flex-col overflow-hidden rounded-[22px] border border-white/[0.12] bg-[#25282c] text-white shadow-[0_32px_100px_rgba(0,0,0,0.6)]"
           >
-            <img
-              src="/search-experience/forest-wallpaper.png"
-              alt=""
-              aria-hidden="true"
-              className="absolute inset-0 size-full object-cover"
-            />
-            <div className="absolute inset-0 bg-[linear-gradient(110deg,rgba(16,27,15,0.88),rgba(31,41,23,0.81)_45%,rgba(48,43,29,0.79))]" aria-hidden="true" />
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(179,211,102,0.12),transparent_48%)]" aria-hidden="true" />
-
             <div className="relative z-10 flex min-h-0 flex-1 flex-col p-3 sm:p-4 md:p-4">
               <h2 id="search-experience-title" className="sr-only">Search experience</h2>
               <form
                 role="search"
                 onSubmit={handleSubmit}
-                className="flex h-9 shrink-0 items-center gap-2 rounded-full border border-white/10 bg-[#171d16]/75 px-3 shadow-inner shadow-black/20 backdrop-blur-xl sm:px-4"
+                className="flex h-12 shrink-0 items-center gap-3 rounded-full border border-white/[0.1] bg-[#30343a] px-4 shadow-sm shadow-black/20 sm:h-14 sm:px-5"
               >
-                <Search className="size-5 shrink-0 text-sky-400" aria-hidden="true" />
+                <img
+                  src={SEARCH_EXPERIENCE_ICON_URLS.hover}
+                  alt=""
+                  aria-hidden="true"
+                  draggable={false}
+                  referrerPolicy="no-referrer"
+                  className="size-6 shrink-0 object-contain"
+                />
                 <label htmlFor="search-experience-input" className="sr-only">Search apps, settings, files, and the web</label>
                 <input
                   ref={inputRef}
@@ -224,7 +223,7 @@ export const SearchExperience: React.FC<SearchExperienceProps> = ({
                     type="button"
                     onClick={() => onQueryChange('')}
                     aria-label="Clear search"
-                    className="inline-flex size-8 shrink-0 items-center justify-center rounded-full text-white/65 transition-colors hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-300"
+                    className="inline-flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-full text-white/65 transition-colors hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-300"
                   >
                     <X className="size-4" aria-hidden="true" />
                   </button>
@@ -234,7 +233,7 @@ export const SearchExperience: React.FC<SearchExperienceProps> = ({
                   onClick={onClose}
                   aria-label="Close search"
                   title="Close search"
-                  className="inline-flex size-8 shrink-0 items-center justify-center rounded-full text-white/65 transition-colors hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-300"
+                  className="inline-flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-full text-white/65 transition-colors hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-300"
                 >
                   <X className="size-4" aria-hidden="true" />
                 </button>
@@ -249,7 +248,7 @@ export const SearchExperience: React.FC<SearchExperienceProps> = ({
                         key={item.id}
                         type="button"
                         onClick={() => onSelectResult(item)}
-                        className="flex min-h-10 w-full items-center gap-3 rounded-lg px-2 py-1.5 text-left text-[13px] font-medium text-white/90 transition-colors hover:bg-white/[0.09] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-sky-300"
+                        className="flex min-h-10 w-full cursor-pointer items-center gap-3 rounded-lg px-2 py-1.5 text-left text-[13px] font-medium text-white/90 transition-colors hover:bg-white/[0.09] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-sky-300"
                       >
                         <span className="flex size-7 shrink-0 items-center justify-center [&>div]:!h-7 [&>div]:!w-7 [&>div>svg]:!h-6 [&>div>svg]:!w-6 [&>div>img]:!h-6 [&>div>img]:!w-6">
                           {renderDashboardIcon(item)}
@@ -290,7 +289,7 @@ export const SearchExperience: React.FC<SearchExperienceProps> = ({
                               key={item.id}
                               type="button"
                               onClick={() => onSelectResult(item)}
-                              className="flex min-h-[64px] w-full items-center gap-3 border-b border-white/[0.07] px-3 text-left last:border-b-0 hover:bg-white/[0.08] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-sky-300 sm:px-4"
+                              className="flex min-h-[64px] w-full cursor-pointer items-center gap-3 border-b border-white/[0.07] px-3 text-left last:border-b-0 hover:bg-white/[0.08] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-sky-300 sm:px-4"
                             >
                               <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-white/[0.08] [&>div]:!h-9 [&>div]:!w-9 [&>div>svg]:!h-8 [&>div>svg]:!w-8 [&>div>img]:!h-8 [&>div>img]:!w-8">
                                 {renderResultIcon(item)}
@@ -327,7 +326,7 @@ export const SearchExperience: React.FC<SearchExperienceProps> = ({
                           </div>
                         </article>
 
-                        <article className="flex h-[236px] flex-col overflow-hidden rounded-xl border border-white/[0.08] bg-[#283126]/65 backdrop-blur-md">
+                        <article className="flex h-[236px] flex-col overflow-hidden rounded-xl border border-white/[0.08] bg-[#30343a]/65 backdrop-blur-md">
                           <div className="flex items-start justify-between gap-3 border-b border-white/[0.08] px-4 py-3.5 sm:px-5">
                             <div>
                               <p className="text-[11px] font-semibold text-white/65">Daily quiz</p>
@@ -347,7 +346,7 @@ export const SearchExperience: React.FC<SearchExperienceProps> = ({
                                   type="button"
                                   onClick={() => setSelectedAnswer(answer)}
                                   aria-pressed={isSelected}
-                                  className={`min-h-9 rounded-full border px-3 text-left text-[12px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-300 ${
+                                  className={`min-h-9 cursor-pointer rounded-full border px-3 text-left text-[12px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-300 ${
                                     isSelected
                                       ? isCorrectAnswer
                                         ? 'border-emerald-200/60 bg-emerald-300/20 text-white'
@@ -374,7 +373,7 @@ export const SearchExperience: React.FC<SearchExperienceProps> = ({
                       </div>
 
                       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
-                        <section aria-labelledby="search-experience-apps-title" className="rounded-xl border border-white/[0.08] bg-[#283126]/60 p-3.5 backdrop-blur-md sm:p-4">
+                        <section aria-labelledby="search-experience-apps-title" className="rounded-xl border border-white/[0.08] bg-[#30343a]/60 p-3.5 backdrop-blur-md sm:p-4">
                           <div className="mb-2.5 flex items-center justify-between px-1">
                             <h2 id="search-experience-apps-title" className="text-[13px] font-medium text-white/80">Top apps</h2>
                             <ChevronRight className="size-4 text-white/45" aria-hidden="true" />
@@ -384,7 +383,7 @@ export const SearchExperience: React.FC<SearchExperienceProps> = ({
                           </div>
                         </section>
 
-                        <section aria-labelledby="search-experience-tools-title" className="rounded-xl border border-white/[0.08] bg-[#283126]/60 p-3.5 backdrop-blur-md sm:p-4">
+                        <section aria-labelledby="search-experience-tools-title" className="rounded-xl border border-white/[0.08] bg-[#30343a]/60 p-3.5 backdrop-blur-md sm:p-4">
                           <div className="mb-2.5 flex items-center justify-between px-1">
                             <h2 id="search-experience-tools-title" className="text-[13px] font-medium text-white/80">Tools & shortcuts</h2>
                             <Sparkles className="size-4 text-sky-200/80" aria-hidden="true" />
@@ -395,7 +394,7 @@ export const SearchExperience: React.FC<SearchExperienceProps> = ({
                         </section>
                       </div>
 
-                      <section aria-labelledby="search-experience-trending-title" className="rounded-xl border border-white/[0.08] bg-[#283126]/60 p-3.5 backdrop-blur-md sm:p-4">
+                      <section aria-labelledby="search-experience-trending-title" className="rounded-xl border border-white/[0.08] bg-[#30343a]/60 p-3.5 backdrop-blur-md sm:p-4">
                         <div className="mb-2.5 flex items-center justify-between px-1">
                           <h2 id="search-experience-trending-title" className="text-[13px] font-medium text-white/80">Trending searches</h2>
                           <MoreHorizontal className="size-4 text-white/55" aria-hidden="true" />
@@ -406,7 +405,7 @@ export const SearchExperience: React.FC<SearchExperienceProps> = ({
                               key={item.id}
                               type="button"
                               onClick={() => onSelectResult(item)}
-                              className="flex min-h-11 items-center gap-2.5 rounded-full border border-white/[0.08] bg-white/[0.04] px-3 text-left text-[12px] text-white/85 transition-colors hover:bg-white/[0.1] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-300"
+                              className="flex min-h-11 cursor-pointer items-center gap-2.5 rounded-full border border-white/[0.08] bg-white/[0.04] px-3 text-left text-[12px] text-white/85 transition-colors hover:bg-white/[0.1] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-300"
                             >
                               <span className="flex size-7 shrink-0 items-center justify-center [&>div]:!h-7 [&>div]:!w-7 [&>div>svg]:!h-6 [&>div>svg]:!w-6 [&>div>img]:!h-6 [&>div>img]:!w-6">
                                 {renderDashboardIcon(item)}

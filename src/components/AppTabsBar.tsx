@@ -14,6 +14,7 @@ import {
   FluentSettingsIcon,
   FluentUpdatesIcon,
   FluentWatchIcon,
+  SEARCH_EXPERIENCE_ICON_URLS,
 } from './FluentIcons';
 
 export interface AppTab {
@@ -143,41 +144,43 @@ export const AppTabsBar: React.FC<AppTabsBarProps> = ({
       <div
         role="search"
         aria-label="Search current page"
-        className={`flex h-10 shrink-0 items-center overflow-hidden border transition-[width,background-color,transform] duration-200 ${
+        className={`flex ${isSearchExpanded ? 'h-10' : 'h-8'} shrink-0 items-center overflow-hidden border transition-[width,background-color,transform] duration-200 ${
           isCenteredSearch
             ? 'absolute left-1/2 top-1/2 z-50 w-[min(460px,calc(100vw-1rem))] -translate-x-1/2 -translate-y-1/2 rounded-full border-black/[0.08] bg-white shadow-lg shadow-black/15 dark:border-white/[0.08] dark:bg-[#282c31]'
             : isSearchExpanded
               ? 'w-[min(280px,45vw)] rounded-md border-black/[0.08] bg-white dark:border-white/[0.08] dark:bg-[#282c31]'
-              : 'w-[148px] rounded-full border-transparent bg-[#263970] shadow-sm shadow-black/10'
+              : searchColorfulExperiment
+                ? 'w-[148px] rounded-full border border-black/[0.08] bg-white shadow-sm shadow-black/5 dark:border-white/[0.08] dark:bg-[#282c31] dark:shadow-black/10'
+                : 'w-[148px] rounded-full border-transparent bg-[#263970] shadow-sm shadow-black/10'
         }`}
       >
         <button
           id="search-pill-trigger"
           type="button"
           aria-haspopup={searchColorfulExperiment ? 'dialog' : undefined}
-          aria-label={searchColorfulExperiment && !isSearchExpanded ? 'Open Search experience' : isSearchExpanded ? 'Open global search' : 'Search'}
-          title={searchColorfulExperiment && !isSearchExpanded ? 'Open Search experience' : isSearchExpanded ? 'Open global search' : 'Search'}
+          aria-label={searchColorfulExperiment && !isSearchExpanded ? 'Search here' : isSearchExpanded ? 'Open global search' : 'Search'}
+          title={searchColorfulExperiment && !isSearchExpanded ? 'Search here' : isSearchExpanded ? 'Open global search' : 'Search'}
           aria-pressed={isSearchExpanded}
           onClick={() => isSearchExpanded || searchColorfulExperiment ? onOpenSearch() : setIsSearchExpanded(true)}
           className={`group relative inline-flex h-full shrink-0 items-center justify-center outline-none transition-colors focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#4cc2ff] ${
             isSearchExpanded
               ? `${isCenteredSearch ? 'size-9 rounded-full' : 'size-9 rounded-md'} text-[#5f6368] hover:bg-black/[0.06] hover:text-[#111827] dark:text-[#b5bbc4] dark:hover:bg-white/[0.08] dark:hover:text-white`
-              : 'w-full gap-2 rounded-full px-5 text-white hover:bg-[#304785]'
+              : searchColorfulExperiment
+                ? 'w-full gap-2 rounded-full px-3 text-[#5f6368] hover:bg-black/[0.05] dark:text-[#b5bbc4] dark:hover:bg-white/[0.06]'
+                : 'w-full gap-2 rounded-full px-5 text-white hover:bg-[#304785]'
           }`}
         >
           {searchColorfulExperiment ? (
             <span className="relative size-5 shrink-0" aria-hidden="true">
               <img
-                src={theme === 'light'
-                  ? 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Light.ico-Fenah9WyRyImaXgFRfu1C5uTdSOF6B.x-icon'
-                  : 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Dark.ico-ZX1Lx4C3PDgO2CnpVbmZJb0HFdFMrV.x-icon'}
+                src={theme === 'light' ? SEARCH_EXPERIENCE_ICON_URLS.light : SEARCH_EXPERIENCE_ICON_URLS.dark}
                 alt=""
                 draggable={false}
                 referrerPolicy="no-referrer"
                 className={`absolute inset-0 size-full object-contain ${isSearchExpanded ? 'hidden' : 'group-hover:hidden group-active:hidden group-focus-visible:hidden'}`}
               />
               <img
-                src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Medium.ico-9kn2ef8RPiiYjf5yxF1PCo0VGeexm8.x-icon"
+                src={SEARCH_EXPERIENCE_ICON_URLS.hover}
                 alt=""
                 draggable={false}
                 referrerPolicy="no-referrer"
@@ -187,8 +190,8 @@ export const AppTabsBar: React.FC<AppTabsBarProps> = ({
           ) : (
             <Search className="size-5 shrink-0" aria-hidden="true" />
           )}
-          {!isSearchExpanded && <span className="text-[15px] font-medium leading-none no-underline decoration-transparent">Search</span>}
-          {searchQuery && !isSearchExpanded && <span className="absolute right-3 top-2.5 size-1.5 rounded-full bg-[#4cc2ff]" aria-hidden="true" />}
+          {!isSearchExpanded && <span className="whitespace-nowrap text-[15px] font-medium leading-none no-underline decoration-transparent">{searchColorfulExperiment ? 'Search here' : 'Search'}</span>}
+          {searchQuery && !isSearchExpanded && !searchColorfulExperiment && <span className="absolute right-3 top-2.5 size-1.5 rounded-full bg-[#4cc2ff]" aria-hidden="true" />}
         </button>
         {isSearchExpanded && (
           <>
