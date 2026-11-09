@@ -13,7 +13,9 @@ type ExperimentSettingKey =
   | 'dynamicSidebarIcons'
   | 'animatedBootScreen'
   | 'triangleExperiment'
-  | 'tabsExperiment';
+  | 'tabsExperiment'
+  | 'searchColorfulExperiment'
+  | 'widgetsFeed';
 
 type Experiment = {
   id: string;
@@ -46,10 +48,12 @@ const EXPERIMENTS: Experiment[] = [
   { id: '143975006', name: 'Animated boot screen', settingKey: 'animatedBootScreen' },
   { id: '689214707', name: 'Triangle loading experiment', settingKey: 'triangleExperiment' },
   { id: '385104729', name: 'Tabs', settingKey: 'tabsExperiment' },
+  { id: '742839516', name: 'Search experience upgrades', settingKey: 'searchColorfulExperiment' },
+  { id: '861937204', name: 'Widgets Feed', settingKey: 'widgetsFeed' },
 ];
 
 const commandUsage =
-  'Commands: /vivetool /enable|/disable /id:<9-digit-id> or /vivetool /list; /drivers /install|/uninstall /visuals|/resolution; /search <keyword>; /debug legacysearch; /sparkver.';
+  'Commands: /vivetool /enable|/disable /id:<9-digit-id> [/velocity] or /vivetool /list; /drivers /install|/uninstall /visuals|/resolution; /search <keyword>; /debug legacysearch; /sparkver.';
 
 const readExperimentRows = (settings: SystemSettings): ExperimentRow[] =>
   EXPERIMENTS.map(({ id, name, settingKey }) => ({
@@ -243,13 +247,14 @@ export const CommandPrompt: React.FC<CommandPromptProps> = ({
       }
 
       const shouldEnable = action === 'enable';
+      const hasVelocityFlag = tokens.slice(2).some((token) => /^\/?velocity$/i.test(token));
       const isAlreadyInRequestedState = settings[experiment.settingKey] === shouldEnable;
       updateSetting(experiment.settingKey, shouldEnable);
       appendEntry(rawCommand, {
         kind: 'message',
         message: isAlreadyInRequestedState
-          ? `${experiment.name} (ID ${experiment.id}) is already ${shouldEnable ? 'ENABLED' : 'DISABLED'}.`
-          : `${experiment.name} (ID ${experiment.id}) is now ${shouldEnable ? 'ENABLED' : 'DISABLED'}.`,
+          ? `${experiment.name} (ID ${experiment.id}) is already ${shouldEnable ? 'ENABLED' : 'DISABLED'}${hasVelocityFlag ? ' with /velocity' : ''}.`
+          : `${experiment.name} (ID ${experiment.id}) is now ${shouldEnable ? 'ENABLED' : 'DISABLED'}${hasVelocityFlag ? ' with /velocity' : ''}.`,
         tone: isAlreadyInRequestedState ? 'neutral' : 'success',
       });
       return;
@@ -397,7 +402,7 @@ export const CommandPrompt: React.FC<CommandPromptProps> = ({
 
       {!isWindowContent && (
         <p className="text-xs text-[#6B7280] dark:text-[#9CA3AF]">
-          Example: <code className="rounded bg-black/[0.05] px-1.5 py-0.5 font-mono dark:bg-white/[0.08]">/vivetool /enable /id:471503201</code>
+          Example: <code className="rounded bg-black/[0.05] px-1.5 py-0.5 font-mono dark:bg-white/[0.08]">/vivetool /enable /id:742839516</code>
         </p>
       )}
     </div>
