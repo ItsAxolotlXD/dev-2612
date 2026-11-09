@@ -60,6 +60,7 @@ import { NEWS_DATA } from '../data/news';
 import { galleryDB, GalleryMediaItem } from '../services/galleryStorage';
 import { showAppToast } from '../utils/toast';
 import { SearchPane } from './SearchPane';
+import { SearchExperience } from './SearchExperience';
 import { getAppPortalTarget, toAppPortalCoordinates } from '../utils/appPortal';
 
 function stripHtml(html: string): string {
@@ -159,6 +160,7 @@ export const TopBar: React.FC<TopBarProps> = ({
   const [searchQuery, setSearchQuery] = useState(tabSearchQuery);
   const [isSearchFlyoutOpen, setIsSearchFlyoutOpen] = useState(false);
   const [isSearchPaneOpen, setIsSearchPaneOpen] = useState(false);
+  const [isSearchExperienceOpen, setIsSearchExperienceOpen] = useState(false);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [showAllResults, setShowAllResults] = useState(false);
   const isSearchExperimentActive = settings.searchExperiments;
@@ -312,6 +314,12 @@ export const TopBar: React.FC<TopBarProps> = ({
   useEffect(() => {
     const handleFocusTopBarSearch = () => {
       setIsSearchFlyoutOpen(false);
+      if (settings.searchColorfulExperiment) {
+        setIsSearchPaneOpen(false);
+        setIsSearchFocused(false);
+        setIsSearchExperienceOpen(true);
+        return;
+      }
       if (!isSearchExperimentActive) setIsSearchPaneOpen(true);
       setIsSearchFocused(true);
     };
@@ -324,8 +332,14 @@ export const TopBar: React.FC<TopBarProps> = ({
       onTabSearchChange?.(query);
       setShowAllResults(false);
       setIsSearchFlyoutOpen(false);
-      setIsSearchPaneOpen(true);
-      setIsSearchFocused(true);
+      if (settings.searchColorfulExperiment) {
+        setIsSearchPaneOpen(false);
+        setIsSearchFocused(false);
+        setIsSearchExperienceOpen(true);
+      } else {
+        setIsSearchPaneOpen(true);
+        setIsSearchFocused(true);
+      }
     };
 
     window.addEventListener('vplay:focus-topbar-search', handleFocusTopBarSearch);
@@ -334,7 +348,7 @@ export const TopBar: React.FC<TopBarProps> = ({
       window.removeEventListener('vplay:focus-topbar-search', handleFocusTopBarSearch);
       window.removeEventListener('vplay:search-command', handleCommandSearch);
     };
-  }, [onTabSearchChange]);
+  }, [isSearchExperimentActive, onTabSearchChange, settings.searchColorfulExperiment]);
 
   // Load gallery items so TopBar search can find gallery media/documents
   useEffect(() => {
@@ -454,7 +468,8 @@ export const TopBar: React.FC<TopBarProps> = ({
     const handleClickOutside = (event: MouseEvent | TouchEvent) => {
       const target = event.target;
       const isInsidePane = target instanceof Element && Boolean(target.closest('[data-search-pane]'));
-      if (isInsidePane || (target instanceof Node && searchContainerRef.current?.contains(target))) return;
+      const isInsideSearchExperience = target instanceof Element && Boolean(target.closest('[data-search-experience]'));
+      if (isInsidePane || isInsideSearchExperience || (target instanceof Node && searchContainerRef.current?.contains(target))) return;
 
       setIsSearchFlyoutOpen(false);
       setIsSearchPaneOpen(false);
@@ -464,6 +479,8 @@ export const TopBar: React.FC<TopBarProps> = ({
       if (event.key === 'Escape') {
         setIsSearchFlyoutOpen(false);
         setIsSearchPaneOpen(false);
+        setIsSearchExperienceOpen(false);
+        setIsSearchFocused(false);
         setShowAllResults(false);
       }
     };
@@ -1211,6 +1228,7 @@ export const TopBar: React.FC<TopBarProps> = ({
     setShowAllResults(false);
     setIsSearchFlyoutOpen(false);
     setIsSearchPaneOpen(false);
+    setIsSearchExperienceOpen(false);
     setIsSearchFocused(false);
     onTabSearchChange?.('');
     onOpenSparkver();
@@ -1223,7 +1241,7 @@ export const TopBar: React.FC<TopBarProps> = ({
     setSearchQuery(query);
     setShowAllResults(false);
     setIsSearchFlyoutOpen(false);
-    if (!isSearchExperimentActive) setIsSearchPaneOpen(true);
+    if (!isSearchExperimentActive && !settings.searchColorfulExperiment) setIsSearchPaneOpen(true);
     if (onTabSearchChange) {
       onTabSearchChange(query);
     }
@@ -1238,11 +1256,21 @@ export const TopBar: React.FC<TopBarProps> = ({
     }
   };
 
+  const handleCloseSearchExperience = useCallback(() => {
+    setIsSearchExperienceOpen(false);
+    setIsSearchFocused(false);
+    setIsSearchFlyoutOpen(false);
+    setIsSearchPaneOpen(false);
+    setShowAllResults(false);
+  }, []);
+
   const handleSelectSearchResult = (item: SearchAspectItem) => {
     saveToHistory(item.title, { type: item.type, logo: item.logo, subtitle: item.subtitle });
     item.onSelect();
     setIsSearchFlyoutOpen(false);
     setIsSearchPaneOpen(false);
+    setIsSearchExperienceOpen(false);
+    setIsSearchFocused(false);
     setShowAllResults(false);
   };
 
@@ -2357,6 +2385,20 @@ export const TopBar: React.FC<TopBarProps> = ({
           setIsSearchFlyoutOpen(false);
           setShowAllResults(false);
         }}
+        renderResultIcon={renderItemIcon}
+      />
+      <SearchExperience
+        isOpen={isSearchExperienceOpen}
+        query={searchQuery}
+        results={searchResults}
+        suggestedItems={appAspects.filter((item) => item.type === 'page')}
+        topAppItems={appAspects.filter((item) => item.type === 'page')}
+        toolItems={appAspects.filter((item) => item.type === 'tool')}
+        trendingItems={trendingSearchItems}
+        onQueryChange={handleSearchPaneQueryChange}
+        onSubmit={handleSearchPaneSubmit}
+        onSelectResult={handleSelectSearchResult}
+        onClose={handleCloseSearchExperience}
         renderResultIcon={renderItemIcon}
       />
 

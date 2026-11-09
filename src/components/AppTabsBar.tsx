@@ -152,11 +152,13 @@ export const AppTabsBar: React.FC<AppTabsBarProps> = ({
         }`}
       >
         <button
+          id="search-pill-trigger"
           type="button"
-          aria-label={isSearchExpanded ? 'Open global search' : 'Search'}
-          title={isSearchExpanded ? 'Open global search' : 'Search'}
+          aria-haspopup={searchColorfulExperiment ? 'dialog' : undefined}
+          aria-label={searchColorfulExperiment && !isSearchExpanded ? 'Open Search experience' : isSearchExpanded ? 'Open global search' : 'Search'}
+          title={searchColorfulExperiment && !isSearchExpanded ? 'Open Search experience' : isSearchExpanded ? 'Open global search' : 'Search'}
           aria-pressed={isSearchExpanded}
-          onClick={() => isSearchExpanded ? onOpenSearch() : setIsSearchExpanded(true)}
+          onClick={() => isSearchExpanded || searchColorfulExperiment ? onOpenSearch() : setIsSearchExpanded(true)}
           className={`group relative inline-flex h-full shrink-0 items-center justify-center outline-none transition-colors focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#4cc2ff] ${
             isSearchExpanded
               ? `${isCenteredSearch ? 'size-9 rounded-full' : 'size-9 rounded-md'} text-[#5f6368] hover:bg-black/[0.06] hover:text-[#111827] dark:text-[#b5bbc4] dark:hover:bg-white/[0.08] dark:hover:text-white`

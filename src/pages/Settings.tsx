@@ -38,7 +38,7 @@ const SETTING_LABELS: Partial<Record<keyof SystemSettings, string>> = {
   customKeybinds: 'Keybinds',
   newWatchTab: 'Watch tab layout',
   tabsExperiment: 'Tabs experiment',
-  searchColorfulExperiment: 'Search colorful experiment',
+  searchColorfulExperiment: 'Search experience upgrades',
   fluentIcons: 'Fluent icons',
   dynamicSidebarIcons: 'Dynamic sidebar icons',
   pageAnimation: 'Page animation',
