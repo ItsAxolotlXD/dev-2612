@@ -32,6 +32,7 @@ import { AppNativeCursor } from './components/AppNativeCursor';
 import { SparkverAboutWindow } from './components/SparkverAboutWindow';
 import { WidgetsFeed } from './components/WidgetsFeed';
 import { CommandPromptWindow } from './components/CommandPromptWindow';
+import { ViveToolGuiWindow } from './components/ViveToolGuiWindow';
 import { GlobalToast } from './components/GlobalToast';
 import { EvaluationWatermark } from './components/EvaluationWatermark';
 import { showAppToast } from './utils/toast';
@@ -252,6 +253,9 @@ export default function App() {
   const [isCommandPromptOpen, setIsCommandPromptOpen] = useState(() => window.location.pathname === '/command-prompt');
   const handleOpenCommandPrompt = useCallback(() => setIsCommandPromptOpen(true), []);
   const handleCloseCommandPrompt = useCallback(() => setIsCommandPromptOpen(false), []);
+  const [isViveToolGuiOpen, setIsViveToolGuiOpen] = useState(false);
+  const handleOpenViveToolGui = useCallback(() => setIsViveToolGuiOpen(true), []);
+  const handleCloseViveToolGui = useCallback(() => setIsViveToolGuiOpen(false), []);
   const [isSpotlightOpen, setIsSpotlightOpen] = useState(false);
   const [isCustomStreamModalOpen, setIsCustomStreamModalOpen] = useState(false);
   const [isHelpModalOpen, setIsHelpModalOpen] = useState(false);
@@ -894,6 +898,7 @@ export default function App() {
             onSearch={handleCommandSearch}
             onOpenAbout={handleOpenSparkverAbout}
             onOpenLegacySearch={handleCommandLegacySearch}
+            onOpenViveToolGui={handleOpenViveToolGui}
           />
         );
 
@@ -1180,7 +1185,9 @@ export default function App() {
         onSearch={handleCommandSearchFromWindow}
         onOpenAbout={handleCommandAboutFromWindow}
         onOpenLegacySearch={handleCommandLegacySearch}
+        onOpenViveToolGui={handleOpenViveToolGui}
       />
+      <ViveToolGuiWindow isOpen={isViveToolGuiOpen} onClose={handleCloseViveToolGui} />
       <SpotlightModal
         isOpen={isSpotlightOpen}
         onClose={() => setIsSpotlightOpen(false)}

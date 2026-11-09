@@ -53,7 +53,7 @@ const EXPERIMENTS: Experiment[] = [
 ];
 
 const commandUsage =
-  'Commands: /vivetool /enable|/disable /id:<9-digit-id> [/velocity] or /vivetool /list; /drivers /install|/uninstall /visuals|/resolution; /search <keyword>; /debug legacysearch; /sparkver.';
+  'Commands: /vivetool /gui, /vivetool /enable|/disable /id:<9-digit-id> [/velocity] or /vivetool /list; /drivers /install|/uninstall /visuals|/resolution; /search <keyword>; /debug legacysearch; /sparkver.';
 
 const readExperimentRows = (settings: SystemSettings): ExperimentRow[] =>
   EXPERIMENTS.map(({ id, name, settingKey }) => ({
@@ -66,6 +66,7 @@ interface CommandPromptProps {
   onSearch: (query: string) => void;
   onOpenAbout: () => void;
   onOpenLegacySearch: () => void;
+  onOpenViveToolGui: () => void;
   isWindowContent?: boolean;
 }
 
@@ -73,6 +74,7 @@ export const CommandPrompt: React.FC<CommandPromptProps> = ({
   onSearch,
   onOpenAbout,
   onOpenLegacySearch,
+  onOpenViveToolGui,
   isWindowContent = false,
 }) => {
   const { settings, updateSetting } = useSettings();
@@ -115,6 +117,12 @@ export const CommandPrompt: React.FC<CommandPromptProps> = ({
     const tokens = rawCommand.split(/\s+/);
     const executable = tokens[0]?.replace(/^\/+/, '').toLowerCase();
     const action = tokens[1]?.replace(/^\/+/, '').replace(/:$/, '').toLowerCase();
+
+    if (executable === 'vivetool' && action === 'gui' && tokens.length === 2) {
+      onOpenViveToolGui();
+      appendEntry(rawCommand, { kind: 'message', message: 'Opening ViveTool GUI.', tone: 'neutral' });
+      return;
+    }
 
     if (executable === 'sparkver') {
       onOpenAbout();
@@ -299,6 +307,7 @@ export const CommandPrompt: React.FC<CommandPromptProps> = ({
           <div className="space-y-1 text-slate-400">
             <p>Sparkle Command Prompt</p>
             <p>Type /vivetool /list to show all available experimental features.</p>
+            <p>Type /vivetool /gui to open ViveTool GUI and toggle features.</p>
             <p>Manage display drivers with /drivers /install|/uninstall /visuals|/resolution.</p>
             <p>{'Search Sparkle with /search <keyword>.'}</p>
             <p>Open About Sparkle with /sparkver.</p>

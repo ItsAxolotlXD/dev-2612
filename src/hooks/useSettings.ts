@@ -61,7 +61,7 @@ export interface SystemSettings {
   customKeybinds: CustomKeybinds;
 }
 
-export const getDefaultNavigationMode = (): 'sidebar' | 'topbar' | 'floaty' => {
+export const getDefaultNavigationMode = (): 'sidebar' | 'topbar' | 'floaty' | 'taskbar' => {
   return 'sidebar';
 };
 

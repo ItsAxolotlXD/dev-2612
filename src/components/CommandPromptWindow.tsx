@@ -10,6 +10,7 @@ interface CommandPromptWindowProps {
   onSearch: (query: string) => void;
   onOpenAbout: () => void;
   onOpenLegacySearch: () => void;
+  onOpenViveToolGui: () => void;
 }
 
 export const CommandPromptWindow = ({
@@ -18,6 +19,7 @@ export const CommandPromptWindow = ({
   onSearch,
   onOpenAbout,
   onOpenLegacySearch,
+  onOpenViveToolGui,
 }: CommandPromptWindowProps) => {
   const dragAreaRef = useRef<HTMLDivElement>(null);
   const previousFocusRef = useRef<HTMLElement | null>(null);
@@ -105,6 +107,7 @@ export const CommandPromptWindow = ({
                 onSearch={onSearch}
                 onOpenAbout={onOpenAbout}
                 onOpenLegacySearch={onOpenLegacySearch}
+                onOpenViveToolGui={onOpenViveToolGui}
                 isWindowContent
               />
             </div>
