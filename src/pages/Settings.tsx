@@ -37,6 +37,7 @@ const SETTING_LABELS: Partial<Record<keyof SystemSettings, string>> = {
   keyboardSoundEnabled: 'Keyboard sound',
   customKeybinds: 'Keybinds',
   newWatchTab: 'Watch tab layout',
+  tabsExperiment: 'Tabs experiment',
   fluentIcons: 'Fluent icons',
   dynamicSidebarIcons: 'Dynamic sidebar icons',
   pageAnimation: 'Page animation',
@@ -189,7 +190,7 @@ export const Settings: React.FC<SettingsProps> = ({
     });
   };
 
-  const matchesExperimental = 
+  const matchesExperimental =
     matchesSearch(['Insider experiments', 'Insider Flags', 'thử nghiệm', 'native keyboard', 'bàn phím ảo', 'immersive search', 'fluent icons', '3d icons', 'animated boot screen', 'boot screen', 'khởi động', 'video khởi động']);
   const matchesInterface = 
     matchesSearch(['Appearance', 'Interface', 'giao diện', 'chế độ ứng dụng', 'ban ngày', 'ban đêm', 'light', 'dark', 'thanh điều hướng', 'navigation', 'side view', 'top view', 'tab view', 'thu phóng giao diện', 'font', 'vị trí thanh bên', 'siêu chế độ tối', 'super dark']);
@@ -275,10 +276,10 @@ export const Settings: React.FC<SettingsProps> = ({
                     Insider experiments
                   </h2>
                 </div>
-                <ChevronDown 
+                <ChevronDown
                   className={`w-4 h-4 text-white transition-transform duration-200 ${
                     isCategoryCollapsed('settings-section-experimental') ? '-rotate-90' : 'rotate-0'
-                  }`} 
+                  }`}
                 />
               </button>
             </motion.div>
@@ -297,7 +298,7 @@ export const Settings: React.FC<SettingsProps> = ({
               <div className="space-y-2.5 bg-transparent pt-0.5">
                 {/* 1. Native keyboard */}
                 {matchesSearch(['Native keyboard', 'bàn phím', 'cảm ứng']) && (
-                  <motion.div 
+                  <motion.div
                     variants={slideUpVariant}
                     initial="hidden"
                     animate="visible"
@@ -330,7 +331,7 @@ export const Settings: React.FC<SettingsProps> = ({
 
                 {/* 2. Immersive search experience */}
                 {matchesSearch(['Immersive search experience', 'tìm kiếm', 'immersive']) && (
-                  <motion.div 
+                  <motion.div
                     variants={slideUpVariant}
                     initial="hidden"
                     animate="visible"
@@ -395,7 +396,7 @@ export const Settings: React.FC<SettingsProps> = ({
 
                 {/* 3. Fluent icons */}
                 {matchesSearch(['Fluent icons', '3d icons', 'bi��u tượng 3d']) && (
-                  <motion.div 
+                  <motion.div
                     variants={slideUpVariant}
                     initial="hidden"
                     animate="visible"
@@ -665,7 +666,7 @@ export const Settings: React.FC<SettingsProps> = ({
 
                 {/* 2. Thanh điều hướng */}
                 {matchesSearch(['Thanh điều hướng', 'side view', 'tab view', 'navigation']) && (
-                  <motion.div 
+                  <motion.div
                     variants={slideUpVariant}
                     initial="hidden"
                     animate="visible"
@@ -696,7 +697,8 @@ export const Settings: React.FC<SettingsProps> = ({
                             draftSettings.navigationMode === value
                               ? 'bg-[#0078d4] dark:bg-[#4cc2ff] text-white dark:text-black shadow-xs font-normal'
                               : 'text-[#6B7280] dark:text-[#9CA3AF] hover:text-[#111827] dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 font-normal'
-                          }`} 
+                  }`}
+
                           aria-pressed={draftSettings.navigationMode === value}
                           title={label}
                         >
@@ -709,7 +711,7 @@ export const Settings: React.FC<SettingsProps> = ({
 
                 {/* 3. Thu phóng giao diện */}
                 {matchesSearch(['Thu phóng giao diện', 'font', 'scale', 'kích cỡ']) && (
-                  <motion.div 
+                  <motion.div
                     variants={slideUpVariant}
                     initial="hidden"
                     animate="visible"
@@ -914,7 +916,7 @@ export const Settings: React.FC<SettingsProps> = ({
               <div className="space-y-2.5 bg-transparent pt-0.5">
                 {/* 1. Hover to expand */}
                 {matchesSearch(['Hover to expand', 'sidebar', 'di chuột', 'mở rộng']) && (
-                  <motion.div 
+                  <motion.div
                     variants={slideUpVariant}
                     initial="hidden"
                     animate="visible"
@@ -950,7 +952,7 @@ export const Settings: React.FC<SettingsProps> = ({
 
                 {/* 2. Page loading */}
                 {matchesSearch(['Page loading', 'tải trang', 'vòng xoay']) && (
-                  <motion.div 
+                  <motion.div
                     variants={slideUpVariant}
                     initial="hidden"
                     animate="visible"
@@ -986,7 +988,7 @@ export const Settings: React.FC<SettingsProps> = ({
 
                 {/* 3. Load pages sequentially */}
                 {matchesSearch(['Load pages sequentially', 'tải tuần tự', 'cuộn trang']) && (
-                  <motion.div 
+                  <motion.div
                     variants={slideUpVariant}
                     initial="hidden"
                     animate="visible"
@@ -1022,7 +1024,7 @@ export const Settings: React.FC<SettingsProps> = ({
 
                 {/* 4. Bàn phím số */}
                 {matchesSearch(['Bàn phím số', 'keyboard number', 'số 0-9']) && (
-                  <motion.div 
+                  <motion.div
                     variants={slideUpVariant}
                     initial="hidden"
                     animate="visible"
@@ -1058,7 +1060,7 @@ export const Settings: React.FC<SettingsProps> = ({
 
                 {/* 5. Clipboard */}
                 {matchesSearch(['Clipboard', 'lịch sử sao chép', 'bộ nhớ tạm']) && (
-                  <motion.div 
+                  <motion.div
                     variants={slideUpVariant}
                     initial="hidden"
                     animate="visible"
@@ -1094,7 +1096,7 @@ export const Settings: React.FC<SettingsProps> = ({
 
                 {/* 6. Âm bàn phím */}
                 {matchesSearch(['Âm bàn phím', 'keyboard sound', 'âm thanh']) && (
-                  <motion.div 
+                  <motion.div
                     variants={slideUpVariant}
                     initial="hidden"
                     animate="visible"
@@ -1130,7 +1132,7 @@ export const Settings: React.FC<SettingsProps> = ({
 
                 <div className="px-1 pt-4 text-xs font-semibold uppercase tracking-wider text-[#6B7280] dark:text-[#9CA3AF]">Keybinds</div>
                 {matchesSearch(['Keyboard and Mouse', 'Tổ hợp phím', 'keybinds', 'phím tắt', 'ctrl', 'alt', 'keyboard sound', 'b��n phím']) && (
-                  <motion.div 
+                  <motion.div
                     variants={slideUpVariant}
                     initial="hidden"
                     animate="visible"
@@ -1345,7 +1347,7 @@ export const Settings: React.FC<SettingsProps> = ({
               <div className="space-y-2.5 bg-transparent pt-0.5">
                 {/* 1. Tỉ lệ khung hình */}
                 {matchesSearch(['Tỉ lệ khung hình', 'aspect ratio', '16:9', '4:3']) && (
-                  <motion.div 
+                  <motion.div
                     variants={slideUpVariant}
                     initial="hidden"
                     animate="visible"
@@ -1389,7 +1391,7 @@ export const Settings: React.FC<SettingsProps> = ({
 
                 {/* 2. Sparkle Notes */}
                 {matchesSearch(['Sparkle Notes', 'ghi chú', 'notes']) && (
-                  <motion.div 
+                  <motion.div
                     variants={slideUpVariant}
                     initial="hidden"
                     animate="visible"
@@ -1639,7 +1641,6 @@ export const Settings: React.FC<SettingsProps> = ({
         )}
       </AnimatePresence>
 
-      {/* Preview animated boot video inside Settings if requested */}
       {isPreviewBootScreen && (
         <AnimatedBootScreen onFinish={() => setIsPreviewBootScreen(false)} />
       )}

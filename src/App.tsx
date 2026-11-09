@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Sidebar } from './components/Sidebar';
 import { TopBar } from './components/TopBar';
+import { AppTabsBar, type AppTab } from './components/AppTabsBar';
 import { BottomDock } from './components/BottomDock';
 import { SpotlightModal } from './components/SpotlightModal';
 import { CustomStreamModal } from './components/CustomStreamModal';
@@ -29,6 +30,7 @@ import { TabLoadingScreen } from './components/TabLoadingScreen';
 import { AppScrollbar } from './components/AppScrollbar';
 import { AppNativeCursor } from './components/AppNativeCursor';
 import { SparkverAboutWindow } from './components/SparkverAboutWindow';
+import { CommandPromptWindow } from './components/CommandPromptWindow';
 import { GlobalToast } from './components/GlobalToast';
 import { EvaluationWatermark } from './components/EvaluationWatermark';
 import { showAppToast } from './utils/toast';
@@ -54,6 +56,7 @@ import { Camera } from './pages/Camera';
 import { Auth } from './pages/Auth';
 import { Feedback } from './pages/Feedback';
 import { WinUI3 } from './pages/WinUI3';
+import { CommandPrompt } from './pages/CommandPrompt';
 import { CHANNELS_DATA } from './data/channels';
 import { NEWS_DATA } from './data/news';
 import { Channel, NewsArticle } from './types';
@@ -91,10 +94,15 @@ export default function App() {
   }, []);
 
   // Navigation Route State (supports browser pathname or internal state)
-  const [currentRoute, setCurrentRoute] = useState<string>(() => {
+  const getInitialAppRoute = () => {
     const pathname = window.location.pathname;
-    return pathname === '/' || pathname === '/drivers' ? '/' : pathname;
-  });
+    const route = pathname === '/' || pathname === '/drivers' || pathname === '/command-prompt' ? '/' : pathname;
+    return `${route}${pathname === '/drivers' || pathname === '/command-prompt' ? '' : window.location.search}`;
+  };
+  const [currentRoute, setCurrentRouteState] = useState<string>(() => getInitialAppRoute().split(/[?#]/)[0] || '/');
+  const [appTabs, setAppTabs] = useState<AppTab[]>(() => [{ id: 1, route: getInitialAppRoute() }]);
+  const [activeAppTabId, setActiveAppTabId] = useState(1);
+  const nextAppTabIdRef = useRef(2);
   const [isDriverManagementPanelOpen, setIsDriverManagementPanelOpen] = useState(
     () => window.location.pathname === '/drivers'
   );
@@ -104,7 +112,7 @@ export default function App() {
   const [routeState, setRouteState] = useState<any>(null);
 
   useEffect(() => {
-    if (window.location.pathname === '/drivers') {
+    if (window.location.pathname === '/drivers' || window.location.pathname === '/command-prompt') {
       window.history.replaceState(null, '', '/');
     }
   }, []);
@@ -121,15 +129,15 @@ export default function App() {
 
 
 
-  // Tab-specific search state for Floating Search Bar
+  // Keep search state independent for each browser-like app tab.
   const [tabSearchQueries, setTabSearchQueries] = useState<Record<string, string>>({});
-  const currentTabSearchQuery = tabSearchQueries[currentRoute] || '';
-  const handleTabSearchChange = (query: string) => {
+  const currentTabSearchQuery = tabSearchQueries[String(activeAppTabId)] || '';
+  const handleTabSearchChange = useCallback((query: string) => {
     setTabSearchQueries((prev) => ({
       ...prev,
-      [currentRoute]: query
+      [String(activeAppTabId)]: query
     }));
-  };
+  }, [activeAppTabId]);
 
   // Channels State (base channels + imported channels from localStorage)
   const [channels, setChannels] = useState<Channel[]>(() => {
@@ -234,6 +242,9 @@ export default function App() {
   const [isSparkverAboutOpen, setIsSparkverAboutOpen] = useState(false);
   const handleOpenSparkverAbout = useCallback(() => setIsSparkverAboutOpen(true), []);
   const handleCloseSparkverAbout = useCallback(() => setIsSparkverAboutOpen(false), []);
+  const [isCommandPromptOpen, setIsCommandPromptOpen] = useState(() => window.location.pathname === '/command-prompt');
+  const handleOpenCommandPrompt = useCallback(() => setIsCommandPromptOpen(true), []);
+  const handleCloseCommandPrompt = useCallback(() => setIsCommandPromptOpen(false), []);
   const [isSpotlightOpen, setIsSpotlightOpen] = useState(false);
   const [isCustomStreamModalOpen, setIsCustomStreamModalOpen] = useState(false);
   const [isHelpModalOpen, setIsHelpModalOpen] = useState(false);
@@ -289,7 +300,7 @@ export default function App() {
 
   const [mobileDragOffset, setMobileDragOffset] = useState<number | null>(null);
 
-  // Edge swipe gesture: vuốt từ cạnh trái sang để mở sidebar - follow finger trong thời gian thực
+  // Edge swipe gesture: vuốt từ cạnh trái sang đ�� mở sidebar - follow finger trong thời gian thực
   useEffect(() => {
     let startX = 0;
     let startY = 0;
@@ -448,7 +459,12 @@ export default function App() {
   const [isUnsavedSettingsModalOpen, setIsUnsavedSettingsModalOpen] = useState(false);
   const [unsavedNoteState, setUnsavedNoteState] = useState<UnsavedNoteHandler | null>(null);
   const [isUnsavedNoteModalOpen, setIsUnsavedNoteModalOpen] = useState(false);
-  const [pendingNavigation, setPendingNavigation] = useState<{ path: string; state?: any } | null>(null);
+  const [pendingNavigation, setPendingNavigation] = useState<{
+    path: string;
+    state?: any;
+    targetTabId?: number;
+    closeTabId?: number;
+  } | null>(null);
 
   // Auto-collapse sidebar when entering note editor
   useEffect(() => {
@@ -458,33 +474,39 @@ export default function App() {
   }, [currentRoute]);
 
   // Perform actual navigation
-  const executeNavigation = useCallback((path: string, state?: any) => {
-    const targetRoute = path.includes('?') ? path.split('?')[0] : path;
-    const isDifferentTab = targetRoute !== currentRoute;
+  const executeNavigation = useCallback((path: string, state?: any, targetTabId?: number, closeTabId?: number) => {
+    const targetRoute = path.split(/[?#]/)[0] || '/';
+    const isDifferentRoute = targetRoute !== currentRoute;
+    const isAppTabSwitch = targetTabId !== undefined && targetTabId !== activeAppTabId;
+    const destinationTabId = targetTabId ?? activeAppTabId;
 
     if (currentRoute !== '/search') {
       previousRouteRef.current = currentRoute;
     }
 
     setRouteState(state);
-    
-    // Parse query params if any
+
     if (path.includes('?')) {
-      const [parsedBaseRoute, query] = path.split('?');
+      const [, query] = path.split('?');
       const params = new URLSearchParams(query);
       const chSlug = params.get('channel');
       if (chSlug) {
         const matched = channels.find((c) => c.slug === chSlug);
         if (matched) setCurrentChannel(matched);
       }
-      window.history.pushState(null, '', path);
-      setCurrentRoute(parsedBaseRoute);
-    } else {
-      window.history.pushState(null, '', path);
-      setCurrentRoute(path);
     }
 
-    // Scroll to top on navigation
+    window.history.pushState(null, '', path);
+    setCurrentRouteState(targetRoute);
+    if (targetTabId !== undefined) setActiveAppTabId(targetTabId);
+    setAppTabs((currentTabs) => {
+      const remainingTabs = closeTabId === undefined
+        ? currentTabs
+        : currentTabs.filter((tab) => tab.id !== closeTabId);
+      return remainingTabs.map((tab) => tab.id === destinationTabId ? { ...tab, route: path } : tab);
+    });
+
+    // Scroll to top on route navigation
     const scrollContainer = document.querySelector<HTMLElement>('#main-content-scroll-container');
     if (scrollContainer) {
       scrollContainer.scrollTo({ top: 0, behavior: 'smooth' });
@@ -492,8 +514,7 @@ export default function App() {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    // Tab Splash screen: displays centered tab icon with spinning ring for 1 second on tab switch
-    if (isDifferentTab) {
+    if (isDifferentRoute && !isAppTabSwitch) {
       if (tabLoadingTimerRef.current) clearTimeout(tabLoadingTimerRef.current);
       setIsTabLoading(true);
       tabLoadingTimerRef.current = setTimeout(() => {
@@ -501,11 +522,12 @@ export default function App() {
         setTabLoadCount((c) => c + 1);
       }, 1000);
     }
-  }, [channels, currentRoute]);
+  }, [activeAppTabId, channels, currentRoute]);
 
   // Navigation handler
-  const navigate = useCallback((path: string, state?: any) => {
+  const navigate = useCallback((path: string, state?: any, targetTabId?: number, closeTabId?: number) => {
     const targetRoute = path.split(/[?#]/)[0];
+    const isAppTabSwitch = targetTabId !== undefined && targetTabId !== activeAppTabId;
     if (targetRoute === '/drivers') {
       setIsDriverManagementPanelOpen(true);
       return;
@@ -513,31 +535,58 @@ export default function App() {
 
     setIsDriverManagementPanelOpen(false);
 
-    // If currently on settings and there are unsaved changes, prompt before leaving
     if (currentRoute === '/settings' && hasChanges) {
       const isStillSettings = path === '/settings' || path.startsWith('/settings?') || path.startsWith('/settings#');
-      if (!isStillSettings) {
-        setPendingNavigation({ path, state });
+      if (!isStillSettings || isAppTabSwitch) {
+        setPendingNavigation({ path, state, targetTabId, closeTabId });
         setIsUnsavedSettingsModalOpen(true);
         return;
       }
     }
 
-    // If currently editing a note with unsaved edits and attempting to switch to another tab/route, prompt before leaving
-    if (unsavedNoteState?.isDirty && path !== currentRoute) {
-      setPendingNavigation({ path, state });
+    if (unsavedNoteState?.isDirty && (path !== currentRoute || isAppTabSwitch)) {
+      setPendingNavigation({ path, state, targetTabId, closeTabId });
       setIsUnsavedNoteModalOpen(true);
       return;
     }
 
-    executeNavigation(path, state);
-  }, [currentRoute, hasChanges, unsavedNoteState, executeNavigation]);
+    executeNavigation(path, state, targetTabId, closeTabId);
+  }, [activeAppTabId, currentRoute, executeNavigation, hasChanges, unsavedNoteState]);
+
+  const handleCommandLegacySearch = useCallback(() => {
+    setIsCommandPromptOpen(false);
+    navigate('/search');
+  }, [navigate]);
+
+  const handleSelectAppTab = useCallback((tabId: number) => {
+    const selectedTab = appTabs.find((tab) => tab.id === tabId);
+    if (!selectedTab || tabId === activeAppTabId) return;
+    navigate(selectedTab.route, undefined, selectedTab.id);
+  }, [activeAppTabId, appTabs, navigate]);
+
+  const handleCreateAppTab = useCallback(() => {
+    const id = nextAppTabIdRef.current++;
+    setAppTabs((currentTabs) => [...currentTabs, { id, route: '/' }]);
+    navigate('/', undefined, id);
+  }, [navigate]);
+
+  const handleCloseAppTab = useCallback((tabId: number) => {
+    if (appTabs.length <= 1) return;
+    if (tabId !== activeAppTabId) {
+      setAppTabs((currentTabs) => currentTabs.filter((tab) => tab.id !== tabId));
+      return;
+    }
+
+    const closingIndex = appTabs.findIndex((tab) => tab.id === tabId);
+    const nextTab = appTabs[closingIndex + 1] || appTabs[closingIndex - 1];
+    if (nextTab) navigate(nextTab.route, undefined, nextTab.id, tabId);
+  }, [activeAppTabId, appTabs, navigate]);
 
   const handleSaveAndNavigate = () => {
     applyDraftSettings();
     setIsUnsavedSettingsModalOpen(false);
     if (pendingNavigation) {
-      executeNavigation(pendingNavigation.path, pendingNavigation.state);
+      executeNavigation(pendingNavigation.path, pendingNavigation.state, pendingNavigation.targetTabId, pendingNavigation.closeTabId);
       setPendingNavigation(null);
     }
   };
@@ -546,7 +595,7 @@ export default function App() {
     discardDraftSettings();
     setIsUnsavedSettingsModalOpen(false);
     if (pendingNavigation) {
-      executeNavigation(pendingNavigation.path, pendingNavigation.state);
+      executeNavigation(pendingNavigation.path, pendingNavigation.state, pendingNavigation.targetTabId, pendingNavigation.closeTabId);
       setPendingNavigation(null);
     }
   };
@@ -562,7 +611,7 @@ export default function App() {
     }
     setIsUnsavedNoteModalOpen(false);
     if (pendingNavigation) {
-      executeNavigation(pendingNavigation.path, pendingNavigation.state);
+      executeNavigation(pendingNavigation.path, pendingNavigation.state, pendingNavigation.targetTabId, pendingNavigation.closeTabId);
       setPendingNavigation(null);
     }
   };
@@ -573,7 +622,7 @@ export default function App() {
     }
     setIsUnsavedNoteModalOpen(false);
     if (pendingNavigation) {
-      executeNavigation(pendingNavigation.path, pendingNavigation.state);
+      executeNavigation(pendingNavigation.path, pendingNavigation.state, pendingNavigation.targetTabId, pendingNavigation.closeTabId);
       setPendingNavigation(null);
     }
   };
@@ -587,6 +636,18 @@ export default function App() {
   const handleOpenSearch = useCallback(() => {
     window.dispatchEvent(new CustomEvent('vplay:focus-topbar-search'));
   }, []);
+
+  const handleCommandSearch = useCallback((query: string) => {
+    window.dispatchEvent(new CustomEvent('vplay:search-command', { detail: { query } }));
+  }, []);
+  const handleCommandSearchFromWindow = useCallback((query: string) => {
+    setIsCommandPromptOpen(false);
+    handleCommandSearch(query);
+  }, [handleCommandSearch]);
+  const handleCommandAboutFromWindow = useCallback(() => {
+    setIsCommandPromptOpen(false);
+    handleOpenSparkverAbout();
+  }, [handleOpenSparkverAbout]);
 
   // Global search shortcut: Ctrl+K / Cmd+K vẫn mở page spotlight search (/search)
   useEffect(() => {
@@ -661,7 +722,11 @@ export default function App() {
         if (matched) setCurrentChannel(matched);
       }
       setIsDriverManagementPanelOpen(false);
-      setCurrentRoute(path);
+      setCurrentRouteState(path);
+      const fullPath = `${path}${window.location.search}${window.location.hash}`;
+      setAppTabs((currentTabs) => currentTabs.map((tab) =>
+        tab.id === activeAppTabId ? { ...tab, route: fullPath } : tab
+      ));
 
       if (isTabSwitch) {
         if (tabLoadingTimerRef.current) clearTimeout(tabLoadingTimerRef.current);
@@ -675,7 +740,7 @@ export default function App() {
 
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
-  }, [channels, currentRoute, hasChanges, unsavedNoteState, triggerUnsavedTooltip]);
+  }, [activeAppTabId, channels, currentRoute, hasChanges, unsavedNoteState, triggerUnsavedTooltip]);
 
   // Handle page reload / unload when settings or note edits are unsaved
   useEffect(() => {
@@ -816,6 +881,15 @@ export default function App() {
       case '/winui-3':
         return <WinUI3 />;
 
+      case '/command-prompt':
+        return (
+          <CommandPrompt
+            onSearch={handleCommandSearch}
+            onOpenAbout={handleOpenSparkverAbout}
+            onOpenLegacySearch={handleCommandLegacySearch}
+          />
+        );
+
       case '/settings':
         return (
           <Settings
@@ -912,11 +986,7 @@ export default function App() {
         <Sidebar
           currentRoute={isDriverManagementPanelOpen ? '/drivers' : currentRoute}
           navigate={navigate}
-          onOpenSearch={handleOpenSearch}
-          onOpenSparkver={handleOpenSparkverAbout}
-          searchQuery={currentTabSearchQuery}
-          onSearchChange={handleTabSearchChange}
-          searchExperiments={settings.searchExperiments}
+          onOpenCommandPrompt={handleOpenCommandPrompt}
           onSelectChannel={setCurrentChannel}
           isCollapsed={isSidebarCollapsed}
           onToggleCollapse={toggleSidebarCollapse}
@@ -1001,8 +1071,27 @@ export default function App() {
           </div>
         )}
 
+        {(!isInkCanvasEditor || isInkCanvasChromeVisible) && !isGalleryViewerOpen && (
+          <AppTabsBar
+            showTabs={settings.tabsExperiment}
+            tabs={settings.tabsExperiment ? appTabs : []}
+            activeTabId={activeAppTabId}
+            searchQuery={currentTabSearchQuery}
+            onSearchChange={handleTabSearchChange}
+            onOpenSearch={handleOpenSearch}
+            onOpenAbout={handleOpenSparkverAbout}
+            onSelectTab={handleSelectAppTab}
+            onCreateTab={handleCreateAppTab}
+            onCloseTab={handleCloseAppTab}
+          />
+        )}
+
         {/* Dynamic Page Content with smooth slide-up transition - Bo cong 10px góc trên trái ở desktop, không bo ở mobile */}
-        <main className={`main-tab-page flex-1 w-full mx-auto rounded-tl-none md:rounded-tl-[10px] rounded-tr-none rounded-br-none rounded-bl-none bg-[#f9f9f9] dark:bg-[#282c31] ${
+        <main
+          id={settings.tabsExperiment ? `app-tab-panel-${activeAppTabId}` : undefined}
+          role={settings.tabsExperiment ? 'tabpanel' : undefined}
+          aria-labelledby={settings.tabsExperiment ? `app-tab-${activeAppTabId}` : undefined}
+          className={`main-tab-page flex-1 w-full mx-auto rounded-tl-none md:rounded-tl-[10px] rounded-tr-none rounded-br-none rounded-bl-none bg-[#f9f9f9] dark:bg-[#282c31] ${
           currentRoute === '/' || currentRoute === '/home' || currentRoute === '/news' || currentRoute === '/updates' || isOfficeRoute || currentRoute === '/craftmine' || currentRoute === '/photopea' || currentRoute === '/vlc' || currentRoute === '/screenbox' || currentRoute === '/screenbug' || currentRoute === '/gallery' || currentRoute === '/draws' || currentRoute.startsWith('/draws/') || currentRoute === '/camera'
             ? 'p-0 max-w-none pt-0' 
             : 'px-4 sm:px-6 md:px-8 py-5 max-w-7xl'
@@ -1072,6 +1161,13 @@ export default function App() {
       <SparkverAboutWindow
         isOpen={isSparkverAboutOpen}
         onClose={handleCloseSparkverAbout}
+      />
+      <CommandPromptWindow
+        isOpen={isCommandPromptOpen}
+        onClose={handleCloseCommandPrompt}
+        onSearch={handleCommandSearchFromWindow}
+        onOpenAbout={handleCommandAboutFromWindow}
+        onOpenLegacySearch={handleCommandLegacySearch}
       />
       <SpotlightModal
         isOpen={isSpotlightOpen}

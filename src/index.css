@@ -511,6 +511,12 @@ html.light-mode header {
   background: #f3f3f3 !important;
 }
 
+#sparkver-about-titlebar {
+  background-color: #fafafa !important;
+  background: #fafafa !important;
+  color: #171717 !important;
+}
+
 html.dark main,
 html.dark .tab-element-slide-up-container,
 html:not(.light-mode) main,

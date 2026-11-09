@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'motion/react';
-import { Tv, Heart, FlaskConical, PanelsTopLeft } from 'lucide-react';
+import { Tv, Heart, FlaskConical, PanelsTopLeft, Terminal } from 'lucide-react';
 import { useSettings } from '../hooks/useSettings';
 import {
   FluentHomeIcon,
@@ -159,6 +159,10 @@ export const TabLoadingScreen: React.FC<TabLoadingScreenProps> = ({
           className={`${largeIconClass} object-contain`}
         />
       );
+    }
+
+    if (cleanRoute.startsWith('/command-prompt')) {
+      return <Terminal className={standardIconClass} />;
     }
 
     return useFluent3DForContent ? (

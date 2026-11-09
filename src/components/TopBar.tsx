@@ -308,16 +308,33 @@ export const TopBar: React.FC<TopBarProps> = ({
     setSearchQuery(tabSearchQuery || '');
   }, [tabSearchQuery, currentRoute]);
 
-  // Listen for vplay:focus-topbar-search event to open and focus the right-side pane
+  // Listen for search events so keyboard shortcuts and command-line searches share the same pane.
   useEffect(() => {
     const handleFocusTopBarSearch = () => {
       setIsSearchFlyoutOpen(false);
       if (!isSearchExperimentActive) setIsSearchPaneOpen(true);
       setIsSearchFocused(true);
     };
+    const handleCommandSearch = (event: Event) => {
+      const detail = (event as CustomEvent<{ query?: string }>).detail;
+      const query = detail?.query?.trim();
+      if (!query) return;
+
+      setSearchQuery(query);
+      onTabSearchChange?.(query);
+      setShowAllResults(false);
+      setIsSearchFlyoutOpen(false);
+      setIsSearchPaneOpen(true);
+      setIsSearchFocused(true);
+    };
+
     window.addEventListener('vplay:focus-topbar-search', handleFocusTopBarSearch);
-    return () => window.removeEventListener('vplay:focus-topbar-search', handleFocusTopBarSearch);
-  }, []);
+    window.addEventListener('vplay:search-command', handleCommandSearch);
+    return () => {
+      window.removeEventListener('vplay:focus-topbar-search', handleFocusTopBarSearch);
+      window.removeEventListener('vplay:search-command', handleCommandSearch);
+    };
+  }, [onTabSearchChange]);
 
   // Load gallery items so TopBar search can find gallery media/documents
   useEffect(() => {
@@ -1360,7 +1377,7 @@ export const TopBar: React.FC<TopBarProps> = ({
       q.includes('thoi su') ||
       q.includes('báo') ||
       q.includes('tin tức') ||
-      q.includes('bão')
+      q.includes('b��o')
     ) {
       return (
         <div className="w-8.5 h-8.5 flex items-center justify-center shrink-0">

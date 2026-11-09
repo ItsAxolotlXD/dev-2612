@@ -30,7 +30,8 @@ import {
   Music,
   FileText,
   FolderPlus,
-  HardDrive
+  HardDrive,
+  Terminal
 } from 'lucide-react';
 import { galleryDB, GalleryFolder, GalleryMediaItem } from '../services/galleryStorage';
 import { 
@@ -227,11 +228,7 @@ const MorphingVerticalIndicator: React.FC<MorphingIndicatorProps> = ({
 interface SidebarProps {
   currentRoute: string;
   navigate: (route: string, state?: any) => void;
-  onOpenSearch: () => void;
-  onOpenSparkver?: () => void;
-  searchQuery?: string;
-  onSearchChange?: (query: string) => void;
-  searchExperiments?: boolean;
+  onOpenCommandPrompt?: () => void;
   selectedChannel?: Channel | null;
   onSelectChannel?: (channel: Channel) => void;
   isCollapsed?: boolean;
@@ -259,11 +256,7 @@ interface SidebarProps {
 export const Sidebar: React.FC<SidebarProps> = ({
   currentRoute,
   navigate,
-  onOpenSearch,
-  onOpenSparkver = () => {},
-  searchQuery = '',
-  onSearchChange,
-  searchExperiments = false,
+  onOpenCommandPrompt = () => {},
   onSelectChannel,
   isCollapsed = false,
   onToggleCollapse,
@@ -306,7 +299,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const [isFavoritesExpanded, setIsFavoritesExpanded] = useState(false);
   const [isDiscordModalOpen, setIsDiscordModalOpen] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
-  const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [galleryFolders, setGalleryFolders] = useState<GalleryFolder[]>([]);
   const [galleryItems, setGalleryItems] = useState<GalleryMediaItem[]>([]);
   const [isGalleryTreeExpanded, setIsGalleryTreeExpanded] = useState<boolean>(false);
@@ -486,6 +478,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
   const handleNavClick = (route: string, state?: any) => {
     navigate(route, state);
+    if (onCloseMobile) onCloseMobile();
+  };
+
+  const handleOpenCommandPrompt = () => {
+    onOpenCommandPrompt();
     if (onCloseMobile) onCloseMobile();
   };
 
@@ -1314,72 +1311,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
             dependencyKey={`${navItems.length}-${isLiveTvExpanded}-${currentRoute}`}
           />
 
-          <div className="shrink-0 pb-1">
-            <div
-              role="search"
-              aria-label="Search this page"
-              className="flex h-9 w-full items-center gap-2 rounded-[6px] border border-black/[0.06] bg-white/70 px-2.5 dark:border-white/[0.06] dark:bg-[#282c31]"
-            >
-              <button
-                type="button"
-                onClick={onOpenSearch}
-                aria-label="Open global search"
-                title="Open global search"
-                className="flex h-7 w-6 shrink-0 items-center justify-center text-neutral-500 transition-colors hover:text-[#0078d4] dark:text-neutral-300 dark:hover:text-[#4cc2ff]"
-              >
-                {searchExperiments ? (
-                  <picture>
-                    <source media="(prefers-color-scheme: dark)" srcSet="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Dark.ico-3IhPwx2SaMxnTetBPF0U8ENf3T0nAA.x-icon" />
-                    <img
-                      src={isSearchFocused ? 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Medium.ico-0Tz0qlF3D1nIDDcLOvgJsH7a2IXqW5.x-icon' : 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Light.ico-XTH1C45gf8NiG4v4Lp7AqrP0Fa1H34.x-icon'}
-                      alt=""
-                      className="h-4 w-4 object-contain"
-                    />
-                  </picture>
-                ) : <FluentSearchIcon className="h-4 w-4" />}
-              </button>
-              <input
-                id={isMobile ? 'mobile-sidebar-search' : 'sidebar-search'}
-                type="text"
-                value={searchQuery}
-                onChange={(event) => {
-                  const query = event.target.value;
-                  if (query.trim().toLowerCase() === 'sparkver') {
-                    onSearchChange?.('');
-                    onOpenSparkver();
-                    return;
-                  }
-                  onSearchChange?.(query);
-                }}
-                onKeyDown={(event) => {
-                  if (event.key !== 'Enter' || event.nativeEvent.isComposing || event.keyCode === 229) return;
-                  event.preventDefault();
-                  onOpenSearch();
-                }}
-                onFocus={() => setIsSearchFocused(true)}
-                onBlur={() => setIsSearchFocused(false)}
-                aria-label="Search current page"
-                placeholder={searchExperiments ? 'Type here to search' : 'Search'}
-                autoComplete="off"
-                autoCapitalize="off"
-                autoCorrect="off"
-                spellCheck={false}
-                className="min-w-0 flex-1 bg-transparent text-[13px] text-[#111827] outline-none placeholder:text-neutral-500 dark:text-white dark:placeholder:text-neutral-400"
-              />
-              {searchQuery && (
-                <button
-                  type="button"
-                  onClick={() => onSearchChange?.('')}
-                  aria-label="Clear search"
-                  title="Clear search"
-                  className="flex h-6 w-6 shrink-0 items-center justify-center rounded text-neutral-500 transition-colors hover:bg-black/5 hover:text-[#111827] dark:text-neutral-300 dark:hover:bg-white/10 dark:hover:text-white"
-                >
-                  <X className="h-3.5 w-3.5" />
-                </button>
-              )}
-            </div>
-          </div>
-
           {/* 1. Home */}
           <div className="shrink-0">
             <button
@@ -1941,7 +1872,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <span className="truncate text-[13.5px]">Feedback</span>
           </button>
 
-          {/* Manage Drivers tab item placed directly above Settings */}
+          {/* Manage Drivers tab item; Command Prompt follows below */}
           <button
             type="button"
             id={isMobile ? 'mobile-nav-drivers' : 'sidebar-nav-drivers'}
@@ -1962,6 +1893,28 @@ export const Sidebar: React.FC<SidebarProps> = ({
             )}
             <HardDrive className="w-5 h-5 shrink-0 text-black dark:text-white" />
             <span className="truncate text-[13.5px]">Manage Drivers</span>
+          </button>
+
+          <button
+            type="button"
+            id={isMobile ? 'mobile-nav-command-prompt' : 'sidebar-nav-command-prompt'}
+            data-nav-active={isCurrentActive('/command-prompt') ? 'true' : undefined}
+            onClick={handleOpenCommandPrompt}
+            aria-label="Command Prompt"
+            className={`sidebar-nav-item w-full h-[38px] flex items-center gap-3.5 px-3 cursor-pointer relative text-left rounded-[6px] transition-colors ${
+              isCurrentActive('/command-prompt')
+                ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white font-medium shadow-xs'
+                : 'text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white'
+            }`}
+          >
+            {isCurrentActive('/command-prompt') && (
+              <span
+                aria-hidden="true"
+                className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-[16px] bg-[#4cc2ff] rounded-full z-30 pointer-events-none"
+              />
+            )}
+            <Terminal className="w-5 h-5 shrink-0 text-black dark:text-white" />
+            <span className="truncate text-[13.5px]">Command Prompt</span>
           </button>
 
           {/* Bottom Settings Tab Item - icon thường khi dynamic */}
@@ -2083,18 +2036,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   currentRoute={currentRoute}
                   dependencyKey={`${navItems.length}-${currentRoute}`}
                 />
-
-                <button
-                  type="button"
-                  id="sidebar-collapsed-search"
-                  onClick={onOpenSearch}
-                  onMouseEnter={(event) => showTooltip('Search', event)}
-                  onMouseLeave={hideTooltip}
-                  aria-label="Open global search"
-                  className="sidebar-nav-item w-10 h-[38px] rounded-[6px] shrink-0 flex items-center justify-center relative transition-colors cursor-pointer text-black dark:text-white hover:bg-black/5 dark:hover:bg-white/[0.05]"
-                >
-                  <FluentSearchIcon className="w-5 h-5 text-black dark:text-white" />
-                </button>
 
                 {/* 1. Home Icon */}
                 <button
@@ -2394,7 +2335,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   <FluentPersonFeedbackIcon className="w-5 h-5 text-[#111827] dark:text-white shrink-0" />
                 </button>
 
-                {/* Collapsed Manage Drivers button placed directly above Settings */}
+                {/* Collapsed Manage Drivers and Command Prompt buttons */}
                 <button
                   type="button"
                   id="sidebar-collapsed-drivers"
@@ -2416,6 +2357,29 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     />
                   )}
                   <HardDrive className="w-5 h-5 text-[#111827] dark:text-white shrink-0" />
+                </button>
+
+                <button
+                  type="button"
+                  id="sidebar-collapsed-command-prompt"
+                  data-nav-active={isCurrentActive('/command-prompt') ? 'true' : undefined}
+                  onClick={handleOpenCommandPrompt}
+                  onMouseEnter={(e) => showTooltip('Command Prompt', e)}
+                  onMouseLeave={hideTooltip}
+                  aria-label="Command Prompt"
+                  className={`sidebar-nav-item w-10 h-[38px] rounded-[6px] shrink-0 flex items-center justify-center relative transition-colors cursor-pointer ${
+                    isCurrentActive('/command-prompt')
+                      ? 'bg-black/10 dark:bg-white/[0.12] text-[#111827] dark:text-white shadow-xs'
+                      : 'text-[#4b5563] dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-[#111827] dark:hover:text-white'
+                  }`}
+                >
+                  {isCurrentActive('/command-prompt') && (
+                    <span
+                      aria-hidden="true"
+                      className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-[16px] bg-[#4cc2ff] rounded-full z-30 pointer-events-none"
+                    />
+                  )}
+                  <Terminal className="w-5 h-5 text-[#111827] dark:text-white shrink-0" />
                 </button>
 
                 {/* Bottom Settings Icon */}
