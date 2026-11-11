@@ -11,6 +11,8 @@ import {
   Volume2,
   Mic,
   Keyboard,
+  Bug,
+  Accessibility,
   Sparkles,
   Tv,
   Layout,
@@ -525,6 +527,94 @@ export const SparkleSetupWizard: React.FC<SparkleSetupWizardProps> = ({
             )}
           </AnimatePresence>
         </div>
+      </div>
+    );
+  }
+
+  if (currentStep === 2 && !isTransitioning) {
+    const choices = [
+      {
+        value: 'install' as const,
+        title: 'Install Sparkle',
+        description: 'Set up a fresh instance of Sparkle streaming & community experience on this device.',
+      },
+      {
+        value: 'recover' as const,
+        title: 'Recover Sparkle',
+        description: 'Restore settings, reset corrupted configurations, or submit troubleshooting feedback.',
+      },
+    ];
+
+    return (
+      <div className="fixed inset-0 z-[2147483646] flex items-center justify-center overflow-hidden bg-[#777b80] p-4 text-slate-900 sm:p-8" style={{ fontFamily: "'Segoe UI Variable Text', 'Segoe UI', system-ui, sans-serif" }}>
+        <section aria-label="Sparkle setup" className="grid h-[min(586px,calc(100dvh-4rem))] min-h-[480px] w-full max-w-[802px] grid-cols-1 overflow-hidden rounded-[18px] bg-white shadow-[0_28px_80px_rgba(20,35,55,0.28)] md:grid-cols-[38%_62%]">
+          <aside className="relative hidden border-r border-slate-200 bg-gradient-to-br from-[#f7f9fc] to-[#eaf1f8] md:flex md:flex-col md:justify-between md:px-5 md:py-8">
+            <button type="button" aria-label="Go back" onClick={() => goToPreviousStep(1)} className="inline-flex size-8 cursor-pointer items-center justify-center rounded-md text-slate-600 transition hover:bg-slate-200/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0879d1]"><ArrowLeft className="size-5" /></button>
+            <div aria-hidden="true" className="flex items-center justify-center">
+              <div className="relative flex size-40 items-center justify-center">
+                <div className="absolute right-2 top-1 size-24 rounded-full bg-gradient-to-br from-amber-300 via-teal-400 to-sky-500 shadow-md" />
+                <div className="relative z-10 flex size-[106px] items-center justify-center rounded-2xl border-[10px] text-white shadow-[0_12px_24px_rgba(15,90,150,0.24)]" style={{ borderColor: '#0876ab', backgroundColor: '#168cc4' }}><Sparkles className="size-10 fill-white" /></div>
+                <span className="absolute bottom-8 left-2 z-20 size-7 rounded-full border-[7px] border-amber-600 bg-white" />
+              </div>
+            </div>
+            <div className="h-8" />
+          </aside>
+
+          <div className="flex min-h-0 flex-col px-5 py-5 sm:px-9 sm:py-8 md:px-[27px] md:py-9">
+            <div className="mb-5 flex items-center justify-between md:hidden">
+              <button type="button" aria-label="Go back" onClick={() => goToPreviousStep(1)} className="inline-flex size-9 cursor-pointer items-center justify-center rounded-md text-slate-600 hover:bg-slate-100"><ArrowLeft className="size-5" /></button>
+              <span className="text-sm font-semibold text-slate-700">Sparkle setup</span>
+              <span className="size-9" />
+            </div>
+            <div className="min-h-0 flex-1 overflow-y-auto pr-1">
+              <div className="mb-6">
+                <h1 className="text-[24px] font-semibold tracking-[-0.025em] text-slate-900 sm:text-[28px]">Choose what you want to do</h1>
+                <p className="mt-1.5 max-w-xl text-[15px] leading-7 text-[#5b5b5b]">Select whether you want to proceed with a fresh installation or open recovery diagnostics.</p>
+              </div>
+
+              <div role="radiogroup" aria-label="Setup action" className="flex flex-col gap-3.5">
+              {choices.map((choice) => {
+                const selected = installMode === choice.value;
+                return (
+                  <button
+                    key={choice.value}
+                    type="button"
+                    role="radio"
+                    aria-checked={selected}
+                    onClick={() => {
+                      setInstallMode(choice.value);
+                      if (choice.value === 'recover') setIsRecoveryModalOpen(true);
+                    }}
+                    className={`flex min-h-[120px] w-full cursor-pointer items-start gap-4 rounded-[20px] border px-5 py-5 text-left transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0879d1] focus-visible:ring-offset-2 ${selected ? 'border-[#0879d1] bg-[#f2f7fc] shadow-[0_2px_5px_rgba(0,0,0,0.08)] ring-1 ring-[#0879d1]/15' : 'border-[#e3e3e3] bg-white shadow-[0_2px_5px_rgba(0,0,0,0.06)] hover:border-slate-300 hover:bg-slate-50'}`}
+                  >
+                    <span className={`mt-0.5 flex size-[23px] shrink-0 items-center justify-center rounded-full border ${selected ? 'border-slate-400 bg-white' : 'border-[#a6a6a6] bg-white'}`} aria-hidden="true">
+                      {selected && <span className="size-3 rounded-full bg-[#0879d1]" />}
+                    </span>
+                    <span className="flex flex-col gap-1">
+                      <span className="text-[16px] font-semibold leading-6 text-slate-900">{choice.title}</span>
+                      <span className="text-[14px] leading-[1.65] text-[#707070]">{choice.description}</span>
+                    </span>
+                  </button>
+                );
+              })}
+              </div>
+            </div>
+
+            <div className="mt-auto flex items-center justify-between border-t border-[#e4e4e4] pt-5">
+              <button type="button" onClick={() => goToPreviousStep(1)} className="h-10 min-w-[67px] cursor-pointer rounded-xl border border-[#dedede] bg-white px-4 text-sm text-[#222] shadow-sm transition hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0879d1]">Back</button>
+              <button type="button" onClick={() => goToNextStep(3)} className="h-10 min-w-[82px] cursor-pointer rounded-xl border border-[#1464a0] bg-[#187bc1] px-5 text-sm font-medium text-white shadow-sm transition hover:bg-[#126eaf] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0879d1] focus-visible:ring-offset-2">Next</button>
+            </div>
+          </div>
+        </section>
+
+        <div className="fixed bottom-4 right-5 flex items-center gap-2.5 text-slate-800 sm:bottom-5 sm:right-6">
+          <span className="flex h-10 w-8 items-center justify-center rounded-xl bg-white/75 shadow-sm" title="Diagnostics"><Bug className="size-5" /></span>
+          <span className="flex h-10 w-8 items-center justify-center rounded-xl bg-white/75 shadow-sm" title="Volume"><Volume2 className="size-5" /></span>
+          <span className="flex h-10 w-8 items-center justify-center rounded-xl bg-white/75 shadow-sm" title="Accessibility"><Accessibility className="size-5" /></span>
+          <span className="flex h-10 w-[45px] items-center justify-center rounded-xl bg-white/75 text-sm font-medium tabular-nums shadow-sm" aria-label="Current time">13:15</span>
+        </div>
+
+        <SparkleRecoveryModal isOpen={isRecoveryModalOpen} onClose={() => setIsRecoveryModalOpen(false)} />
       </div>
     );
   }
