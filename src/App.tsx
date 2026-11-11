@@ -19,6 +19,7 @@ import { SplashScreen } from './components/SplashScreen';
 import { SPINNING_RING_GIF_LOOP_DURATION_MS } from './components/SpinningRing';
 import { AnimatedBootScreen } from './components/AnimatedBootScreen';
 import { SparkleSetupWizard } from './components/SparkleSetupWizard';
+import { SparkleBootInstallFlow } from './components/SparkleBootInstallFlow';
 import { SparkleDriverModal } from './components/SparkleDriverModal';
 import { useDrivers } from './hooks/useDrivers';
 import { DriverManagementPanel } from './components/DriverManagementPanel';
@@ -196,6 +197,7 @@ export default function App() {
       return false;
     }
   });
+  const [isBootInstallFlowOpen, setIsBootInstallFlowOpen] = useState(isSetupWizardOpen);
 
   // Global listener to launch Setup Wizard from Settings or developer console
   useEffect(() => {
@@ -215,6 +217,7 @@ export default function App() {
 
   const handleFinishSetupWizard = useCallback(() => {
     setIsSetupWizardOpen(false);
+    setIsBootInstallFlowOpen(false);
     setIsBootVideoFinished(true);
     setIsSplashFinished(true);
     setIsDriverModalOpen(true);
@@ -241,9 +244,14 @@ export default function App() {
     }
   }, [isSplashFinished, isSetupWizardOpen, isResolutionInstalled, isVisualInstalled]);
 
+  const handleFinishBootInstallFlow = useCallback(() => {
+    setIsBootInstallFlowOpen(false);
+  }, []);
+
   const handleSkipSetupWizard = useCallback(() => {
     hasCheckedDriverStartupRef.current = true;
     setIsSetupWizardOpen(false);
+    setIsBootInstallFlowOpen(false);
     setIsBootVideoFinished(true);
     setIsSplashFinished(true);
   }, []);
@@ -1315,9 +1323,15 @@ export default function App() {
         />
       )}
 
+      {/* Initial setup boot and installation-disc flow */}
+      <SparkleBootInstallFlow
+        isOpen={isBootInstallFlowOpen}
+        onFinish={handleFinishBootInstallFlow}
+      />
+
       {/* Sparkle Setup Wizard (Windows 11 OOBE - first launch or triggered via Settings / URL ?setup=true) */}
       <SparkleSetupWizard
-        isOpen={isSetupWizardOpen}
+        isOpen={isSetupWizardOpen && !isBootInstallFlowOpen}
         onFinish={handleFinishSetupWizard}
         onSkipSetup={handleSkipSetupWizard}
         onOpenCommandPrompt={handleOpenCommandPrompt}
