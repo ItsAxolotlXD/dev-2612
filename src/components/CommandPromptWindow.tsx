@@ -11,6 +11,7 @@ interface CommandPromptWindowProps {
   onOpenAbout: () => void;
   onOpenLegacySearch: () => void;
   onOpenViveToolGui: () => void;
+  onUninstallSparkle: () => void;
 }
 
 export const CommandPromptWindow = ({
@@ -20,6 +21,7 @@ export const CommandPromptWindow = ({
   onOpenAbout,
   onOpenLegacySearch,
   onOpenViveToolGui,
+  onUninstallSparkle,
 }: CommandPromptWindowProps) => {
   const dragAreaRef = useRef<HTMLDivElement>(null);
   const previousFocusRef = useRef<HTMLElement | null>(null);
@@ -108,6 +110,7 @@ export const CommandPromptWindow = ({
                 onOpenAbout={onOpenAbout}
                 onOpenLegacySearch={onOpenLegacySearch}
                 onOpenViveToolGui={onOpenViveToolGui}
+                onUninstallSparkle={onUninstallSparkle}
                 isWindowContent
               />
             </div>

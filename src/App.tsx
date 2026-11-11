@@ -19,6 +19,7 @@ import { SplashScreen } from './components/SplashScreen';
 import { SPINNING_RING_GIF_LOOP_DURATION_MS } from './components/SpinningRing';
 import { AnimatedBootScreen } from './components/AnimatedBootScreen';
 import { SparkleBootloader } from './components/SparkleBootloader';
+import { SparkleUninstallScreen } from './components/SparkleUninstallScreen';
 import { SparkleSetupWizard } from './components/SparkleSetupWizard';
 import { SparkleDriverModal } from './components/SparkleDriverModal';
 import { useDrivers } from './hooks/useDrivers';
@@ -271,8 +272,26 @@ export default function App() {
   const handleOpenSparkverAbout = useCallback(() => setIsSparkverAboutOpen(true), []);
   const handleCloseSparkverAbout = useCallback(() => setIsSparkverAboutOpen(false), []);
   const [isCommandPromptOpen, setIsCommandPromptOpen] = useState(() => window.location.pathname === '/command-prompt');
+  const [isSparkleUninstalling, setIsSparkleUninstalling] = useState(false);
   const handleOpenCommandPrompt = useCallback(() => setIsCommandPromptOpen(true), []);
   const handleCloseCommandPrompt = useCallback(() => setIsCommandPromptOpen(false), []);
+  const handleStartSparkleUninstall = useCallback(() => {
+    setIsCommandPromptOpen(false);
+    setIsSetupWizardOpen(false);
+    setIsBootloaderOpen(false);
+    setIsBootVideoFinished(true);
+    setIsSplashFinished(true);
+    setIsDriverModalOpen(false);
+    setIsDriverManagementPanelOpen(false);
+    setIsSparkleUninstalling(true);
+  }, []);
+  const handleCompleteSparkleUninstall = useCallback(() => {
+    setIsSparkleUninstalling(false);
+    setIsSetupWizardOpen(false);
+    setIsDriverModalOpen(false);
+    setIsDriverManagementPanelOpen(false);
+    setIsBootloaderOpen(true);
+  }, []);
   const [isViveToolGuiOpen, setIsViveToolGuiOpen] = useState(false);
   const handleOpenViveToolGui = useCallback(() => setIsViveToolGuiOpen(true), []);
   const handleCloseViveToolGui = useCallback(() => setIsViveToolGuiOpen(false), []);
@@ -919,6 +938,7 @@ export default function App() {
             onOpenAbout={handleOpenSparkverAbout}
             onOpenLegacySearch={handleCommandLegacySearch}
             onOpenViveToolGui={handleOpenViveToolGui}
+            onUninstallSparkle={handleStartSparkleUninstall}
           />
         );
 
@@ -1206,6 +1226,7 @@ export default function App() {
         onOpenAbout={handleCommandAboutFromWindow}
         onOpenLegacySearch={handleCommandLegacySearch}
         onOpenViveToolGui={handleOpenViveToolGui}
+        onUninstallSparkle={handleStartSparkleUninstall}
       />
       <ViveToolGuiWindow isOpen={isViveToolGuiOpen} onClose={handleCloseViveToolGui} />
       <SpotlightModal
@@ -1349,6 +1370,7 @@ export default function App() {
         onClose={closeDriverManagementPanel}
         onOpenDriverModal={() => setIsDriverModalOpen(true)}
       />
+      <SparkleUninstallScreen isOpen={isSparkleUninstalling} onComplete={handleCompleteSparkleUninstall} />
       </div>
       <AppNativeCursor enabled={!isResolutionInstalled} />
     </div>

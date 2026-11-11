@@ -230,7 +230,7 @@ export const SparkleRecoveryModal: React.FC<SparkleRecoveryModalProps> = ({
           role="dialog"
           aria-modal="true"
           aria-labelledby="sparkle-recovery-title"
-          className="fluent-modal-dialog sparkle-recovery-dialog flex min-h-dvh w-full flex-col overflow-y-auto rounded-none border-0 bg-[#2165B5] px-6 py-6 text-white shadow-none sm:px-10 sm:py-8 select-text"
+          className="sparkle-recovery-dialog flex min-h-dvh w-full flex-col overflow-y-auto rounded-none border-0 bg-[#2165B5] px-6 py-6 text-white shadow-none sm:px-10 sm:py-8 select-text"
           style={{
             backgroundColor: '#2165B5',
             borderRadius: 0,
