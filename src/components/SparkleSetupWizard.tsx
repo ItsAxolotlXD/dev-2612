@@ -12,18 +12,23 @@ import {
   Mic,
   Keyboard,
   Bug,
-  Accessibility,
   Sparkles,
   Tv,
   Layout,
   MessageSquareHeart
 } from 'lucide-react';
 import { SparkleRecoveryModal } from './SparkleRecoveryModal';
+import { SparkleAdvancedOptionsScreen } from './SparkleAdvancedOptionsScreen';
 import { WINDOWS_LOADING_GIF } from '../constants/assets';
+
+const OOBE_WALLPAPER_URL = 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/pink-nature-landscape-with-vegetation-flora-1T39cEvV33dEkxZppizx7iOZcJNdZg.jpg';
+const ACCESSIBILITY_ICON_URL = 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Light.ico-zmPR2D7dTaenfYIhxPo9NykloUnc8M.x-icon';
 
 export interface SparkleSetupWizardProps {
   isOpen: boolean;
   onFinish: () => void;
+  onSkipSetup: () => void;
+  onOpenCommandPrompt: () => void;
   initialStep?: number;
 }
 
@@ -89,6 +94,8 @@ const INITIAL_PARTITIONS: DrivePartition[] = [
 export const SparkleSetupWizard: React.FC<SparkleSetupWizardProps> = ({
   isOpen,
   onFinish,
+  onSkipSetup,
+  onOpenCommandPrompt,
   initialStep = 1
 }) => {
   // Current step 1 to 6
@@ -98,7 +105,8 @@ export const SparkleSetupWizard: React.FC<SparkleSetupWizardProps> = ({
   const [isTransitioning, setIsTransitioning] = useState<boolean>(false);
   const transitionTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Modal dialog recovery state (triggered when selecting 'Recover Sparkle')
+  // Full-screen advanced options and recovery wizard states
+  const [isAdvancedOptionsOpen, setIsAdvancedOptionsOpen] = useState(false);
   const [isRecoveryModalOpen, setIsRecoveryModalOpen] = useState<boolean>(false);
 
   // Post-Wizard Sequence states:
@@ -539,7 +547,7 @@ export const SparkleSetupWizard: React.FC<SparkleSetupWizardProps> = ({
     ];
 
     return (
-      <div className="fixed inset-0 z-[2147483646] flex items-center justify-center overflow-hidden bg-[#777b80] p-4 text-slate-900 sm:p-8" style={{ fontFamily: "'Segoe UI Variable Text', 'Segoe UI', system-ui, sans-serif" }}>
+      <div className="fixed inset-0 z-[2147483646] flex items-center justify-center overflow-hidden bg-cover bg-center bg-no-repeat p-4 text-slate-900 sm:p-8" style={{ backgroundImage: `url("${OOBE_WALLPAPER_URL}")`, fontFamily: "'Segoe UI Variable Text', 'Segoe UI', system-ui, sans-serif" }}>
         <section aria-label="Sparkle setup" className="grid h-[min(586px,calc(100dvh-4rem))] min-h-[480px] w-full max-w-[802px] grid-cols-1 overflow-hidden rounded-[18px] bg-white shadow-[0_28px_80px_rgba(20,35,55,0.28)] md:grid-cols-[38%_62%]">
           <aside className="relative hidden border-r border-slate-200 bg-gradient-to-br from-[#f7f9fc] to-[#eaf1f8] md:flex md:flex-col md:justify-between md:px-5 md:py-8">
             <button type="button" aria-label="Go back" onClick={() => goToPreviousStep(1)} className="inline-flex size-8 cursor-pointer items-center justify-center rounded-md text-slate-600 transition hover:bg-slate-200/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0879d1]"><ArrowLeft className="size-5" /></button>
@@ -601,13 +609,36 @@ export const SparkleSetupWizard: React.FC<SparkleSetupWizardProps> = ({
         </section>
 
         <div className="fixed bottom-4 right-5 hidden items-center gap-2.5 text-slate-800 sm:bottom-5 sm:right-6 sm:flex">
+          <button type="button" onClick={() => setIsAdvancedOptionsOpen(true)} aria-label="Open advanced options" title="Advanced options" className="flex h-10 w-8 items-center justify-center rounded-xl bg-white/75 shadow-sm transition hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2165B5]"><Search className="size-5" aria-hidden="true" /></button>
           <span className="flex h-10 w-8 items-center justify-center rounded-xl bg-white/75 shadow-sm" title="Diagnostics"><Bug className="size-5" /></span>
           <span className="flex h-10 w-8 items-center justify-center rounded-xl bg-white/75 shadow-sm" title="Volume"><Volume2 className="size-5" /></span>
-          <span className="flex h-10 w-8 items-center justify-center rounded-xl bg-white/75 shadow-sm" title="Accessibility"><Accessibility className="size-5" /></span>
+          <span className="flex h-10 w-8 items-center justify-center rounded-xl bg-white/75 shadow-sm" title="Accessibility"><img src={ACCESSIBILITY_ICON_URL} alt="" aria-hidden="true" className="size-5 object-contain" /></span>
           <span className="flex h-10 w-[45px] items-center justify-center rounded-xl bg-white/75 text-sm font-medium tabular-nums shadow-sm" aria-label="Current time">13:15</span>
         </div>
 
-        <SparkleRecoveryModal isOpen={isRecoveryModalOpen} onClose={() => setIsRecoveryModalOpen(false)} />
+        <SparkleAdvancedOptionsScreen
+          isOpen={isAdvancedOptionsOpen}
+          onClose={() => setIsAdvancedOptionsOpen(false)}
+          onOpenRecoveryWizard={() => setIsRecoveryModalOpen(true)}
+          onInstallDrivers={() => {
+            try {
+              localStorage.setItem('sparkle_setup_wizard_completed', 'true');
+              localStorage.setItem('sparkle_username', username.trim() || 'Sparkle User');
+            } catch {}
+            onFinish();
+          }}
+          onOpenCommandPrompt={onOpenCommandPrompt}
+          onSkipSetup={() => {
+            if (transitionTimerRef.current) clearTimeout(transitionTimerRef.current);
+            if (postTimerRef.current) clearTimeout(postTimerRef.current);
+            try {
+              localStorage.setItem('sparkle_setup_wizard_completed', 'true');
+              localStorage.setItem('sparkle_username', username.trim() || 'Sparkle User');
+            } catch {}
+            onSkipSetup();
+          }}
+        />
+      <SparkleRecoveryModal isOpen={isRecoveryModalOpen} onClose={() => setIsRecoveryModalOpen(false)} />
       </div>
     );
   }
@@ -616,10 +647,19 @@ export const SparkleSetupWizard: React.FC<SparkleSetupWizardProps> = ({
   return (
     <div
       id="sparkle-setup-wizard-overlay"
-      className="fixed inset-0 z-[2147483646] flex items-center justify-center overflow-hidden bg-[#777b80] p-4 text-slate-900 sm:p-8"
+      className="fixed inset-0 z-[2147483646] flex items-center justify-center overflow-hidden bg-cover bg-center bg-no-repeat p-4 text-slate-900 sm:p-8"
+      style={{ backgroundImage: `url("${OOBE_WALLPAPER_URL}")` }}
     >
-      <section aria-label="Sparkle setup" className="grid h-[min(586px,calc(100dvh-4rem))] min-h-[480px] w-full max-w-[802px] grid-cols-1 overflow-hidden rounded-[18px] bg-white shadow-[0_28px_80px_rgba(20,35,55,0.28)] md:grid-cols-[38%_62%]" style={{ fontFamily: "'Segoe UI Variable Text', 'Segoe UI', system-ui, sans-serif" }}>
-        <aside className="relative hidden border-r border-slate-200 bg-gradient-to-br from-[#f7f9fc] to-[#eaf1f8] md:flex md:flex-col md:justify-between md:px-5 md:py-8">
+      <section aria-label="Sparkle setup" className="relative grid h-[min(586px,calc(100dvh-4rem))] min-h-[480px] w-full max-w-[802px] grid-cols-1 overflow-hidden rounded-[18px] bg-white shadow-[0_28px_80px_rgba(20,35,55,0.28)] md:grid-cols-[38%_62%]" style={{ fontFamily: "'Segoe UI Variable Text', 'Segoe UI', system-ui, sans-serif" }}>
+        {isTransitioning && (
+          <div className="absolute inset-0 z-30 flex flex-col items-center justify-center gap-6 bg-black px-6 text-center text-white" role="status" aria-live="polite">
+            <img src={WINDOWS_LOADING_GIF} alt="" aria-hidden="true" className="size-14 select-none object-contain" />
+            <p className="text-[22px] font-normal tracking-wide sm:text-[24px]" style={{ fontFamily: "'Segoe UI Variable Display', 'Segoe UI', system-ui, sans-serif" }}>
+              Just a moment...
+            </p>
+          </div>
+        )}
+        <aside aria-hidden={isTransitioning} inert={isTransitioning} className="relative hidden border-r border-slate-200 bg-gradient-to-br from-[#f7f9fc] to-[#eaf1f8] md:flex md:flex-col md:justify-between md:px-5 md:py-8">
           <button type="button" aria-label="Go back" onClick={() => currentStep > 1 ? goToPreviousStep(currentStep - 1) : handleQuickSkip()} className="inline-flex size-8 cursor-pointer items-center justify-center rounded-md text-slate-600 transition hover:bg-slate-200/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0879d1]"><ArrowLeft className="size-5" /></button>
           <div aria-hidden="true" className="flex items-center justify-center">
             <div className="relative flex size-40 items-center justify-center">
@@ -631,33 +671,11 @@ export const SparkleSetupWizard: React.FC<SparkleSetupWizardProps> = ({
           <div className="h-8" />
         </aside>
 
-        <div className="flex min-h-0 flex-col bg-white">
+        <div className="flex min-h-0 flex-col bg-white" aria-hidden={isTransitioning} inert={isTransitioning}>
           <div className="flex-1 min-h-0 w-full px-5 py-5 sm:px-9 sm:py-8 md:px-[27px] md:py-8 overflow-y-auto">
             <div data-oobe-experience-content className="w-full max-w-4xl mx-auto flex flex-col justify-start items-stretch">
         <AnimatePresence mode="wait">
-          {/* 5-SECOND TRANSITION SPINNER BETWEEN STEPS WITH USER GIF */}
-          {isTransitioning ? (
-            <motion.div
-              key="step-transitioning"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              className="flex flex-col items-center justify-center py-16 gap-6"
-            >
-              <img
-                src={WINDOWS_LOADING_GIF}
-                alt="Loading..."
-                className="w-14 h-14 object-contain select-none pointer-events-none"
-              />
-              <div
-                className="text-[22px] !font-normal text-white/95"
-                style={{ fontWeight: 400, fontFamily: "'Segoe UI Variable Display', 'Segoe UI', system-ui, sans-serif" }}
-              >
-                Just a moment...
-              </div>
-            </motion.div>
-          ) : (
+          {!isTransitioning && (
             <div className="w-full flex flex-col items-stretch justify-start">
               {/* STEP 1: REGION & KEYBOARD (Image 1 Style, Font Regular) */}
               {currentStep === 1 && (
@@ -684,13 +702,14 @@ export const SparkleSetupWizard: React.FC<SparkleSetupWizardProps> = ({
                   <div className="w-full max-w-[340px] sm:max-w-[380px] text-left">
                     {/* Search filter */}
                     <div className="relative mb-2">
-                      <Search className="w-3.5 h-3.5 absolute left-3 top-2.5 text-white/50" />
+                      <Search aria-hidden="true" className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-white/75" />
                       <input
                         type="text"
+                        aria-label="Search countries"
                         placeholder="Search countries..."
                         value={regionSearch}
                         onChange={(e) => setRegionSearch(e.target.value)}
-                        className="w-full pl-8 pr-3 py-1.5 text-xs bg-white/10 border border-white/20 text-white placeholder-white/40 focus:outline-none focus:border-white"
+                        className="w-full border border-white/25 bg-white/10 py-2 pl-9 pr-3 text-xs text-white placeholder-white/50 focus:border-white focus:outline-none"
                       />
                     </div>
 
@@ -1217,12 +1236,35 @@ export const SparkleSetupWizard: React.FC<SparkleSetupWizardProps> = ({
       </section>
 
       <div className="fixed bottom-4 right-5 hidden items-center gap-2.5 text-slate-800 sm:bottom-5 sm:right-6 sm:flex">
+        <button type="button" onClick={() => setIsAdvancedOptionsOpen(true)} aria-label="Open advanced options" title="Advanced options" className="flex h-10 w-8 items-center justify-center rounded-xl bg-white/75 shadow-sm transition hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2165B5]"><Search className="size-5" aria-hidden="true" /></button>
         <span className="flex h-10 w-8 items-center justify-center rounded-xl bg-white/75 shadow-sm" title="Diagnostics"><Bug className="size-5" /></span>
         <span className="flex h-10 w-8 items-center justify-center rounded-xl bg-white/75 shadow-sm" title="Volume"><Volume2 className="size-5" /></span>
-        <span className="flex h-10 w-8 items-center justify-center rounded-xl bg-white/75 shadow-sm" title="Accessibility"><Accessibility className="size-5" /></span>
+        <span className="flex h-10 w-8 items-center justify-center rounded-xl bg-white/75 shadow-sm" title="Accessibility"><img src={ACCESSIBILITY_ICON_URL} alt="" aria-hidden="true" className="size-5 object-contain" /></span>
         <span className="flex h-10 w-[45px] items-center justify-center rounded-xl bg-white/75 text-sm font-medium tabular-nums shadow-sm" aria-label="Current time">13:15</span>
       </div>
 
+      <SparkleAdvancedOptionsScreen
+        isOpen={isAdvancedOptionsOpen}
+        onClose={() => setIsAdvancedOptionsOpen(false)}
+        onOpenRecoveryWizard={() => setIsRecoveryModalOpen(true)}
+        onInstallDrivers={() => {
+          try {
+            localStorage.setItem('sparkle_setup_wizard_completed', 'true');
+            localStorage.setItem('sparkle_username', username.trim() || 'Sparkle User');
+          } catch {}
+          onFinish();
+        }}
+        onOpenCommandPrompt={onOpenCommandPrompt}
+        onSkipSetup={() => {
+          if (transitionTimerRef.current) clearTimeout(transitionTimerRef.current);
+          if (postTimerRef.current) clearTimeout(postTimerRef.current);
+          try {
+            localStorage.setItem('sparkle_setup_wizard_completed', 'true');
+            localStorage.setItem('sparkle_username', username.trim() || 'Sparkle User');
+          } catch {}
+          onSkipSetup();
+        }}
+      />
       <SparkleRecoveryModal isOpen={isRecoveryModalOpen} onClose={() => setIsRecoveryModalOpen(false)} />
     </div>
 );
