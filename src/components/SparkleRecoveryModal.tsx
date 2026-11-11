@@ -247,7 +247,7 @@ export const SparkleRecoveryModal: React.FC<SparkleRecoveryModalProps> = ({
               <ArrowLeft className="size-5" aria-hidden="true" />
             </button>
             <h1 id="sparkle-recovery-title" className="text-[28px] font-normal tracking-tight sm:text-[34px]">
-              Advanced options
+              Recovery Environment Wizard
             </h1>
           </header>
           <div className="mx-auto flex w-full max-w-[960px] flex-1 flex-col justify-start py-8">

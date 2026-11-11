@@ -240,6 +240,14 @@ export default function App() {
       }
     }
   }, [isSplashFinished, isSetupWizardOpen, isResolutionInstalled, isVisualInstalled]);
+
+  const handleSkipSetupWizard = useCallback(() => {
+    hasCheckedDriverStartupRef.current = true;
+    setIsSetupWizardOpen(false);
+    setIsBootVideoFinished(true);
+    setIsSplashFinished(true);
+  }, []);
+
   const [isUnderConstructionOpen, setIsUnderConstructionOpen] = useState(false);
   const [isWidgetsFeedOpen, setIsWidgetsFeedOpen] = useState(false);
   const handleOpenWidgetsFeed = useCallback(() => setIsWidgetsFeedOpen(true), []);
@@ -1311,6 +1319,8 @@ export default function App() {
       <SparkleSetupWizard
         isOpen={isSetupWizardOpen}
         onFinish={handleFinishSetupWizard}
+        onSkipSetup={handleSkipSetupWizard}
+        onOpenCommandPrompt={handleOpenCommandPrompt}
       />
 
       {/* Sparkle Driver Setup Modal Dialogs */}

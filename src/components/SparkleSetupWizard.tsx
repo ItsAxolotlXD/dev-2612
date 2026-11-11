@@ -18,6 +18,7 @@ import {
   MessageSquareHeart
 } from 'lucide-react';
 import { SparkleRecoveryModal } from './SparkleRecoveryModal';
+import { SparkleAdvancedOptionsScreen } from './SparkleAdvancedOptionsScreen';
 import { WINDOWS_LOADING_GIF } from '../constants/assets';
 
 const OOBE_WALLPAPER_URL = 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/pink-nature-landscape-with-vegetation-flora-1T39cEvV33dEkxZppizx7iOZcJNdZg.jpg';
@@ -26,6 +27,8 @@ const ACCESSIBILITY_ICON_URL = 'https://hebbkx1anhila5yf.public.blob.vercel-stor
 export interface SparkleSetupWizardProps {
   isOpen: boolean;
   onFinish: () => void;
+  onSkipSetup: () => void;
+  onOpenCommandPrompt: () => void;
   initialStep?: number;
 }
 
@@ -91,6 +94,8 @@ const INITIAL_PARTITIONS: DrivePartition[] = [
 export const SparkleSetupWizard: React.FC<SparkleSetupWizardProps> = ({
   isOpen,
   onFinish,
+  onSkipSetup,
+  onOpenCommandPrompt,
   initialStep = 1
 }) => {
   // Current step 1 to 6
@@ -100,7 +105,8 @@ export const SparkleSetupWizard: React.FC<SparkleSetupWizardProps> = ({
   const [isTransitioning, setIsTransitioning] = useState<boolean>(false);
   const transitionTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Modal dialog recovery state (triggered when selecting 'Recover Sparkle')
+  // Full-screen advanced options and recovery wizard states
+  const [isAdvancedOptionsOpen, setIsAdvancedOptionsOpen] = useState(false);
   const [isRecoveryModalOpen, setIsRecoveryModalOpen] = useState<boolean>(false);
 
   // Post-Wizard Sequence states:
@@ -603,13 +609,36 @@ export const SparkleSetupWizard: React.FC<SparkleSetupWizardProps> = ({
         </section>
 
         <div className="fixed bottom-4 right-5 hidden items-center gap-2.5 text-slate-800 sm:bottom-5 sm:right-6 sm:flex">
+          <button type="button" onClick={() => setIsAdvancedOptionsOpen(true)} aria-label="Open advanced options" title="Advanced options" className="flex h-10 w-8 items-center justify-center rounded-xl bg-white/75 shadow-sm transition hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2165B5]"><Search className="size-5" aria-hidden="true" /></button>
           <span className="flex h-10 w-8 items-center justify-center rounded-xl bg-white/75 shadow-sm" title="Diagnostics"><Bug className="size-5" /></span>
           <span className="flex h-10 w-8 items-center justify-center rounded-xl bg-white/75 shadow-sm" title="Volume"><Volume2 className="size-5" /></span>
           <span className="flex h-10 w-8 items-center justify-center rounded-xl bg-white/75 shadow-sm" title="Accessibility"><img src={ACCESSIBILITY_ICON_URL} alt="" aria-hidden="true" className="size-5 object-contain" /></span>
           <span className="flex h-10 w-[45px] items-center justify-center rounded-xl bg-white/75 text-sm font-medium tabular-nums shadow-sm" aria-label="Current time">13:15</span>
         </div>
 
-        <SparkleRecoveryModal isOpen={isRecoveryModalOpen} onClose={() => setIsRecoveryModalOpen(false)} />
+        <SparkleAdvancedOptionsScreen
+          isOpen={isAdvancedOptionsOpen}
+          onClose={() => setIsAdvancedOptionsOpen(false)}
+          onOpenRecoveryWizard={() => setIsRecoveryModalOpen(true)}
+          onInstallDrivers={() => {
+            try {
+              localStorage.setItem('sparkle_setup_wizard_completed', 'true');
+              localStorage.setItem('sparkle_username', username.trim() || 'Sparkle User');
+            } catch {}
+            onFinish();
+          }}
+          onOpenCommandPrompt={onOpenCommandPrompt}
+          onSkipSetup={() => {
+            if (transitionTimerRef.current) clearTimeout(transitionTimerRef.current);
+            if (postTimerRef.current) clearTimeout(postTimerRef.current);
+            try {
+              localStorage.setItem('sparkle_setup_wizard_completed', 'true');
+              localStorage.setItem('sparkle_username', username.trim() || 'Sparkle User');
+            } catch {}
+            onSkipSetup();
+          }}
+        />
+      <SparkleRecoveryModal isOpen={isRecoveryModalOpen} onClose={() => setIsRecoveryModalOpen(false)} />
       </div>
     );
   }
@@ -1207,12 +1236,35 @@ export const SparkleSetupWizard: React.FC<SparkleSetupWizardProps> = ({
       </section>
 
       <div className="fixed bottom-4 right-5 hidden items-center gap-2.5 text-slate-800 sm:bottom-5 sm:right-6 sm:flex">
+        <button type="button" onClick={() => setIsAdvancedOptionsOpen(true)} aria-label="Open advanced options" title="Advanced options" className="flex h-10 w-8 items-center justify-center rounded-xl bg-white/75 shadow-sm transition hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2165B5]"><Search className="size-5" aria-hidden="true" /></button>
         <span className="flex h-10 w-8 items-center justify-center rounded-xl bg-white/75 shadow-sm" title="Diagnostics"><Bug className="size-5" /></span>
         <span className="flex h-10 w-8 items-center justify-center rounded-xl bg-white/75 shadow-sm" title="Volume"><Volume2 className="size-5" /></span>
         <span className="flex h-10 w-8 items-center justify-center rounded-xl bg-white/75 shadow-sm" title="Accessibility"><img src={ACCESSIBILITY_ICON_URL} alt="" aria-hidden="true" className="size-5 object-contain" /></span>
         <span className="flex h-10 w-[45px] items-center justify-center rounded-xl bg-white/75 text-sm font-medium tabular-nums shadow-sm" aria-label="Current time">13:15</span>
       </div>
 
+      <SparkleAdvancedOptionsScreen
+        isOpen={isAdvancedOptionsOpen}
+        onClose={() => setIsAdvancedOptionsOpen(false)}
+        onOpenRecoveryWizard={() => setIsRecoveryModalOpen(true)}
+        onInstallDrivers={() => {
+          try {
+            localStorage.setItem('sparkle_setup_wizard_completed', 'true');
+            localStorage.setItem('sparkle_username', username.trim() || 'Sparkle User');
+          } catch {}
+          onFinish();
+        }}
+        onOpenCommandPrompt={onOpenCommandPrompt}
+        onSkipSetup={() => {
+          if (transitionTimerRef.current) clearTimeout(transitionTimerRef.current);
+          if (postTimerRef.current) clearTimeout(postTimerRef.current);
+          try {
+            localStorage.setItem('sparkle_setup_wizard_completed', 'true');
+            localStorage.setItem('sparkle_username', username.trim() || 'Sparkle User');
+          } catch {}
+          onSkipSetup();
+        }}
+      />
       <SparkleRecoveryModal isOpen={isRecoveryModalOpen} onClose={() => setIsRecoveryModalOpen(false)} />
     </div>
 );
