@@ -8976,3 +8976,50 @@ html.light-mode .no-visual-drivers div[role="dialog"] {
   box-shadow: 0 0 0 2px #f2f2f2 !important;
 }
 
+[data-oobe-experience-content] [class*="text-white"] {
+  color: #172033 !important;
+}
+
+[data-oobe-experience-content] button[class*="text-white"],
+[data-oobe-experience-content] [class~="bg-[#0067c0]"][class*="text-white"] {
+  color: #ffffff !important;
+}
+
+[data-oobe-experience-content] [class~="bg-[#003c6b]"],
+[data-oobe-experience-content] [class~="bg-[#00335c]"],
+[data-oobe-experience-content] [class~="bg-[#003c6b]"] option,
+[data-oobe-experience-content] [class~="bg-white/10"],
+[data-oobe-experience-content] [class~="bg-white/5"],
+[data-oobe-experience-content] [class~="bg-black/20"] {
+  background-color: #f4f7fb !important;
+  color: #172033 !important;
+}
+
+[data-oobe-experience-content] [class~="bg-[#00477e]"]:not(button):not([class~="bg-[#0067c0]"]) {
+  background-color: #f2f7fc !important;
+  color: #172033 !important;
+}
+
+[data-oobe-experience-content] [class~="bg-[#0067c0]"] {
+  background-color: #0879d1 !important;
+  color: #ffffff !important;
+}
+
+[data-oobe-experience-content] [class*="border-white/"] {
+  border-color: #d7dee8 !important;
+}
+
+[data-oobe-experience-content] [class*="placeholder-white/"]::placeholder {
+  color: #778291 !important;
+  opacity: 1 !important;
+}
+
+[data-oobe-experience-content] input[type="checkbox"],
+[data-oobe-experience-content] input[type="radio"] {
+  accent-color: #0879d1 !important;
+}
+
+[data-oobe-experience-content] > div > [class*="text-center"] {
+  align-items: stretch !important;
+  text-align: left !important;
+}
