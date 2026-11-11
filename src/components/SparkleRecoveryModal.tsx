@@ -230,9 +230,10 @@ export const SparkleRecoveryModal: React.FC<SparkleRecoveryModalProps> = ({
           role="dialog"
           aria-modal="true"
           aria-labelledby="sparkle-recovery-title"
-          className="fluent-modal-dialog sparkle-recovery-dialog flex min-h-dvh w-full flex-col overflow-y-auto bg-[#2468b4] px-6 py-6 text-white sm:px-10 sm:py-8 select-text"
+          className="fluent-modal-dialog sparkle-recovery-dialog flex min-h-dvh w-full flex-col overflow-y-auto rounded-none border-0 bg-[#2165B5] px-6 py-6 text-white shadow-none sm:px-10 sm:py-8 select-text"
           style={{
-            backgroundColor: '#2468b4',
+            backgroundColor: '#2165B5',
+            borderRadius: 0,
             fontFamily: "'Segoe UI Variable Text', 'Segoe UI', system-ui, sans-serif"
           }}
         >
@@ -249,7 +250,7 @@ export const SparkleRecoveryModal: React.FC<SparkleRecoveryModalProps> = ({
               Advanced options
             </h1>
           </header>
-          <div className="mx-auto flex w-full max-w-[960px] flex-1 flex-col justify-center py-8">
+          <div className="mx-auto flex w-full max-w-[960px] flex-1 flex-col justify-start py-8">
             <AnimatePresence mode="wait">
             {/* TRANSITION DIALOG (5 seconds between steps) */}
             {isTransitioning ? (
