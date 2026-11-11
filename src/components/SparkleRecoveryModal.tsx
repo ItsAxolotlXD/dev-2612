@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'motion/react';
+import { ArrowLeft } from 'lucide-react';
 import { SpinningRing } from './SpinningRing';
 import { DEFAULT_SETTINGS } from '../hooks/useSettings';
 
@@ -224,33 +225,32 @@ export const SparkleRecoveryModal: React.FC<SparkleRecoveryModalProps> = ({
 
   const modalContent = (
     <AnimatePresence>
-      <div
-        id="sparkle-recovery-modal-container"
-        className="fixed inset-0 z-[100000] flex items-center justify-center p-4 sm:p-6 select-none"
-      >
-        {/* Backdrop */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.15 }}
-          onClick={() => {
-            if (step !== 4 && !isTransitioning) onClose();
-          }}
-          className="fixed inset-0 bg-black/70 backdrop-blur-[2px]"
-        />
-
-        {/* Windows Blue Dialog Frame (#0078d7) - Static frame with NO animation */}
-        <div
+      <div id="sparkle-recovery-modal-container" className="fixed inset-0 z-[100000] select-none">
+        <section
           role="dialog"
           aria-modal="true"
-          className="fluent-modal-dialog sparkle-recovery-dialog relative z-10 w-full max-w-[500px] bg-[#0078d7] text-white rounded-none px-6 py-5 sm:px-7 sm:py-6 shadow-[0_24px_64px_rgba(0,0,0,0.85)] select-text border-none"
+          aria-labelledby="sparkle-recovery-title"
+          className="fluent-modal-dialog sparkle-recovery-dialog flex min-h-dvh w-full flex-col overflow-y-auto bg-[#2468b4] px-6 py-6 text-white sm:px-10 sm:py-8 select-text"
           style={{
-            backgroundColor: '#0078d7',
+            backgroundColor: '#2468b4',
             fontFamily: "'Segoe UI Variable Text', 'Segoe UI', system-ui, sans-serif"
           }}
         >
-          <AnimatePresence mode="wait">
+          <header className="mx-auto flex w-full max-w-[1100px] items-center gap-5">
+            <button
+              type="button"
+              onClick={onClose}
+              aria-label="Back to setup"
+              className="inline-flex size-10 shrink-0 items-center justify-center rounded-full border border-white/40 text-white transition hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+            >
+              <ArrowLeft className="size-5" aria-hidden="true" />
+            </button>
+            <h1 id="sparkle-recovery-title" className="text-[28px] font-normal tracking-tight sm:text-[34px]">
+              Advanced options
+            </h1>
+          </header>
+          <div className="mx-auto flex w-full max-w-[960px] flex-1 flex-col justify-center py-8">
+            <AnimatePresence mode="wait">
             {/* TRANSITION DIALOG (5 seconds between steps) */}
             {isTransitioning ? (
               <motion.div
@@ -691,8 +691,9 @@ export const SparkleRecoveryModal: React.FC<SparkleRecoveryModalProps> = ({
                 )}
               </>
             )}
-          </AnimatePresence>
-        </div>
+            </AnimatePresence>
+          </div>
+        </section>
       </div>
     </AnimatePresence>
   );
