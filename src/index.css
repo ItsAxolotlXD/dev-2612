@@ -168,6 +168,14 @@ html.light-mode ::-moz-selection,
     font-family: 'Segoe UI Variable Display', 'Segoe UI Variable Text', 'Segoe UI Variable', 'Segoe UI', 'Be Vietnam Pro', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
   }
 
+  #sparkle-bootloader,
+  #sparkle-bootloader *,
+  #sparkle-bootloader *::before,
+  #sparkle-bootloader *::after {
+    font-family: 'Consolas', 'Lucida Console', 'Courier New', monospace !important;
+    font-variant-ligatures: none;
+  }
+
   /* Global typography: Segoe UI Variable for headers, headings, h1-h6, titles & big titles -> semi-bold */
   .font-bold, strong, b,
   h1, h2, h3, h4, h5, h6,

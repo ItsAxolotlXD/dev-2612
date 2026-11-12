@@ -130,11 +130,12 @@ export function SparkleBootloader({ isOpen, onReady }: SparkleBootloaderProps) {
   return (
     <div
       ref={rootRef}
+      id="sparkle-bootloader"
       data-testid="sparkle-bootloader"
       tabIndex={0}
       onKeyDown={handleKeyDown}
-      className="fixed inset-0 z-[2147483647] overflow-y-auto bg-black px-6 py-10 text-white outline-none sm:px-12 sm:py-12"
-      style={{ fontFamily: "Consolas, 'Courier New', monospace", fontSize: 'clamp(14px, 1.25vw, 18px)', lineHeight: 1.75 }}
+      className="sparkle-bootloader fixed inset-0 z-[2147483647] flex min-h-dvh items-center justify-center overflow-y-auto bg-black px-6 py-8 text-white outline-none sm:px-12 sm:py-12"
+      style={{ fontFamily: 'Consolas, "Lucida Console", "Courier New", monospace', fontSize: 'clamp(14px, 1.2vw, 17px)', lineHeight: 1.65, letterSpacing: '0.02em', fontVariantLigatures: 'none' }}
     >
       <input
         ref={fileInputRef}
@@ -148,7 +149,7 @@ export function SparkleBootloader({ isOpen, onReady }: SparkleBootloaderProps) {
       />
 
       {installPhase === 'loading-files' ? (
-        <section className="mx-auto flex min-h-[calc(100dvh-6rem)] w-full max-w-4xl flex-col justify-center gap-7" aria-label="Loading installation disc">
+        <section className="mx-auto flex w-full max-w-4xl flex-col gap-7" aria-label="Loading installation disc">
           <p>Sparkle is loading files and installation disc...</p>
           <div className="h-5 w-full border border-white p-[3px]" aria-label="Loading progress">
             <div className="h-full bg-white" style={{ animation: 'sparkle-bootloader-progress 5s linear forwards' }} />
@@ -156,12 +157,12 @@ export function SparkleBootloader({ isOpen, onReady }: SparkleBootloaderProps) {
           <style>{'@keyframes sparkle-bootloader-progress { from { width: 0%; } to { width: 100%; } }'}</style>
         </section>
       ) : installPhase === 'just-a-moment' ? (
-        <section className="mx-auto flex min-h-[calc(100dvh-6rem)] w-full max-w-4xl flex-col items-center justify-center gap-6" aria-label="Preparing installation">
+        <section className="mx-auto flex w-full max-w-4xl flex-col items-center gap-6" aria-label="Preparing installation">
           <span aria-hidden="true" className="size-8 animate-spin rounded-full border-2 border-white/25 border-t-white" />
           <p>Just a moment...</p>
         </section>
       ) : screen === 'boot-error' ? (
-        <div role="main" className="mx-auto flex min-h-[calc(100dvh-6rem)] w-full max-w-4xl flex-col justify-center gap-2">
+        <div role="main" className="mx-auto flex w-full max-w-4xl flex-col gap-2">
           <p>Failed to boot your operating system.</p>
           <p>ERROR_367: Operating system not found</p>
           <p className="mt-5 max-w-3xl">
@@ -177,7 +178,7 @@ export function SparkleBootloader({ isOpen, onReady }: SparkleBootloaderProps) {
           <p className="mt-7 text-sm text-white/70">Use arrow keys or click to navigate.</p>
         </div>
       ) : screen === 'disc-selection' ? (
-        <div role="main" className="mx-auto flex min-h-[calc(100dvh-6rem)] w-full max-w-4xl flex-col justify-center">
+        <div role="main" className="mx-auto flex w-full max-w-4xl flex-col">
           <p className="mb-1">Select available installation disc to install</p>
           <p className="mb-6 text-sm text-white/70">Use arrow keys or click to navigate.</p>
           <div role="listbox" aria-label="Available installation discs" className="flex flex-col gap-1">
@@ -207,7 +208,7 @@ export function SparkleBootloader({ isOpen, onReady }: SparkleBootloaderProps) {
           {discStatus && <p role="alert" className="mt-5 text-white">{discStatus}</p>}
         </div>
       ) : (
-        <div role="main" className="mx-auto flex min-h-[calc(100dvh-6rem)] w-full max-w-4xl flex-col justify-center gap-3">
+        <div role="main" className="mx-auto flex w-full max-w-4xl flex-col gap-3">
           <p>Unable to load imported installation disc.</p>
           <p className="max-w-3xl">
             This is probably due to your installation disc contains an expired build of Sparkle or it is missing some important files to load.
