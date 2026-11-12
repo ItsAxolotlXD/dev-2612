@@ -18,6 +18,8 @@ import { TextToSpeechPlayer } from './components/TextToSpeechPlayer';
 import { SplashScreen } from './components/SplashScreen';
 import { SPINNING_RING_GIF_LOOP_DURATION_MS } from './components/SpinningRing';
 import { AnimatedBootScreen } from './components/AnimatedBootScreen';
+import { SparkleBootloader } from './components/SparkleBootloader';
+import { SparkleUninstallScreen } from './components/SparkleUninstallScreen';
 import { SparkleSetupWizard } from './components/SparkleSetupWizard';
 import { SparkleDriverModal } from './components/SparkleDriverModal';
 import { useDrivers } from './hooks/useDrivers';
@@ -183,25 +185,29 @@ export default function App() {
     }
   }, [currentChannel]);
 
-  // Sparkle Setup Wizard (Windows 11 Setup OOBE - first launch or triggered via Settings)
-  const [isSetupWizardOpen, setIsSetupWizardOpen] = useState<boolean>(() => {
+  // First launch and OOBE resets begin in the simulated bootloader before setup.
+  const [isBootloaderOpen, setIsBootloaderOpen] = useState<boolean>(() => {
     try {
       const urlParams = new URLSearchParams(window.location.search);
       if (urlParams.get('setup') === 'true' || urlParams.get('oobe') === 'true') {
         return true;
       }
-      const completed = localStorage.getItem('sparkle_setup_wizard_completed');
-      return completed !== 'true';
+      return localStorage.getItem('sparkle_setup_wizard_completed') !== 'true';
     } catch {
       return false;
     }
   });
+  const [isSetupWizardOpen, setIsSetupWizardOpen] = useState(false);
 
   // Global listener to launch Setup Wizard from Settings or developer console
+  const handleLaunchSetup = useCallback(() => {
+    setIsSetupWizardOpen(false);
+    setIsBootVideoFinished(true);
+    setIsSplashFinished(true);
+    setIsBootloaderOpen(true);
+  }, []);
+
   useEffect(() => {
-    const handleLaunchSetup = () => {
-      setIsSetupWizardOpen(true);
-    };
     window.addEventListener('launch-sparkle-setup', handleLaunchSetup);
     (window as any).launchSparkleSetup = handleLaunchSetup;
     (window as any).launchSparkleSetupWizard = handleLaunchSetup;
@@ -211,6 +217,13 @@ export default function App() {
       delete (window as any).launchSparkleSetup;
       delete (window as any).launchSparkleSetupWizard;
     };
+  }, [handleLaunchSetup]);
+
+  const handleBootloaderReady = useCallback(() => {
+    setIsBootloaderOpen(false);
+    setIsBootVideoFinished(true);
+    setIsSplashFinished(true);
+    setIsSetupWizardOpen(true);
   }, []);
 
   const handleFinishSetupWizard = useCallback(() => {
@@ -259,8 +272,26 @@ export default function App() {
   const handleOpenSparkverAbout = useCallback(() => setIsSparkverAboutOpen(true), []);
   const handleCloseSparkverAbout = useCallback(() => setIsSparkverAboutOpen(false), []);
   const [isCommandPromptOpen, setIsCommandPromptOpen] = useState(() => window.location.pathname === '/command-prompt');
+  const [isSparkleUninstalling, setIsSparkleUninstalling] = useState(false);
   const handleOpenCommandPrompt = useCallback(() => setIsCommandPromptOpen(true), []);
   const handleCloseCommandPrompt = useCallback(() => setIsCommandPromptOpen(false), []);
+  const handleStartSparkleUninstall = useCallback(() => {
+    setIsCommandPromptOpen(false);
+    setIsSetupWizardOpen(false);
+    setIsBootloaderOpen(false);
+    setIsBootVideoFinished(true);
+    setIsSplashFinished(true);
+    setIsDriverModalOpen(false);
+    setIsDriverManagementPanelOpen(false);
+    setIsSparkleUninstalling(true);
+  }, []);
+  const handleCompleteSparkleUninstall = useCallback(() => {
+    setIsSparkleUninstalling(false);
+    setIsSetupWizardOpen(false);
+    setIsDriverModalOpen(false);
+    setIsDriverManagementPanelOpen(false);
+    setIsBootloaderOpen(true);
+  }, []);
   const [isViveToolGuiOpen, setIsViveToolGuiOpen] = useState(false);
   const handleOpenViveToolGui = useCallback(() => setIsViveToolGuiOpen(true), []);
   const handleCloseViveToolGui = useCallback(() => setIsViveToolGuiOpen(false), []);
@@ -907,6 +938,7 @@ export default function App() {
             onOpenAbout={handleOpenSparkverAbout}
             onOpenLegacySearch={handleCommandLegacySearch}
             onOpenViveToolGui={handleOpenViveToolGui}
+            onUninstallSparkle={handleStartSparkleUninstall}
           />
         );
 
@@ -917,7 +949,7 @@ export default function App() {
             onSearchChange={handleTabSearchChange}
             onOpenUpdate={() => setIsUpdating(true)}
             onOpenOfficeTool={handleOpenOfficeTool}
-            onOpenSetupWizard={() => setIsSetupWizardOpen(true)}
+            onOpenSetupWizard={handleLaunchSetup}
             navigate={navigate}
           />
         );
@@ -1194,6 +1226,7 @@ export default function App() {
         onOpenAbout={handleCommandAboutFromWindow}
         onOpenLegacySearch={handleCommandLegacySearch}
         onOpenViveToolGui={handleOpenViveToolGui}
+        onUninstallSparkle={handleStartSparkleUninstall}
       />
       <ViveToolGuiWindow isOpen={isViveToolGuiOpen} onClose={handleCloseViveToolGui} />
       <SpotlightModal
@@ -1292,12 +1325,12 @@ export default function App() {
       {isSplashFinished && !(settings.widgetsFeed && isWidgetsFeedOpen) && <EvaluationWatermark />}
 
       {/* Animated Boot Screen (if enabled via Insider experiments and not running setup wizard) */}
-      {!isSetupWizardOpen && !isBootVideoFinished && settings.animatedBootScreen && (
+      {!isBootloaderOpen && !isSetupWizardOpen && !isBootVideoFinished && settings.animatedBootScreen && (
         <AnimatedBootScreen onFinish={() => setIsBootVideoFinished(true)} />
       )}
 
       {/* Startup splash waits for two full progress GIF loops after the boot video (if not running setup wizard) */}
-      {!isSetupWizardOpen && isBootVideoFinished && !isSplashFinished && (
+      {!isBootloaderOpen && !isSetupWizardOpen && isBootVideoFinished && !isSplashFinished && (
         <SplashScreen
           duration={SPINNING_RING_GIF_LOOP_DURATION_MS * 2}
           ringSize={60}
@@ -1314,6 +1347,9 @@ export default function App() {
           onFinish={() => setIsUpdating(false)}
         />
       )}
+
+      {/* Simulated recovery bootloader shown before first-launch and reset OOBE */}
+      <SparkleBootloader isOpen={isBootloaderOpen} onReady={handleBootloaderReady} />
 
       {/* Sparkle Setup Wizard (Windows 11 OOBE - first launch or triggered via Settings / URL ?setup=true) */}
       <SparkleSetupWizard
@@ -1334,6 +1370,7 @@ export default function App() {
         onClose={closeDriverManagementPanel}
         onOpenDriverModal={() => setIsDriverModalOpen(true)}
       />
+      <SparkleUninstallScreen isOpen={isSparkleUninstalling} onComplete={handleCompleteSparkleUninstall} />
       </div>
       <AppNativeCursor enabled={!isResolutionInstalled} />
     </div>

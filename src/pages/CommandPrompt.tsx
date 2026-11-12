@@ -53,7 +53,7 @@ const EXPERIMENTS: Experiment[] = [
 ];
 
 const commandUsage =
-  'Commands: /vivetool /gui, /vivetool /enable|/disable /id:<9-digit-id> [/velocity] or /vivetool /list; /drivers /install|/uninstall /visuals|/resolution; /search <keyword>; /debug legacysearch; /sparkver.';
+  'Commands: /vivetool /gui, /vivetool /enable|/disable /id:<9-digit-id> [/velocity] or /vivetool /list; /drivers /install|/uninstall /visuals|/resolution; /search <keyword>; /debug legacysearch; /sparkver; /uninstall sparkle.';
 
 const readExperimentRows = (settings: SystemSettings): ExperimentRow[] =>
   EXPERIMENTS.map(({ id, name, settingKey }) => ({
@@ -67,6 +67,7 @@ interface CommandPromptProps {
   onOpenAbout: () => void;
   onOpenLegacySearch: () => void;
   onOpenViveToolGui: () => void;
+  onUninstallSparkle: () => void;
   isWindowContent?: boolean;
 }
 
@@ -75,6 +76,7 @@ export const CommandPrompt: React.FC<CommandPromptProps> = ({
   onOpenAbout,
   onOpenLegacySearch,
   onOpenViveToolGui,
+  onUninstallSparkle,
   isWindowContent = false,
 }) => {
   const { settings, updateSetting } = useSettings();
@@ -130,6 +132,20 @@ export const CommandPrompt: React.FC<CommandPromptProps> = ({
         kind: 'message',
         message: 'Opening About Sparkle.',
         tone: 'neutral',
+      });
+      return;
+    }
+
+    if (executable === 'uninstall') {
+      if (action === 'sparkle' && tokens.length === 2) {
+        onUninstallSparkle();
+        return;
+      }
+
+      appendEntry(rawCommand, {
+        kind: 'message',
+        message: 'Usage: /uninstall sparkle',
+        tone: 'error',
       });
       return;
     }
@@ -311,6 +327,7 @@ export const CommandPrompt: React.FC<CommandPromptProps> = ({
             <p>Manage display drivers with /drivers /install|/uninstall /visuals|/resolution.</p>
             <p>{'Search Sparkle with /search <keyword>.'}</p>
             <p>Open About Sparkle with /sparkver.</p>
+            <p>Uninstall Sparkle with /uninstall sparkle.</p>
             <p>{'Open the legacy search page with /debug legacysearch.'}</p>
           </div>
 
