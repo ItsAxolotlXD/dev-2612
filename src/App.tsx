@@ -32,6 +32,7 @@ import { AppScrollbar } from './components/AppScrollbar';
 import { AppNativeCursor } from './components/AppNativeCursor';
 import { SparkverAboutWindow } from './components/SparkverAboutWindow';
 import { WidgetsFeed } from './components/WidgetsFeed';
+import { DirectCommandExperience } from './components/DirectCommandExperience';
 import { CommandPromptWindow } from './components/CommandPromptWindow';
 import { ViveToolGuiWindow } from './components/ViveToolGuiWindow';
 import { GlobalToast } from './components/GlobalToast';
@@ -253,12 +254,33 @@ export default function App() {
 
   const [isUnderConstructionOpen, setIsUnderConstructionOpen] = useState(false);
   const [isWidgetsFeedOpen, setIsWidgetsFeedOpen] = useState(false);
-  const handleOpenWidgetsFeed = useCallback(() => setIsWidgetsFeedOpen(true), []);
-  const handleToggleWidgetsFeed = useCallback(() => setIsWidgetsFeedOpen((prev) => !prev), []);
+  const [isDirectCommandOpen, setIsDirectCommandOpen] = useState(false);
+  const handleOpenWidgetsFeed = useCallback(() => {
+    setIsDirectCommandOpen(false);
+    setIsWidgetsFeedOpen(true);
+  }, []);
+  const handleToggleWidgetsFeed = useCallback(() => {
+    setIsDirectCommandOpen(false);
+    setIsWidgetsFeedOpen((prev) => !prev);
+  }, []);
   const handleCloseWidgetsFeed = useCallback(() => setIsWidgetsFeedOpen(false), []);
+  const handleToggleDirectCommand = useCallback(() => {
+    setIsWidgetsFeedOpen(false);
+    setIsDirectCommandOpen((prev) => !prev);
+  }, []);
+  const handleCloseDirectCommand = useCallback(() => setIsDirectCommandOpen(false), []);
   useEffect(() => {
     if (!settings.widgetsFeed) setIsWidgetsFeedOpen(false);
   }, [settings.widgetsFeed]);
+  useEffect(() => {
+    const closeDirectCommand = () => setIsDirectCommandOpen(false);
+    window.addEventListener('vplay:focus-topbar-search', closeDirectCommand);
+    window.addEventListener('vplay:search-command', closeDirectCommand);
+    return () => {
+      window.removeEventListener('vplay:focus-topbar-search', closeDirectCommand);
+      window.removeEventListener('vplay:search-command', closeDirectCommand);
+    };
+  }, []);
   const [isSparkverAboutOpen, setIsSparkverAboutOpen] = useState(false);
   const handleOpenSparkverAbout = useCallback(() => setIsSparkverAboutOpen(true), []);
   const handleCloseSparkverAbout = useCallback(() => setIsSparkverAboutOpen(false), []);
@@ -996,7 +1018,7 @@ export default function App() {
             id="sparkle-app-root"
             data-immersive-sidebar={settings.immersiveSidebar}
             data-sidebar-position={settings.sidebarPosition}
-            className={`h-screen w-full ${!isVisualInstalled ? 'no-visual-drivers' : ''} ${settings.superDarkMode ? 'bg-black' : 'bg-[#f9f9f9] dark:bg-[#1b1f24]'} text-[#111827] dark:text-[#E0E0E6] flex font-sans selection:bg-[#d946ef] selection:text-white dark:selection:bg-[#ff2d92] dark:selection:text-white relative overflow-hidden`}
+            className={`h-screen w-full ${!isVisualInstalled ? 'no-visual-drivers' : ''} ${settings.isWallpaperAllowed ? 'bg-transparent' : settings.superDarkMode ? 'bg-black' : 'bg-[#f9f9f9] dark:bg-[#1b1f24]'} text-[#111827] dark:text-[#E0E0E6] flex font-sans selection:bg-[#d946ef] selection:text-white dark:selection:bg-[#ff2d92] dark:selection:text-white relative overflow-hidden`}
             style={!isResolutionInstalled ? {
               width: '75%',
               transform: 'scaleX(1.333333)',
@@ -1007,9 +1029,25 @@ export default function App() {
       {/* Fixed atmospheric cosmic background matching custom nebula gradient */}
       <div 
         id="fixed-app-background-solid" 
-        className={`fixed inset-0 pointer-events-none -z-50 ${settings.superDarkMode ? '!bg-black' : ''}`} 
+        className={`fixed inset-0 pointer-events-none -z-50 ${settings.superDarkMode && !settings.isWallpaperAllowed ? '!bg-black' : ''}`} 
         aria-hidden="true" 
       />
+
+      {settings.isWallpaperAllowed && (
+        <div
+          id="sparkle-app-wallpaper-layer"
+          className="fixed inset-0 z-0 pointer-events-none select-none overflow-hidden"
+          aria-hidden="true"
+        >
+          <img
+            src="/assets/aistudio/image_1a8895cc.png"
+            alt=""
+            draggable={false}
+            className="h-full w-full object-cover object-center"
+          />
+          <div className="absolute inset-0 bg-white/15 dark:bg-black/30" />
+        </div>
+      )}
 
       {isInkCanvasEditor && !isInkCanvasChromeVisible && <><div onMouseEnter={() => setIsInkCanvasChromeVisible(true)} className="fixed left-0 top-0 bottom-0 w-3 z-[200]" /><div onMouseEnter={() => setIsInkCanvasChromeVisible(true)} className="fixed left-0 top-0 right-0 h-3 z-[200]" /><div onMouseEnter={() => setIsInkCanvasChromeVisible(true)} className="fixed left-0 bottom-0 right-0 h-3 z-[200]" /></>}
 
@@ -1054,7 +1092,7 @@ export default function App() {
       {/* Main App Container */}
       <div 
         id="main-content-scroll-container"
-        className={`flex-1 flex flex-col min-w-0 h-screen overflow-y-auto overflow-x-hidden no-scrollbar transition-[padding] duration-[160ms] ease-[cubic-bezier(0.34,1.45,0.64,1)] bg-[#f3f3f3] dark:bg-[#1b1f24] ${
+        className={`relative z-10 flex-1 flex flex-col min-w-0 h-screen overflow-y-auto overflow-x-hidden no-scrollbar transition-[padding] duration-[160ms] ease-[cubic-bezier(0.34,1.45,0.64,1)] ${settings.isWallpaperAllowed ? 'bg-transparent' : 'bg-[#f3f3f3] dark:bg-[#1b1f24]'} ${
         isInkCanvasEditor || isGalleryViewerOpen
           ? 'md:pl-0 md:pr-0 pb-0'
           : !settings.dockToSidebar || settings.navigationMode === 'floaty'
@@ -1120,6 +1158,8 @@ export default function App() {
             showWidgets={settings.widgetsFeed}
             isWidgetsOpen={isWidgetsFeedOpen}
             onToggleWidgets={handleToggleWidgetsFeed}
+            isDirectCommandOpen={isDirectCommandOpen}
+            onToggleDirectCommand={handleToggleDirectCommand}
             theme={settings.theme}
             isTopBarBottom={settings.isTopBarBottom}
             isSidebarMerged={isSidebarMerged}
@@ -1141,7 +1181,7 @@ export default function App() {
           id={settings.tabsExperiment ? `app-tab-panel-${activeAppTabId}` : undefined}
           role={settings.tabsExperiment ? 'tabpanel' : undefined}
           aria-labelledby={settings.tabsExperiment ? `app-tab-${activeAppTabId}` : undefined}
-          className={`main-tab-page flex-1 w-full mx-auto ${isSidebarMerged ? 'rounded-none' : 'rounded-tl-none md:rounded-tl-[10px]'} rounded-tr-none rounded-br-none rounded-bl-none bg-[#f9f9f9] dark:bg-[#282c31] ${
+          className={`main-tab-page flex-1 w-full mx-auto ${isSidebarMerged ? 'rounded-none' : 'rounded-tl-none md:rounded-tl-[10px]'} rounded-tr-none rounded-br-none rounded-bl-none ${settings.isWallpaperAllowed ? 'bg-transparent' : 'bg-[#f9f9f9] dark:bg-[#282c31]'} ${
           currentRoute === '/' || currentRoute === '/home' || currentRoute === '/news' || currentRoute === '/updates' || isOfficeRoute || currentRoute === '/craftmine' || currentRoute === '/photopea' || currentRoute === '/vlc' || currentRoute === '/screenbox' || currentRoute === '/screenbug' || currentRoute === '/gallery' || currentRoute === '/draws' || currentRoute.startsWith('/draws/') || currentRoute === '/camera'
             ? 'p-0 max-w-none pt-0' 
             : 'px-4 sm:px-6 md:px-8 py-5 max-w-7xl'
@@ -1209,6 +1249,16 @@ export default function App() {
 
       {/* Global Modals */}
       <WidgetsFeed isOpen={settings.widgetsFeed && isWidgetsFeedOpen} onClose={handleCloseWidgetsFeed} />
+      <DirectCommandExperience
+        isOpen={isDirectCommandOpen}
+        isTopBarBottom={settings.isTopBarBottom}
+        onSearch={handleCommandSearch}
+        onOpenAbout={handleOpenSparkverAbout}
+        onOpenLegacySearch={handleCommandLegacySearch}
+        onOpenViveToolGui={handleOpenViveToolGui}
+        onOpenFullCommandPrompt={handleOpenCommandPrompt}
+        onClose={handleCloseDirectCommand}
+      />
       <SparkverAboutWindow
         isOpen={isSparkverAboutOpen}
         onClose={handleCloseSparkverAbout}

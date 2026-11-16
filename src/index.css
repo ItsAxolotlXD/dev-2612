@@ -8951,3 +8951,57 @@ html.light-mode .no-visual-drivers div[role="dialog"] {
   align-items: stretch !important;
   text-align: left !important;
 }
+
+/* ==========================================================================
+   IsWallpaperAllowed (Velocity / viVeTool) App Wallpaper Mode
+   ========================================================================== */
+html.wallpaper-allowed,
+html.wallpaper-allowed body,
+html.wallpaper-allowed #root,
+html.wallpaper-allowed #fixed-app-background-solid,
+html.wallpaper-allowed.light-mode,
+html.wallpaper-allowed.light-mode body,
+html.wallpaper-allowed.light-mode #root,
+html.wallpaper-allowed.light-mode #fixed-app-background-solid,
+html.wallpaper-allowed.super-dark body,
+html.wallpaper-allowed.super-dark #root,
+html.wallpaper-allowed.super-dark #fixed-app-background-solid,
+html.wallpaper-allowed #sparkle-app-root,
+html.wallpaper-allowed #main-content-scroll-container,
+html.wallpaper-allowed main,
+html.wallpaper-allowed .main-tab-page,
+html.wallpaper-allowed .tab-element-slide-up-container,
+html.wallpaper-allowed.light-mode main,
+html.wallpaper-allowed.light-mode .main-tab-page,
+html.wallpaper-allowed.light-mode .tab-element-slide-up-container,
+html.wallpaper-allowed.dark main,
+html.wallpaper-allowed.dark .main-tab-page,
+html.wallpaper-allowed.dark .tab-element-slide-up-container {
+  background-color: transparent !important;
+  background: transparent !important;
+}
+
+html.wallpaper-allowed:not(.no-visual-drivers) #waves-desktop-sidebar,
+html.wallpaper-allowed:not(.no-visual-drivers) #waves-mobile-sidebar {
+  background-color: rgba(27, 31, 36, 0.72) !important;
+  background: rgba(27, 31, 36, 0.72) !important;
+  backdrop-filter: blur(20px) saturate(140%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(140%) !important;
+}
+
+html.wallpaper-allowed.light-mode:not(.no-visual-drivers) #waves-desktop-sidebar,
+html.wallpaper-allowed.light-mode:not(.no-visual-drivers) #waves-mobile-sidebar {
+  background-color: rgba(243, 243, 243, 0.72) !important;
+  background: rgba(243, 243, 243, 0.72) !important;
+}
+
+html.wallpaper-allowed:not(.no-visual-drivers) #app-bottom-tabs-bar {
+  background-color: rgba(27, 31, 36, 0.76) !important;
+  backdrop-filter: blur(22px) saturate(150%) !important;
+  -webkit-backdrop-filter: blur(22px) saturate(150%) !important;
+}
+
+html.wallpaper-allowed.light-mode:not(.no-visual-drivers) #app-bottom-tabs-bar {
+  background-color: rgba(243, 243, 243, 0.76) !important;
+}
+

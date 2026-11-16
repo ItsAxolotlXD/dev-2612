@@ -42,6 +42,7 @@ const SETTING_LABELS: Partial<Record<keyof SystemSettings, string>> = {
   widgetsFeed: 'Widgets Feed',
   isTopBarBottom: 'IsTopBarBottom',
   isSidebarMerged: 'IsSidebarMerged',
+  isWallpaperAllowed: 'IsWallpaperAllowed',
   fluentIcons: 'Fluent icons',
   dynamicSidebarIcons: 'Dynamic sidebar icons',
   pageAnimation: 'Page animation',

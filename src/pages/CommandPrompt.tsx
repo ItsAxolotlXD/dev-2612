@@ -2,69 +2,14 @@ import React, { useEffect, useRef, useState } from 'react';
 import type { FormEvent } from 'react';
 import { ArrowUp, Terminal } from 'lucide-react';
 import { useSettings } from '../hooks/useSettings';
-import type { SystemSettings } from '../hooks/useSettings';
 import { useDrivers } from '../hooks/useDrivers';
-
-type ExperimentSettingKey =
-  | 'nativeKeyboard'
-  | 'immersiveSearch'
-  | 'fluentIcons'
-  | 'newWatchTab'
-  | 'dynamicSidebarIcons'
-  | 'animatedBootScreen'
-  | 'triangleExperiment'
-  | 'tabsExperiment'
-  | 'searchColorfulExperiment'
-  | 'widgetsFeed'
-  | 'isTopBarBottom'
-  | 'isSidebarMerged';
-
-type Experiment = {
-  id: string;
-  name: string;
-  settingKey: ExperimentSettingKey;
-};
-
-type ExperimentRow = {
-  id: string;
-  name: string;
-  enabled: boolean;
-};
-
-type CommandResult =
-  | { kind: 'message'; message: string; tone: 'success' | 'error' | 'neutral' }
-  | { kind: 'list'; experiments: ExperimentRow[] };
+import { executeSparkleCommand, type CommandResult } from '../utils/commandRunner';
 
 type TranscriptEntry = {
   id: number;
   command: string;
-  result: CommandResult;
+  result: Exclude<CommandResult, { kind: 'clear' }>;
 };
-
-const EXPERIMENTS: Experiment[] = [
-  { id: '471503201', name: 'Native keyboard', settingKey: 'nativeKeyboard' },
-  { id: '824690102', name: 'Immersive search experience', settingKey: 'immersiveSearch' },
-  { id: '306517403', name: 'Fluent icons', settingKey: 'fluentIcons' },
-  { id: '918243604', name: 'New Watch Tab', settingKey: 'newWatchTab' },
-  { id: '572638105', name: 'Dynamic sidebar icons', settingKey: 'dynamicSidebarIcons' },
-  { id: '143975006', name: 'Animated boot screen', settingKey: 'animatedBootScreen' },
-  { id: '689214707', name: 'Triangle loading experiment', settingKey: 'triangleExperiment' },
-  { id: '385104729', name: 'Tabs', settingKey: 'tabsExperiment' },
-  { id: '742839516', name: 'Search experience upgrades', settingKey: 'searchColorfulExperiment' },
-  { id: '861937204', name: 'Widgets Feed', settingKey: 'widgetsFeed' },
-  { id: '902417635', name: 'IsTopBarBottom', settingKey: 'isTopBarBottom' },
-  { id: '648291037', name: 'IsSidebarMerged', settingKey: 'isSidebarMerged' },
-];
-
-const commandUsage =
-  'Commands: /vivetool /gui, /vivetool /enable|/disable /id:<9-digit-id> [/velocity] or /vivetool /list; /drivers /install|/uninstall /visuals|/resolution; /search <keyword>; /debug legacysearch; /sparkver.';
-
-const readExperimentRows = (settings: SystemSettings): ExperimentRow[] =>
-  EXPERIMENTS.map(({ id, name, settingKey }) => ({
-    id,
-    name,
-    enabled: settings[settingKey],
-  }));
 
 interface CommandPromptProps {
   onSearch: (query: string) => void;
@@ -102,7 +47,7 @@ export const CommandPrompt: React.FC<CommandPromptProps> = ({
     }
   }, [entries]);
 
-  const appendEntry = (rawCommand: string, result: CommandResult) => {
+  const appendEntry = (rawCommand: string, result: Exclude<CommandResult, { kind: 'clear' }>) => {
     const entry: TranscriptEntry = {
       id: nextEntryId.current,
       command: rawCommand,
@@ -118,168 +63,27 @@ export const CommandPrompt: React.FC<CommandPromptProps> = ({
     if (!rawCommand) return;
 
     setCommand('');
-    const tokens = rawCommand.split(/\s+/);
-    const executable = tokens[0]?.replace(/^\/+/, '').toLowerCase();
-    const action = tokens[1]?.replace(/^\/+/, '').replace(/:$/, '').toLowerCase();
-
-    if (executable === 'vivetool' && action === 'gui' && tokens.length === 2) {
-      onOpenViveToolGui();
-      appendEntry(rawCommand, { kind: 'message', message: 'Opening ViveTool GUI.', tone: 'neutral' });
-      return;
-    }
-
-    if (executable === 'sparkver') {
-      onOpenAbout();
-      appendEntry(rawCommand, {
-        kind: 'message',
-        message: 'Opening About Sparkle.',
-        tone: 'neutral',
-      });
-      return;
-    }
-
-    if (executable === 'debug') {
-      const debugCommand = tokens[1]?.replace(/^\/+/, '').toLowerCase();
-      if (debugCommand === 'legacysearch' && tokens.length === 2) {
-        onOpenLegacySearch();
-        appendEntry(rawCommand, {
-          kind: 'message',
-          message: 'Opening the legacy search page.',
-          tone: 'neutral',
-        });
-        return;
-      }
-
-      appendEntry(rawCommand, {
-        kind: 'message',
-        message: 'Usage: /debug legacysearch',
-        tone: 'error',
-      });
-      return;
-    }
-
-    if (executable === 'search') {
-      const query = tokens.slice(1).join(' ').trim();
-      if (!query) {
-        appendEntry(rawCommand, {
-          kind: 'message',
-          message: 'Usage: /search <keyword>',
-          tone: 'error',
-        });
-        return;
-      }
-
-      onSearch(query);
-      appendEntry(rawCommand, {
-        kind: 'message',
-        message: `Searching Sparkle for "${query}".`,
-        tone: 'neutral',
-      });
-      return;
-    }
-
-    if (executable === 'drivers') {
-      const driverType = tokens[2]?.replace(/^\/+/, '').toLowerCase();
-      if ((action !== 'install' && action !== 'uninstall') || (driverType !== 'visuals' && driverType !== 'resolution')) {
-        appendEntry(rawCommand, {
-          kind: 'message',
-          message: 'Usage: /drivers /install|/uninstall /visuals|/resolution',
-          tone: 'error',
-        });
-        return;
-      }
-
-      const isVisualDriver = driverType === 'visuals';
-      const driverName = isVisualDriver ? 'Visual effects' : 'Resolution';
-      const status = isVisualDriver ? visualStatus : resolutionStatus;
-      const shouldInstall = action === 'install';
-      const isAlreadyInRequestedState = shouldInstall
-        ? status === 'installed'
-        : status !== 'installed';
-
-      if (!isAlreadyInRequestedState) {
-        if (isVisualDriver) {
-          if (shouldInstall) installVisualDriver();
-          else rollbackVisualDriver();
-        } else if (shouldInstall) {
-          installResolutionDriver();
-        } else {
-          rollbackResolutionDriver();
-        }
-      }
-
-      appendEntry(rawCommand, {
-        kind: 'message',
-        message: isAlreadyInRequestedState
-          ? `${driverName} driver is already ${shouldInstall ? 'installed' : 'uninstalled'}.`
-          : `${driverName} driver is now ${shouldInstall ? 'installed' : 'uninstalled'}.`,
-        tone: isAlreadyInRequestedState ? 'neutral' : 'success',
-      });
-      return;
-    }
-
-    if (executable !== 'vivetool' && executable !== 'vivetool.exe') {
-      appendEntry(rawCommand, {
-        kind: 'message',
-        message: `Command not recognized: ${tokens[0]}. ${commandUsage}`,
-        tone: 'error',
-      });
-      return;
-    }
-
-    if (action === 'list') {
-      appendEntry(rawCommand, {
-        kind: 'list',
-        experiments: readExperimentRows(settings),
-      });
-      return;
-    }
-
-    if (action === 'enable' || action === 'disable') {
-      const idToken = tokens.slice(2).find((token) => /^\/?id:\d+$/i.test(token));
-      const featureId = idToken?.replace(/^\/?id:/i, '');
-
-      if (!featureId || !/^\d{9}$/.test(featureId)) {
-        appendEntry(rawCommand, {
-          kind: 'message',
-          message: `A 9-digit feature ID is required. ${commandUsage}`,
-          tone: 'error',
-        });
-        return;
-      }
-
-      const experiment = EXPERIMENTS.find((feature) => feature.id === featureId);
-      if (!experiment) {
-        appendEntry(rawCommand, {
-          kind: 'message',
-          message: `No experimental feature was found with ID ${featureId}. Run /vivetool /list to see available IDs.`,
-          tone: 'error',
-        });
-        return;
-      }
-
-      const shouldEnable = action === 'enable';
-      const hasVelocityFlag = tokens.slice(2).some((token) => /^\/?velocity$/i.test(token));
-      const isAlreadyInRequestedState = settings[experiment.settingKey] === shouldEnable;
-      if (experiment.settingKey === 'isSidebarMerged' && shouldEnable && !settings.isTopBarBottom) {
-        updateSetting('isTopBarBottom', true);
-      }
-      updateSetting(experiment.settingKey, shouldEnable);
-      appendEntry(rawCommand, {
-        kind: 'message',
-        message: isAlreadyInRequestedState
-          ? `${experiment.name} (ID ${experiment.id}) is already ${shouldEnable ? 'ENABLED' : 'DISABLED'}${hasVelocityFlag ? ' with /velocity' : ''}.`
-          : `${experiment.name} (ID ${experiment.id}) is now ${shouldEnable ? 'ENABLED' : 'DISABLED'}${hasVelocityFlag ? ' with /velocity' : ''}.`,
-        tone: isAlreadyInRequestedState ? 'neutral' : 'success',
-      });
-      return;
-    }
-
-    appendEntry(rawCommand, {
-      kind: 'message',
-      message: `Invalid viVeTool command. ${commandUsage}`,
-      tone: 'error',
+    const result = executeSparkleCommand(rawCommand, {
+      settings,
+      updateSetting,
+      resolutionStatus,
+      visualStatus,
+      installResolutionDriver,
+      rollbackResolutionDriver,
+      installVisualDriver,
+      rollbackVisualDriver,
+      onSearch,
+      onOpenAbout,
+      onOpenLegacySearch,
+      onOpenViveToolGui,
     });
+
+    if (result.kind === 'clear') {
+      setEntries([]);
+      return;
+    }
+
+    appendEntry(rawCommand, result);
   };
 
   return (

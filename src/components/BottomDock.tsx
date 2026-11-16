@@ -1,4 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { AnimatePresence, motion } from 'motion/react';
 import { 
   Settings as SettingsIcon,
@@ -16,6 +17,7 @@ import { useSettings } from '../hooks/useSettings';
 import { useNativeKeyboard } from '../context/NativeKeyboardContext';
 import { ToolsMenu } from './ToolsMenu';
 import { Channel, NewsArticle } from '../types';
+import { getAppPortalTarget, toAppPortalCoordinates } from '../utils/appPortal';
 
 interface BottomDockProps {
   currentRoute: string;
@@ -103,6 +105,7 @@ export const BottomDock: React.FC<BottomDockProps> = ({
   const useDarkContent = isLightMode;
 
   const [hoveredId, setHoveredId] = useState<string | null>(null);
+  const [hoveredTooltip, setHoveredTooltip] = useState<{ label: string; top: number; left: number } | null>(null);
   const [gesturingTabId, setGesturingTabId] = useState<string | null>(null);
   const [isToolsOpen, setIsToolsOpen] = useState(false);
   const [imageErrors, setImageErrors] = useState<Record<string, boolean>>({});
@@ -110,6 +113,22 @@ export const BottomDock: React.FC<BottomDockProps> = ({
   const toolsFlyoutRef = useRef<HTMLDivElement>(null);
   const tabRefs = useRef<Record<string, HTMLButtonElement | null>>({});
   const isGesturingRef = useRef(false);
+
+  const showItemTooltip = useCallback((label: string, target: HTMLElement) => {
+    if (!label) return;
+    const rect = target.getBoundingClientRect();
+    const clampedX = Math.max(48, Math.min(window.innerWidth - 48, rect.left + rect.width / 2));
+    const point = toAppPortalCoordinates(clampedX, rect.top - 8);
+    setHoveredTooltip({ label, top: point.y, left: point.x });
+  }, []);
+
+  const hideItemTooltip = useCallback(() => {
+    setHoveredTooltip(null);
+  }, []);
+
+  useEffect(() => {
+    setHoveredTooltip(null);
+  }, [currentRoute, isToolsOpen]);
 
   const { isOpen: isKeyboardOpen, keyboardHeight } = useNativeKeyboard();
 
@@ -389,9 +408,20 @@ export const BottomDock: React.FC<BottomDockProps> = ({
                         id={item.id}
                         type="button"
                         title={item.label}
-                        onMouseEnter={() => setHoveredId(item.id)}
-                        onMouseLeave={() => setHoveredId(null)}
-                        onClick={() => handleTabClick(item)}
+                        onMouseEnter={(e) => {
+                          setHoveredId(item.id);
+                          showItemTooltip(item.label, e.currentTarget);
+                        }}
+                        onMouseLeave={() => {
+                          setHoveredId(null);
+                          hideItemTooltip();
+                        }}
+                        onFocus={(e) => showItemTooltip(item.label, e.currentTarget)}
+                        onBlur={hideItemTooltip}
+                        onClick={() => {
+                          hideItemTooltip();
+                          handleTabClick(item);
+                        }}
                         className={`floaty-bar__item relative flex-1 h-[48px] sm:h-[52px] min-w-0 px-0.5 sm:px-1 rounded-full flex flex-col items-center justify-center cursor-default transition-all duration-150 outline-none select-none shrink-0 ${
                           active
                             ? 'is-active text-white z-20'
@@ -501,6 +531,33 @@ export const BottomDock: React.FC<BottomDockProps> = ({
             </motion.div>
         </AnimatePresence>
       </div>
+      {typeof document !== 'undefined' && createPortal(
+        <AnimatePresence>
+          {hoveredTooltip && (
+            <motion.div
+              key="bottomdock-hover-tooltip"
+              role="tooltip"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.15, ease: 'easeOut' }}
+              style={{
+                position: 'fixed',
+                top: `${hoveredTooltip.top}px`,
+                left: `${hoveredTooltip.left}px`,
+                transform: 'translate(-50%, -100%)',
+                backgroundColor: isLightMode ? 'rgba(255, 255, 255, 0.50)' : 'rgba(24, 24, 28, 0.50)',
+                backdropFilter: 'blur(16px) saturate(140%)',
+                WebkitBackdropFilter: 'blur(16px) saturate(140%)',
+              }}
+              className="fluent-tooltip z-[2147483647] px-3 py-1.5 min-h-[30px] flex items-center rounded-[6px] text-[#111827] dark:text-white text-xs font-medium shadow-[0_4px_20px_rgba(0,0,0,0.18)] border-0 outline-none pointer-events-none whitespace-nowrap select-none"
+            >
+              {hoveredTooltip.label}
+            </motion.div>
+          )}
+        </AnimatePresence>,
+        getAppPortalTarget() ?? document.body
+      )}
     </>
   );
 };

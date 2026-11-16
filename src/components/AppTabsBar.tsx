@@ -1,5 +1,8 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
+import { AnimatePresence, motion } from 'motion/react';
 import { ChevronLeft, ChevronRight, HardDrive, Heart, Info, PanelsTopLeft, Plus, Search, Terminal, X } from 'lucide-react';
+import { getAppPortalTarget, toAppPortalCoordinates } from '../utils/appPortal';
 import {
   FluentArticlesIcon,
   FluentCameraIcon,
@@ -39,6 +42,7 @@ export interface AppTab {
 
 const WINUI3_ICON_URL =
   'https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8e/WinUI.svg/120px-WinUI.svg.png?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=thumbnail&_=20241127184612';
+const DIRECT_COMMAND_ICON_URL = '/assets/aistudio/direct_command_6240d59d.png';
 
 interface AppTabsBarProps {
   tabs: AppTab[];
@@ -51,6 +55,8 @@ interface AppTabsBarProps {
   showWidgets?: boolean;
   isWidgetsOpen?: boolean;
   onToggleWidgets?: () => void;
+  isDirectCommandOpen?: boolean;
+  onToggleDirectCommand?: () => void;
   theme?: 'dark' | 'light';
   showTabs?: boolean;
   isTopBarBottom?: boolean;
@@ -138,6 +144,8 @@ export const AppTabsBar: React.FC<AppTabsBarProps> = ({
   showWidgets = false,
   isWidgetsOpen = false,
   onToggleWidgets,
+  isDirectCommandOpen = false,
+  onToggleDirectCommand,
   theme = 'dark',
   showTabs = true,
   isTopBarBottom = false,
@@ -154,6 +162,7 @@ export const AppTabsBar: React.FC<AppTabsBarProps> = ({
   onCloseTab,
 }) => {
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);
+  const [hoveredTooltip, setHoveredTooltip] = useState<{ label: string; top: number; left: number } | null>(null);
   const [scrollState, setScrollState] = useState({
     hasOverflow: false,
     canScrollLeft: false,
@@ -164,6 +173,26 @@ export const AppTabsBar: React.FC<AppTabsBarProps> = ({
   const isCenteredSearch = searchColorfulExperiment && isSearchExpanded;
   const useFluent3DForContent = dynamicSidebarIcons || fluentIcons;
   const useFluent3DForSystem = !dynamicSidebarIcons && fluentIcons;
+
+  const showItemTooltip = useCallback(
+    (label: string, target: HTMLElement) => {
+      if (!label) return;
+      const rect = target.getBoundingClientRect();
+      const clampedX = Math.max(48, Math.min(window.innerWidth - 48, rect.left + rect.width / 2));
+      const anchorY = isTopBarBottom ? rect.top - 8 : rect.bottom + 8;
+      const point = toAppPortalCoordinates(clampedX, anchorY);
+      setHoveredTooltip({ label, top: point.y, left: point.x });
+    },
+    [isTopBarBottom]
+  );
+
+  const hideItemTooltip = useCallback(() => {
+    setHoveredTooltip(null);
+  }, []);
+
+  useEffect(() => {
+    setHoveredTooltip(null);
+  }, [currentRoute, isDirectCommandOpen, isWidgetsOpen, isCenteredSearch]);
 
   const updateScrollState = useCallback(() => {
     const el = scrollContainerRef.current;
@@ -419,6 +448,7 @@ export const AppTabsBar: React.FC<AppTabsBarProps> = ({
 
   return (
     <div
+      id="app-bottom-tabs-bar"
       data-search-experience="true"
       className={`sticky z-30 flex h-11 w-full shrink-0 items-center gap-1 border-black/[0.08] bg-[#f3f3f3]/95 px-2 backdrop-blur-xl dark:border-white/[0.08] dark:bg-[#1b1f24]/95 ${
         showTabs && !isCenteredSearch ? '' : 'justify-center'
@@ -430,7 +460,14 @@ export const AppTabsBar: React.FC<AppTabsBarProps> = ({
         <button
           id="bottombar-scroll-left"
           type="button"
-          onClick={() => handleScrollBar('left')}
+          onClick={() => {
+            hideItemTooltip();
+            handleScrollBar('left');
+          }}
+          onMouseEnter={(e) => showItemTooltip('Scroll left', e.currentTarget)}
+          onMouseLeave={hideItemTooltip}
+          onFocus={(e) => showItemTooltip('Scroll left', e.currentTarget)}
+          onBlur={hideItemTooltip}
           disabled={!scrollState.canScrollLeft}
           aria-label="Scroll bottom bar left"
           title="Scroll left"
@@ -442,7 +479,10 @@ export const AppTabsBar: React.FC<AppTabsBarProps> = ({
 
       <div
         ref={scrollContainerRef}
-        onScroll={updateScrollState}
+        onScroll={() => {
+          updateScrollState();
+          hideItemTooltip();
+        }}
         className={isSidebarMerged ? `${showTabs && !isCenteredSearch ? 'min-w-0 flex-[2]' : 'min-w-0 max-w-full'} overflow-x-auto no-scrollbar` : 'flex shrink-0 items-center justify-center gap-1.5'}
       >
       <div
@@ -456,7 +496,14 @@ export const AppTabsBar: React.FC<AppTabsBarProps> = ({
               key={homeMergedItem.key}
               id={`bottombar-nav-${homeMergedItem.key}`}
               type="button"
-              onClick={homeMergedItem.onClick}
+              onClick={() => {
+                hideItemTooltip();
+                homeMergedItem.onClick();
+              }}
+              onMouseEnter={(e) => showItemTooltip(homeMergedItem.label, e.currentTarget)}
+              onMouseLeave={hideItemTooltip}
+              onFocus={(e) => showItemTooltip(homeMergedItem.label, e.currentTarget)}
+              onBlur={hideItemTooltip}
               aria-label={homeMergedItem.label}
               aria-current={active ? 'page' : undefined}
               title={homeMergedItem.label}
@@ -496,7 +543,33 @@ export const AppTabsBar: React.FC<AppTabsBarProps> = ({
             aria-label={searchColorfulExperiment && !isSearchExpanded ? 'Search here' : isSearchExpanded ? 'Open global search' : 'Search'}
             title={searchColorfulExperiment && !isSearchExpanded ? 'Search here' : isSearchExpanded ? 'Open global search' : 'Search'}
             aria-pressed={isSearchExpanded}
-            onClick={() => isSearchExpanded || searchColorfulExperiment ? onOpenSearch() : setIsSearchExpanded(true)}
+            onClick={() => {
+              hideItemTooltip();
+              if (isSearchExpanded || searchColorfulExperiment) onOpenSearch();
+              else setIsSearchExpanded(true);
+            }}
+            onMouseEnter={(e) =>
+              showItemTooltip(
+                searchColorfulExperiment && !isSearchExpanded
+                  ? 'Search'
+                  : isSearchExpanded
+                    ? 'Open global search'
+                    : 'Search',
+                e.currentTarget
+              )
+            }
+            onMouseLeave={hideItemTooltip}
+            onFocus={(e) =>
+              showItemTooltip(
+                searchColorfulExperiment && !isSearchExpanded
+                  ? 'Search'
+                  : isSearchExpanded
+                    ? 'Open global search'
+                    : 'Search',
+                e.currentTarget
+              )
+            }
+            onBlur={hideItemTooltip}
             className={`group relative inline-flex h-full shrink-0 items-center justify-center outline-none transition-colors focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#4cc2ff] ${
               isSearchExpanded
                 ? `${isCenteredSearch ? 'size-9 rounded-full' : 'size-9 rounded-md'} text-[#5f6368] hover:bg-black/[0.06] hover:text-[#111827] dark:text-[#b5bbc4] dark:hover:bg-white/[0.08] dark:hover:text-white`
@@ -571,6 +644,8 @@ export const AppTabsBar: React.FC<AppTabsBarProps> = ({
                 <button
                   type="button"
                   onClick={() => onSearchChange('')}
+                  onMouseEnter={(e) => showItemTooltip('Clear search', e.currentTarget)}
+                  onMouseLeave={hideItemTooltip}
                   aria-label="Clear search"
                   title="Clear search"
                   className="inline-flex size-7 shrink-0 items-center justify-center rounded text-[#70757d] outline-none hover:bg-black/[0.06] hover:text-[#111827] focus-visible:ring-2 focus-visible:ring-[#0078d4] dark:text-[#a5abb4] dark:hover:bg-white/[0.08] dark:hover:text-white dark:focus-visible:ring-[#4cc2ff]"
@@ -580,7 +655,12 @@ export const AppTabsBar: React.FC<AppTabsBarProps> = ({
               )}
               <button
                 type="button"
-                onClick={() => setIsSearchExpanded(false)}
+                onClick={() => {
+                  hideItemTooltip();
+                  setIsSearchExpanded(false);
+                }}
+                onMouseEnter={(e) => showItemTooltip('Collapse search', e.currentTarget)}
+                onMouseLeave={hideItemTooltip}
                 aria-label="Collapse tab search"
                 title="Collapse tab search"
                 className="mr-1 inline-flex size-7 shrink-0 items-center justify-center rounded text-[#70757d] outline-none hover:bg-black/[0.06] hover:text-[#111827] focus-visible:ring-2 focus-visible:ring-[#0078d4] dark:text-[#a5abb4] dark:hover:bg-white/[0.08] dark:hover:text-white dark:focus-visible:ring-[#4cc2ff]"
@@ -595,7 +675,14 @@ export const AppTabsBar: React.FC<AppTabsBarProps> = ({
           <button
             id="topbar-widgets-button"
             type="button"
-            onClick={onToggleWidgets}
+            onClick={() => {
+              hideItemTooltip();
+              onToggleWidgets();
+            }}
+            onMouseEnter={(e) => showItemTooltip('Widgets', e.currentTarget)}
+            onMouseLeave={hideItemTooltip}
+            onFocus={(e) => showItemTooltip('Widgets', e.currentTarget)}
+            onBlur={hideItemTooltip}
             aria-label="Widgets"
             title="Widgets"
             aria-pressed={isWidgetsOpen}
@@ -615,6 +702,38 @@ export const AppTabsBar: React.FC<AppTabsBarProps> = ({
           </button>
         )}
 
+        {!isCenteredSearch && onToggleDirectCommand && (
+          <button
+            id="topbar-direct-command-button"
+            type="button"
+            onClick={() => {
+              hideItemTooltip();
+              onToggleDirectCommand();
+            }}
+            onMouseEnter={(e) => showItemTooltip('Direct Command', e.currentTarget)}
+            onMouseLeave={hideItemTooltip}
+            onFocus={(e) => showItemTooltip('Direct Command', e.currentTarget)}
+            onBlur={hideItemTooltip}
+            aria-label="Direct Command"
+            title="Direct Command"
+            aria-pressed={isDirectCommandOpen}
+            aria-haspopup="dialog"
+            className={`inline-flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-md outline-none transition-colors focus-visible:ring-2 focus-visible:ring-[#0078d4] dark:focus-visible:ring-[#4cc2ff] ${
+              isDirectCommandOpen
+                ? 'bg-black/[0.08] ring-1 ring-black/[0.08] dark:bg-white/[0.14] dark:ring-white/[0.14]'
+                : 'hover:bg-black/[0.06] dark:hover:bg-white/[0.08]'
+            }`}
+          >
+            <img
+              src={DIRECT_COMMAND_ICON_URL}
+              alt=""
+              aria-hidden="true"
+              draggable={false}
+              className="size-[20px] shrink-0 object-contain select-none"
+            />
+          </button>
+        )}
+
         {!isCenteredSearch && isSidebarMerged && (
           <>
             <span className="mx-1 h-5 w-px shrink-0 bg-black/10 dark:bg-white/15" aria-hidden="true" />
@@ -626,7 +745,14 @@ export const AppTabsBar: React.FC<AppTabsBarProps> = ({
                     key={item.key}
                     id={`bottombar-nav-${item.key}`}
                     type="button"
-                    onClick={item.onClick}
+                    onClick={() => {
+                      hideItemTooltip();
+                      item.onClick();
+                    }}
+                    onMouseEnter={(e) => showItemTooltip(item.label, e.currentTarget)}
+                    onMouseLeave={hideItemTooltip}
+                    onFocus={(e) => showItemTooltip(item.label, e.currentTarget)}
+                    onBlur={hideItemTooltip}
                     aria-label={item.label}
                     aria-current={active ? 'page' : undefined}
                     title={item.label}
@@ -656,7 +782,14 @@ export const AppTabsBar: React.FC<AppTabsBarProps> = ({
         <button
           id="bottombar-scroll-right"
           type="button"
-          onClick={() => handleScrollBar('right')}
+          onClick={() => {
+            hideItemTooltip();
+            handleScrollBar('right');
+          }}
+          onMouseEnter={(e) => showItemTooltip('Scroll right', e.currentTarget)}
+          onMouseLeave={hideItemTooltip}
+          onFocus={(e) => showItemTooltip('Scroll right', e.currentTarget)}
+          onBlur={hideItemTooltip}
           disabled={!scrollState.canScrollRight}
           aria-label="Scroll bottom bar right"
           title="Scroll right"
@@ -693,7 +826,14 @@ export const AppTabsBar: React.FC<AppTabsBarProps> = ({
                   tabIndex={isActive ? 0 : -1}
                   title={title}
                   data-app-tab-id={tab.id}
-                  onClick={() => onSelectTab(tab.id)}
+                  onClick={() => {
+                    hideItemTooltip();
+                    onSelectTab(tab.id);
+                  }}
+                  onMouseEnter={(e) => showItemTooltip(title, e.currentTarget)}
+                  onMouseLeave={hideItemTooltip}
+                  onFocus={(e) => showItemTooltip(title, e.currentTarget)}
+                  onBlur={hideItemTooltip}
                   onKeyDown={(event) => handleTabKeyDown(event, index)}
                   className="flex min-w-0 flex-1 items-center gap-2 truncate rounded-l-md px-2.5 py-2 text-left text-xs font-medium outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#0078d4] dark:focus-visible:ring-[#4cc2ff]"
                 >
@@ -707,7 +847,12 @@ export const AppTabsBar: React.FC<AppTabsBarProps> = ({
                     type="button"
                     aria-label={`Close ${title} tab`}
                     title={`Close ${title} tab`}
-                    onClick={() => onCloseTab(tab.id)}
+                    onClick={() => {
+                      hideItemTooltip();
+                      onCloseTab(tab.id);
+                    }}
+                    onMouseEnter={(e) => showItemTooltip(`Close ${title}`, e.currentTarget)}
+                    onMouseLeave={hideItemTooltip}
                     className="mr-1 inline-flex size-6 shrink-0 items-center justify-center rounded text-[#70757d] outline-none transition-colors hover:bg-black/[0.08] hover:text-[#111827] focus-visible:ring-2 focus-visible:ring-[#0078d4] dark:text-[#a5abb4] dark:hover:bg-white/[0.1] dark:hover:text-white dark:focus-visible:ring-[#4cc2ff]"
                   >
                     <X className="size-3.5" aria-hidden="true" />
@@ -721,12 +866,47 @@ export const AppTabsBar: React.FC<AppTabsBarProps> = ({
             type="button"
             aria-label="Open new tab"
             title="Open new tab"
-            onClick={onCreateTab}
+            onClick={() => {
+              hideItemTooltip();
+              onCreateTab();
+            }}
+            onMouseEnter={(e) => showItemTooltip('New tab', e.currentTarget)}
+            onMouseLeave={hideItemTooltip}
+            onFocus={(e) => showItemTooltip('New tab', e.currentTarget)}
+            onBlur={hideItemTooltip}
             className="inline-flex size-8 shrink-0 items-center justify-center rounded-md text-[#5f6368] outline-none transition-colors hover:bg-black/[0.06] hover:text-[#111827] focus-visible:ring-2 focus-visible:ring-[#0078d4] dark:text-[#b5bbc4] dark:hover:bg-white/[0.08] dark:hover:text-white dark:focus-visible:ring-[#4cc2ff]"
           >
             <Plus className="size-4" aria-hidden="true" />
           </button>
         </div>
+      )}
+
+      {typeof document !== 'undefined' && createPortal(
+        <AnimatePresence>
+          {hoveredTooltip && (
+            <motion.div
+              key="bottombar-hover-tooltip"
+              role="tooltip"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.15, ease: 'easeOut' }}
+              style={{
+                position: 'fixed',
+                top: `${hoveredTooltip.top}px`,
+                left: `${hoveredTooltip.left}px`,
+                transform: isTopBarBottom ? 'translate(-50%, -100%)' : 'translate(-50%, 0)',
+                backgroundColor: theme === 'light' ? 'rgba(255, 255, 255, 0.50)' : 'rgba(24, 24, 28, 0.50)',
+                backdropFilter: 'blur(16px) saturate(140%)',
+                WebkitBackdropFilter: 'blur(16px) saturate(140%)',
+              }}
+              className="fluent-tooltip z-[2147483647] px-3 py-1.5 min-h-[30px] flex items-center rounded-[6px] text-[#111827] dark:text-white text-xs font-medium shadow-[0_4px_20px_rgba(0,0,0,0.18)] border-0 outline-none pointer-events-none whitespace-nowrap select-none"
+            >
+              {hoveredTooltip.label}
+            </motion.div>
+          )}
+        </AnimatePresence>,
+        getAppPortalTarget() ?? document.body
       )}
     </div>
   );
