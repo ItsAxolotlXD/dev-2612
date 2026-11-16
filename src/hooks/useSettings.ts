@@ -37,6 +37,7 @@ export interface SystemSettings {
   immersiveSidebar: boolean;
   sidebarPosition: 'left' | 'right';
   navigationMode: 'sidebar' | 'topbar' | 'floaty' | 'taskbar';
+  isTopBarBottom: boolean;
   navModeVersion?: number;
   floatingSearchBar: boolean;
   floatingSearchBarVersion?: number;
@@ -99,6 +100,7 @@ export const DEFAULT_SETTINGS: SystemSettings = {
   immersiveSidebar: false,
   sidebarPosition: 'left',
   navigationMode: 'sidebar',
+  isTopBarBottom: false,
   navModeVersion: 3,
   floatingSearchBar: true,
   floatingSearchBarVersion: 1,

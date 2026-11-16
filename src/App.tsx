@@ -1104,6 +1104,7 @@ export default function App() {
             onOpenAbout={handleOpenSparkverAbout}
             searchColorfulExperiment={settings.searchColorfulExperiment}
             theme={settings.theme}
+            isTopBarBottom={settings.isTopBarBottom}
             onSelectTab={handleSelectAppTab}
             onCreateTab={handleCreateAppTab}
             onCloseTab={handleCloseAppTab}
