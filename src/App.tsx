@@ -18,6 +18,7 @@ import { TextToSpeechPlayer } from './components/TextToSpeechPlayer';
 import { SplashScreen } from './components/SplashScreen';
 import { SPINNING_RING_GIF_LOOP_DURATION_MS } from './components/SpinningRing';
 import { AnimatedBootScreen } from './components/AnimatedBootScreen';
+import { WindowsBootScreen } from './components/WindowsBootScreen';
 import { SparkleSetupWizard } from './components/SparkleSetupWizard';
 import { SparkleDriverModal } from './components/SparkleDriverModal';
 import { useDrivers } from './hooks/useDrivers';
@@ -69,6 +70,8 @@ export default function App() {
   const { settings, draftSettings, hasChanges, applyDraftSettings, discardDraftSettings } = useSettings();
   const { isResolutionInstalled, isVisualInstalled } = useDrivers();
   const [isDriverModalOpen, setIsDriverModalOpen] = useState(false);
+  const [isWindowsBootFinished, setIsWindowsBootFinished] = useState(false);
+  const finishWindowsBoot = useCallback(() => setIsWindowsBootFinished(true), []);
 
   // Tooltip & navigation block for unsaved settings
   const [showUnsavedTooltip, setShowUnsavedTooltip] = useState(false);
@@ -1291,6 +1294,8 @@ export default function App() {
 
       {/* In-App Insider Evaluation Watermark (30s on / 30s off cycle) */}
       {isSplashFinished && !(settings.widgetsFeed && isWidgetsFeedOpen) && <EvaluationWatermark />}
+
+      {!isWindowsBootFinished && <WindowsBootScreen onFinish={finishWindowsBoot} />}
 
       {/* Animated Boot Screen (if enabled via Insider experiments and not running setup wizard) */}
       {!isSetupWizardOpen && !isBootVideoFinished && settings.animatedBootScreen && (
