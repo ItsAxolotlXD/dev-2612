@@ -30,6 +30,9 @@ interface AppTabsBarProps {
   onOpenSearch: () => void;
   onOpenAbout: () => void;
   searchColorfulExperiment?: boolean;
+  showWidgets?: boolean;
+  isWidgetsOpen?: boolean;
+  onToggleWidgets?: () => void;
   theme?: 'dark' | 'light';
   showTabs?: boolean;
   isTopBarBottom?: boolean;
@@ -106,6 +109,9 @@ export const AppTabsBar: React.FC<AppTabsBarProps> = ({
   onOpenSearch,
   onOpenAbout,
   searchColorfulExperiment = false,
+  showWidgets = false,
+  isWidgetsOpen = false,
+  onToggleWidgets,
   theme = 'dark',
   showTabs = true,
   isTopBarBottom = false,
@@ -152,7 +158,7 @@ export const AppTabsBar: React.FC<AppTabsBarProps> = ({
             : isSearchExpanded
               ? 'w-[min(280px,45vw)] rounded-md border-black/[0.08] bg-white dark:border-white/[0.08] dark:bg-[#282c31]'
               : searchColorfulExperiment
-                ? 'w-[148px] rounded-full border border-black/[0.08] bg-white shadow-sm shadow-black/5 dark:border-white/[0.08] dark:bg-[#282c31] dark:shadow-black/10'
+                ? 'w-[min(218px,55vw)] sm:w-[218px] rounded-full border-black/[0.1] bg-white/85 shadow-[0_1px_2px_rgba(0,0,0,0.06)] backdrop-blur-md dark:border-white/[0.14] dark:bg-white/[0.11] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.07),0_1px_2px_rgba(0,0,0,0.2)]'
                 : 'w-[148px] rounded-full border-transparent bg-[#263970] shadow-sm shadow-black/10'
         }`}
       >
@@ -168,31 +174,45 @@ export const AppTabsBar: React.FC<AppTabsBarProps> = ({
             isSearchExpanded
               ? `${isCenteredSearch ? 'size-9 rounded-full' : 'size-9 rounded-md'} text-[#5f6368] hover:bg-black/[0.06] hover:text-[#111827] dark:text-[#b5bbc4] dark:hover:bg-white/[0.08] dark:hover:text-white`
               : searchColorfulExperiment
-                ? 'w-full gap-2 rounded-full px-3 text-[#5f6368] hover:bg-black/[0.05] dark:text-[#b5bbc4] dark:hover:bg-white/[0.06]'
+                ? 'w-full justify-start gap-2 rounded-full pl-3 pr-[3px] text-[#374151] hover:bg-black/[0.04] dark:text-[#e5e7eb] dark:hover:bg-white/[0.06]'
                 : 'w-full gap-2 rounded-full px-5 text-white hover:bg-[#304785]'
           }`}
         >
           {searchColorfulExperiment ? (
-            <span className="relative size-5 shrink-0" aria-hidden="true">
-              <img
-                src={theme === 'light' ? SEARCH_EXPERIENCE_ICON_URLS.light : SEARCH_EXPERIENCE_ICON_URLS.dark}
-                alt=""
-                draggable={false}
-                referrerPolicy="no-referrer"
-                className={`absolute inset-0 size-full object-contain ${isSearchExpanded ? 'hidden' : 'group-hover:hidden group-active:hidden group-focus-visible:hidden'}`}
-              />
-              <img
-                src={SEARCH_EXPERIENCE_ICON_URLS.hover}
-                alt=""
-                draggable={false}
-                referrerPolicy="no-referrer"
-                className={`absolute inset-0 size-full object-contain ${isSearchExpanded ? '' : 'hidden group-hover:block group-active:block group-focus-visible:block'}`}
-              />
-            </span>
+            isSearchExpanded ? (
+              <span className="relative size-5 shrink-0" aria-hidden="true">
+                <img
+                  src={SEARCH_EXPERIENCE_ICON_URLS.hover}
+                  alt=""
+                  draggable={false}
+                  referrerPolicy="no-referrer"
+                  className="absolute inset-0 size-full object-contain"
+                />
+              </span>
+            ) : (
+              <Search className="size-4 shrink-0 stroke-[1.9] text-[#374151] dark:text-[#e5e7eb]" aria-hidden="true" />
+            )
           ) : (
             <Search className="size-5 shrink-0" aria-hidden="true" />
           )}
-          {!isSearchExpanded && <span className="whitespace-nowrap text-[15px] font-medium leading-none no-underline decoration-transparent">{searchColorfulExperiment ? 'Search here' : 'Search'}</span>}
+          {!isSearchExpanded && (
+            searchColorfulExperiment ? (
+              <>
+                <span className="min-w-0 flex-1 truncate text-left text-[13px] font-normal leading-none text-[#1f2937]/90 no-underline decoration-transparent dark:text-white/85">
+                  Search here
+                </span>
+                <img
+                  src="/search-experience/search-highlight-pill.png"
+                  alt=""
+                  aria-hidden="true"
+                  draggable={false}
+                  className="h-[24px] w-[46px] shrink-0 rounded-full object-cover select-none"
+                />
+              </>
+            ) : (
+              <span className="whitespace-nowrap text-[15px] font-medium leading-none no-underline decoration-transparent">Search</span>
+            )
+          )}
           {searchQuery && !isSearchExpanded && !searchColorfulExperiment && <span className="absolute right-3 top-2.5 size-1.5 rounded-full bg-[#4cc2ff]" aria-hidden="true" />}
         </button>
         {isSearchExpanded && (
@@ -243,6 +263,30 @@ export const AppTabsBar: React.FC<AppTabsBarProps> = ({
           </>
         )}
       </div>
+
+      {!isCenteredSearch && showWidgets && onToggleWidgets && (
+        <button
+          id="topbar-widgets-button"
+          type="button"
+          onClick={onToggleWidgets}
+          aria-label="Widgets"
+          title="Widgets"
+          aria-pressed={isWidgetsOpen}
+          className={`inline-flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-md outline-none transition-colors focus-visible:ring-2 focus-visible:ring-[#0078d4] dark:focus-visible:ring-[#4cc2ff] ${
+            isWidgetsOpen
+              ? 'bg-black/[0.08] ring-1 ring-black/[0.08] dark:bg-white/[0.14] dark:ring-white/[0.14]'
+              : 'hover:bg-black/[0.06] dark:hover:bg-white/[0.08]'
+          }`}
+        >
+          <img
+            src="/icons/widgets.png"
+            alt=""
+            aria-hidden="true"
+            draggable={false}
+            className="size-[19px] shrink-0 object-contain select-none"
+          />
+        </button>
+      )}
 
       {showTabs && !isCenteredSearch && (
         <div role="tablist" aria-label="Open app tabs" className="flex min-w-0 flex-1 items-center gap-1 overflow-x-auto no-scrollbar">

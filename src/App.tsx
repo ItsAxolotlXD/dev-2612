@@ -254,6 +254,7 @@ export default function App() {
   const [isUnderConstructionOpen, setIsUnderConstructionOpen] = useState(false);
   const [isWidgetsFeedOpen, setIsWidgetsFeedOpen] = useState(false);
   const handleOpenWidgetsFeed = useCallback(() => setIsWidgetsFeedOpen(true), []);
+  const handleToggleWidgetsFeed = useCallback(() => setIsWidgetsFeedOpen((prev) => !prev), []);
   const handleCloseWidgetsFeed = useCallback(() => setIsWidgetsFeedOpen(false), []);
   useEffect(() => {
     if (!settings.widgetsFeed) setIsWidgetsFeedOpen(false);
@@ -1106,6 +1107,9 @@ export default function App() {
             onOpenSearch={handleOpenSearch}
             onOpenAbout={handleOpenSparkverAbout}
             searchColorfulExperiment={settings.searchColorfulExperiment}
+            showWidgets={settings.widgetsFeed}
+            isWidgetsOpen={isWidgetsFeedOpen}
+            onToggleWidgets={handleToggleWidgetsFeed}
             theme={settings.theme}
             isTopBarBottom={settings.isTopBarBottom}
             onSelectTab={handleSelectAppTab}
@@ -1293,7 +1297,9 @@ export default function App() {
       <GlobalToast />
 
       {/* In-App Insider Evaluation Watermark (30s on / 30s off cycle) */}
-      {isSplashFinished && !(settings.widgetsFeed && isWidgetsFeedOpen) && <EvaluationWatermark />}
+      {isSplashFinished && !(settings.widgetsFeed && isWidgetsFeedOpen) && (
+        <EvaluationWatermark className={settings.isTopBarBottom ? '!bottom-[52px] sm:!bottom-[56px]' : ''} />
+      )}
 
       {!isWindowsBootFinished && <WindowsBootScreen onFinish={finishWindowsBoot} />}
 

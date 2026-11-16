@@ -1251,7 +1251,18 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <div className="taskbar-weather" aria-label="Weather in Hanoi"><span className="taskbar-weather-icon">☁</span><span><strong>15°C</strong><small>Cloudy</small></span></div>
             <div className="taskbar-apps">
               <button type="button" className="taskbar-app taskbar-start" aria-label="Start" onClick={() => handleNavClick('/')}><Sparkles aria-hidden="true" /></button>
-              <button type="button" className="taskbar-search" aria-label="Search" onClick={() => handleNavClick('/search')}><FluentSearchIcon className="h-4 w-4" /><span>Search here</span><img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-YLGOThs3qN3BChqC41kL940RgI9R59.png" alt="" /></button>
+              <button type="button" className="taskbar-search" aria-label="Search" onClick={() => handleNavClick('/search')}><FluentSearchIcon className="h-4 w-4" /><span>Search here</span><img src="/search-experience/search-highlight-pill.png" alt="" /></button>
+              {settings.widgetsFeed && (
+                <button
+                  type="button"
+                  className={`taskbar-app ${isWidgetsOpen ? 'bg-white/15' : ''}`}
+                  aria-label="Widgets"
+                  title="Widgets"
+                  onClick={onOpenWidgets}
+                >
+                  <img src="/icons/widgets.png" alt="" className="w-[19px] h-[19px] object-contain" />
+                </button>
+              )}
               <button type="button" className="taskbar-app" aria-label="Watch" onClick={() => handleNavClick('/live-tv')}><FluentWatchIcon /></button>
               <button type="button" className="taskbar-app" aria-label="Gallery" onClick={() => handleNavClick('/gallery')}><FluentGalleryIcon /></button>
               <button type="button" className="taskbar-app" aria-label="Command Prompt" onClick={handleOpenCommandPrompt}><Terminal /></button>

@@ -38,6 +38,7 @@ export interface SystemSettings {
   sidebarPosition: 'left' | 'right';
   navigationMode: 'sidebar' | 'topbar' | 'floaty' | 'taskbar';
   isTopBarBottom: boolean;
+  isTopBarBottomVersion?: number;
   navModeVersion?: number;
   floatingSearchBar: boolean;
   floatingSearchBarVersion?: number;
@@ -101,7 +102,8 @@ export const DEFAULT_SETTINGS: SystemSettings = {
   immersiveSidebar: false,
   sidebarPosition: 'left',
   navigationMode: 'sidebar',
-  isTopBarBottom: false,
+  isTopBarBottom: true,
+  isTopBarBottomVersion: 1,
   navModeVersion: 3,
   floatingSearchBar: true,
   floatingSearchBarVersion: 1,
@@ -175,6 +177,10 @@ export const getStoredSettings = (): SystemSettings => {
         immersiveSearchVersion: 2,
         navigationMode,
         navModeVersion: 3,
+        isTopBarBottom: parsed.isTopBarBottomVersion === 1
+          ? (typeof parsed.isTopBarBottom === 'boolean' ? parsed.isTopBarBottom : true)
+          : true,
+        isTopBarBottomVersion: 1,
         floatingSearchBar: parsed.floatingSearchBarVersion === 1
           ? (typeof parsed.floatingSearchBar === 'boolean' ? parsed.floatingSearchBar : true)
           : true,
@@ -387,7 +393,7 @@ export const updateGlobalSetting = <K extends keyof SystemSettings>(key: K, valu
   if (key === 'theme' && value === 'light') {
     extraUpdates.spatialGlassOpacity = 43;
   }
-  settingsStore = { ...settingsStore, [key]: value, ...extraUpdates, fontScaleVersion: 2, spatialGlassVersion: 3, nativeKeyboardVersion: 3, pageLoadingVersion: 2 };
+  settingsStore = { ...settingsStore, [key]: value, ...extraUpdates, fontScaleVersion: 2, spatialGlassVersion: 3, nativeKeyboardVersion: 3, pageLoadingVersion: 2, isTopBarBottomVersion: 1 };
   draftSettingsStore = { ...settingsStore };
   try {
     localStorage.setItem('waves_system_settings', JSON.stringify(settingsStore));
@@ -407,7 +413,7 @@ export const updateGlobalSetting = <K extends keyof SystemSettings>(key: K, valu
 };
 
 export const updateMultipleSettings = (newSettings: Partial<SystemSettings>) => {
-  settingsStore = { ...settingsStore, ...newSettings, fontScaleVersion: 2, spatialGlassVersion: 3, nativeKeyboardVersion: 3, pageLoadingVersion: 2 };
+  settingsStore = { ...settingsStore, ...newSettings, fontScaleVersion: 2, spatialGlassVersion: 3, nativeKeyboardVersion: 3, pageLoadingVersion: 2, isTopBarBottomVersion: 1 };
   draftSettingsStore = { ...settingsStore };
   try {
     localStorage.setItem('waves_system_settings', JSON.stringify(settingsStore));

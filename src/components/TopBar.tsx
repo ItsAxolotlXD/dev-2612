@@ -317,7 +317,7 @@ export const TopBar: React.FC<TopBarProps> = ({
       if (settings.searchColorfulExperiment) {
         setIsSearchPaneOpen(false);
         setIsSearchFocused(false);
-        setIsSearchExperienceOpen(true);
+        setIsSearchExperienceOpen((prev) => !prev);
         return;
       }
       if (!isSearchExperimentActive) setIsSearchPaneOpen(true);
@@ -2389,6 +2389,7 @@ export const TopBar: React.FC<TopBarProps> = ({
       />
       <SearchExperience
         isOpen={isSearchExperienceOpen}
+        isTopBarBottom={settings.isTopBarBottom}
         query={searchQuery}
         results={searchResults}
         suggestedItems={appAspects.filter((item) => item.type === 'page')}
