@@ -51,6 +51,7 @@ export interface SystemSettings {
   searchColorfulExperiment: boolean;
   searchColorfulExperimentVersion?: number;
   widgetsFeed: boolean;
+  widgetsFeedVersion?: number;
   newWatchTab: boolean;
   tabsExperiment: boolean;
   fluentIcons: boolean;
@@ -111,9 +112,10 @@ export const DEFAULT_SETTINGS: SystemSettings = {
   triangleExperimentVersion: 1,
   searchExperiments: false,
   searchExperimentsVersion: 1,
-  searchColorfulExperiment: false,
-  searchColorfulExperimentVersion: 1,
-  widgetsFeed: false,
+  searchColorfulExperiment: true,
+  searchColorfulExperimentVersion: 2,
+  widgetsFeed: true,
+  widgetsFeedVersion: 1,
   newWatchTab: false,
   tabsExperiment: false,
   fluentIcons: false,
@@ -209,11 +211,14 @@ export const getStoredSettings = (): SystemSettings => {
           ? (typeof parsed.searchExperiments === 'boolean' ? parsed.searchExperiments : DEFAULT_SETTINGS.searchExperiments)
           : DEFAULT_SETTINGS.searchExperiments,
         searchExperimentsVersion: 1,
-        searchColorfulExperiment: typeof parsed.searchColorfulExperiment === 'boolean'
-          ? parsed.searchColorfulExperiment
-          : DEFAULT_SETTINGS.searchColorfulExperiment,
-        searchColorfulExperimentVersion: 1,
-        widgetsFeed: typeof parsed.widgetsFeed === 'boolean' ? parsed.widgetsFeed : DEFAULT_SETTINGS.widgetsFeed,
+        searchColorfulExperiment: parsed.searchColorfulExperimentVersion === 2
+          ? (typeof parsed.searchColorfulExperiment === 'boolean' ? parsed.searchColorfulExperiment : DEFAULT_SETTINGS.searchColorfulExperiment)
+          : true,
+        searchColorfulExperimentVersion: 2,
+        widgetsFeed: parsed.widgetsFeedVersion === 1
+          ? (typeof parsed.widgetsFeed === 'boolean' ? parsed.widgetsFeed : DEFAULT_SETTINGS.widgetsFeed)
+          : true,
+        widgetsFeedVersion: 1,
         newWatchTab: typeof parsed.newWatchTab === 'boolean' ? parsed.newWatchTab : DEFAULT_SETTINGS.newWatchTab,
         tabsExperiment: typeof parsed.tabsExperiment === 'boolean' ? parsed.tabsExperiment : DEFAULT_SETTINGS.tabsExperiment,
         fluentIcons: typeof parsed.fluentIcons === 'boolean' ? parsed.fluentIcons : DEFAULT_SETTINGS.fluentIcons,
