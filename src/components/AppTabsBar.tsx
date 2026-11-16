@@ -32,6 +32,7 @@ interface AppTabsBarProps {
   searchColorfulExperiment?: boolean;
   theme?: 'dark' | 'light';
   showTabs?: boolean;
+  isTopBarBottom?: boolean;
   onSelectTab: (tabId: number) => void;
   onCreateTab: () => void;
   onCloseTab: (tabId: number) => void;
@@ -107,6 +108,7 @@ export const AppTabsBar: React.FC<AppTabsBarProps> = ({
   searchColorfulExperiment = false,
   theme = 'dark',
   showTabs = true,
+  isTopBarBottom = false,
   onSelectTab,
   onCreateTab,
   onCloseTab,
@@ -140,7 +142,7 @@ export const AppTabsBar: React.FC<AppTabsBarProps> = ({
   };
 
   return (
-    <div data-search-experience="true" className="sticky top-0 z-30 flex h-11 w-full shrink-0 items-center gap-1 border-b border-black/[0.08] bg-[#f3f3f3]/95 px-2 backdrop-blur-xl dark:border-white/[0.08] dark:bg-[#1b1f24]/95">
+    <div data-search-experience="true" className={`sticky z-30 flex h-11 w-full shrink-0 items-center gap-1 border-black/[0.08] bg-[#f3f3f3]/95 px-2 backdrop-blur-xl dark:border-white/[0.08] dark:bg-[#1b1f24]/95 ${isTopBarBottom ? 'order-last bottom-0 border-t' : 'top-0 border-b'}`}>
       <div
         role="search"
         aria-label="Search current page"

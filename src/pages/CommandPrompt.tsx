@@ -15,7 +15,8 @@ type ExperimentSettingKey =
   | 'triangleExperiment'
   | 'tabsExperiment'
   | 'searchColorfulExperiment'
-  | 'widgetsFeed';
+  | 'widgetsFeed'
+  | 'isTopBarBottom';
 
 type Experiment = {
   id: string;
@@ -50,6 +51,7 @@ const EXPERIMENTS: Experiment[] = [
   { id: '385104729', name: 'Tabs', settingKey: 'tabsExperiment' },
   { id: '742839516', name: 'Search experience upgrades', settingKey: 'searchColorfulExperiment' },
   { id: '861937204', name: 'Widgets Feed', settingKey: 'widgetsFeed' },
+  { id: '902417635', name: 'IsTopBarBottom', settingKey: 'isTopBarBottom' },
 ];
 
 const commandUsage =
