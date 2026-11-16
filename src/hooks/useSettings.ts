@@ -36,9 +36,11 @@ export interface SystemSettings {
   keyboardSoundEnabled: boolean;
   immersiveSidebar: boolean;
   sidebarPosition: 'left' | 'right';
-  navigationMode: 'sidebar' | 'topbar' | 'floaty' | 'taskbar';
+  navigationMode: 'sidebar' | 'topbar' | 'floaty';
   isTopBarBottom: boolean;
   isTopBarBottomVersion?: number;
+  isSidebarMerged: boolean;
+  isSidebarMergedVersion?: number;
   navModeVersion?: number;
   floatingSearchBar: boolean;
   floatingSearchBarVersion?: number;
@@ -64,7 +66,7 @@ export interface SystemSettings {
   customKeybinds: CustomKeybinds;
 }
 
-export const getDefaultNavigationMode = (): 'sidebar' | 'topbar' | 'floaty' | 'taskbar' => {
+export const getDefaultNavigationMode = (): 'sidebar' | 'topbar' | 'floaty' => {
   return 'sidebar';
 };
 
@@ -104,6 +106,8 @@ export const DEFAULT_SETTINGS: SystemSettings = {
   navigationMode: 'sidebar',
   isTopBarBottom: true,
   isTopBarBottomVersion: 1,
+  isSidebarMerged: true,
+  isSidebarMergedVersion: 1,
   navModeVersion: 3,
   floatingSearchBar: true,
   floatingSearchBarVersion: 1,
@@ -161,7 +165,7 @@ export const getStoredSettings = (): SystemSettings => {
       let navigationMode = parsed.navigationMode || DEFAULT_SETTINGS.navigationMode;
       if (navigationMode === 'immersive' || navigationMode === 'immersive_floaty') {
         navigationMode = 'floaty';
-      } else if (navigationMode === 'topbar') {
+      } else if (navigationMode === 'topbar' || navigationMode === 'taskbar') {
         navigationMode = 'sidebar';
       }
       const theme = parsed.theme === 'light' ? 'light' : 'dark';
@@ -181,6 +185,10 @@ export const getStoredSettings = (): SystemSettings => {
           ? (typeof parsed.isTopBarBottom === 'boolean' ? parsed.isTopBarBottom : true)
           : true,
         isTopBarBottomVersion: 1,
+        isSidebarMerged: parsed.isSidebarMergedVersion === 1
+          ? (typeof parsed.isSidebarMerged === 'boolean' ? parsed.isSidebarMerged : true)
+          : true,
+        isSidebarMergedVersion: 1,
         floatingSearchBar: parsed.floatingSearchBarVersion === 1
           ? (typeof parsed.floatingSearchBar === 'boolean' ? parsed.floatingSearchBar : true)
           : true,
@@ -393,7 +401,7 @@ export const updateGlobalSetting = <K extends keyof SystemSettings>(key: K, valu
   if (key === 'theme' && value === 'light') {
     extraUpdates.spatialGlassOpacity = 43;
   }
-  settingsStore = { ...settingsStore, [key]: value, ...extraUpdates, fontScaleVersion: 2, spatialGlassVersion: 3, nativeKeyboardVersion: 3, pageLoadingVersion: 2, isTopBarBottomVersion: 1 };
+  settingsStore = { ...settingsStore, [key]: value, ...extraUpdates, fontScaleVersion: 2, spatialGlassVersion: 3, nativeKeyboardVersion: 3, pageLoadingVersion: 2, isTopBarBottomVersion: 1, isSidebarMergedVersion: 1 };
   draftSettingsStore = { ...settingsStore };
   try {
     localStorage.setItem('waves_system_settings', JSON.stringify(settingsStore));
@@ -413,7 +421,7 @@ export const updateGlobalSetting = <K extends keyof SystemSettings>(key: K, valu
 };
 
 export const updateMultipleSettings = (newSettings: Partial<SystemSettings>) => {
-  settingsStore = { ...settingsStore, ...newSettings, fontScaleVersion: 2, spatialGlassVersion: 3, nativeKeyboardVersion: 3, pageLoadingVersion: 2, isTopBarBottomVersion: 1 };
+  settingsStore = { ...settingsStore, ...newSettings, fontScaleVersion: 2, spatialGlassVersion: 3, nativeKeyboardVersion: 3, pageLoadingVersion: 2, isTopBarBottomVersion: 1, isSidebarMergedVersion: 1 };
   draftSettingsStore = { ...settingsStore };
   try {
     localStorage.setItem('waves_system_settings', JSON.stringify(settingsStore));

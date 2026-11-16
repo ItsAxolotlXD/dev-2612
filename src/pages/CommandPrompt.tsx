@@ -16,7 +16,8 @@ type ExperimentSettingKey =
   | 'tabsExperiment'
   | 'searchColorfulExperiment'
   | 'widgetsFeed'
-  | 'isTopBarBottom';
+  | 'isTopBarBottom'
+  | 'isSidebarMerged';
 
 type Experiment = {
   id: string;
@@ -52,6 +53,7 @@ const EXPERIMENTS: Experiment[] = [
   { id: '742839516', name: 'Search experience upgrades', settingKey: 'searchColorfulExperiment' },
   { id: '861937204', name: 'Widgets Feed', settingKey: 'widgetsFeed' },
   { id: '902417635', name: 'IsTopBarBottom', settingKey: 'isTopBarBottom' },
+  { id: '648291037', name: 'IsSidebarMerged', settingKey: 'isSidebarMerged' },
 ];
 
 const commandUsage =
@@ -259,6 +261,9 @@ export const CommandPrompt: React.FC<CommandPromptProps> = ({
       const shouldEnable = action === 'enable';
       const hasVelocityFlag = tokens.slice(2).some((token) => /^\/?velocity$/i.test(token));
       const isAlreadyInRequestedState = settings[experiment.settingKey] === shouldEnable;
+      if (experiment.settingKey === 'isSidebarMerged' && shouldEnable && !settings.isTopBarBottom) {
+        updateSetting('isTopBarBottom', true);
+      }
       updateSetting(experiment.settingKey, shouldEnable);
       appendEntry(rawCommand, {
         kind: 'message',

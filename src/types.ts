@@ -2,6 +2,7 @@ export type QualityType = '4K' | 'HD' | 'SD';
 
 export type ChannelCategory = 
   | 'Kênh VTV'
+  | 'VTVgo FAST'
   | 'Kênh VTVcab'
   | 'Kênh HTV'
   | 'Kênh SCTV'

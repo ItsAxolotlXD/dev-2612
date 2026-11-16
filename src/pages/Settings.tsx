@@ -40,6 +40,8 @@ const SETTING_LABELS: Partial<Record<keyof SystemSettings, string>> = {
   tabsExperiment: 'Tabs experiment',
   searchColorfulExperiment: 'Search experience upgrades',
   widgetsFeed: 'Widgets Feed',
+  isTopBarBottom: 'IsTopBarBottom',
+  isSidebarMerged: 'IsSidebarMerged',
   fluentIcons: 'Fluent icons',
   dynamicSidebarIcons: 'Dynamic sidebar icons',
   pageAnimation: 'Page animation',
@@ -737,7 +739,7 @@ export const Settings: React.FC<SettingsProps> = ({
                 )}
 
                 {/* 2. Thanh điều hướng */}
-                {matchesSearch(['Thanh điều hướng', 'side view', 'tab view', 'taskbar mode', 'windows 11 taskbar', 'navigation']) && (
+                {matchesSearch(['Thanh điều hướng', 'side view', 'tab view', 'navigation']) && (
                   <motion.div
                     variants={slideUpVariant}
                     initial="hidden"
@@ -750,14 +752,13 @@ export const Settings: React.FC<SettingsProps> = ({
                         Thanh điều hướng
                       </div>
                       <div className="text-xs text-[#6B7280] dark:text-[#9CA3AF] mt-0.5 leading-normal">
-                        Lựa chọn Side View, Tab View hoặc Taskbar Mode kiểu Windows 11.
+                        Lựa chọn hiển thị dạng thanh bên (Side View) hoặc thanh nổi (Tab View).
                       </div>
                     </div>
                     <div className="settings-segmented-group grid grid-cols-2 gap-1 rounded-[6px] bg-black/5 dark:bg-black/30 p-1 w-full sm:w-auto sm:min-w-[200px] border-none" role="group" aria-label="Thanh điều hướng">
                       {([
                         ['sidebar', 'Side View'],
                         ['floaty', 'Tab View'],
-                        ['taskbar', 'Taskbar Mode'],
                       ] as const).map(([value, label]) => (
                         <button 
                           key={value} 

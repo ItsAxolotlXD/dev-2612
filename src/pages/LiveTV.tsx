@@ -262,23 +262,42 @@ export const LiveTV: React.FC<LiveTVProps> = ({
                         >
                           {/* Channel Logo Box without background (strictly only logo) */}
                           <div className="w-full h-full flex items-center justify-center p-1 relative">
-                            <img
-                              src={ch.logo}
-                              alt={ch.name}
-                              loading="lazy"
-                              decoding="async"
-                              referrerPolicy="no-referrer"
-                              className={`${
-                                ch.category === 'Kênh địa phương' || ch.category === 'Kênh phát thanh' || ch.category === 'Kênh HTV'
-                                  ? 'max-h-[78%] max-w-[92%] scale-110'
-                                  : ch.category === 'Kênh VTV'
-                                    ? 'max-h-[56%] max-w-[80%]'
-                                    : 'max-h-[58%] max-w-[82%]'
-                              } w-auto h-auto object-contain filter drop-shadow-sm select-none pointer-events-none transition-transform`}
-                              onError={(e) => {
-                                (e.target as HTMLElement).style.display = 'none';
-                              }}
-                            />
+                            {ch.category === 'VTVgo FAST' ? (
+                              <div className="w-full h-full flex flex-col items-center justify-center gap-1 px-1">
+                                <img
+                                  src={ch.logo}
+                                  alt={ch.name}
+                                  loading="lazy"
+                                  decoding="async"
+                                  referrerPolicy="no-referrer"
+                                  className="max-h-[42%] max-w-[68%] w-auto h-auto object-contain filter drop-shadow-sm select-none pointer-events-none transition-transform"
+                                  onError={(e) => {
+                                    (e.target as HTMLElement).style.display = 'none';
+                                  }}
+                                />
+                                <span className="max-w-full truncate text-[10px] sm:text-[11px] font-semibold tracking-tight text-[#111827] dark:text-white/90 leading-tight text-center">
+                                  {ch.shortName || ch.name}
+                                </span>
+                              </div>
+                            ) : (
+                              <img
+                                src={ch.logo}
+                                alt={ch.name}
+                                loading="lazy"
+                                decoding="async"
+                                referrerPolicy="no-referrer"
+                                className={`${
+                                  ch.category === 'Kênh địa phương' || ch.category === 'Kênh phát thanh' || ch.category === 'Kênh HTV'
+                                    ? 'max-h-[78%] max-w-[92%] scale-110'
+                                    : ch.category === 'Kênh VTV'
+                                      ? 'max-h-[56%] max-w-[80%]'
+                                      : 'max-h-[58%] max-w-[82%]'
+                                } w-auto h-auto object-contain filter drop-shadow-sm select-none pointer-events-none transition-transform`}
+                                onError={(e) => {
+                                  (e.target as HTMLElement).style.display = 'none';
+                                }}
+                              />
+                            )}
                           </div>
                         </div>
                       );

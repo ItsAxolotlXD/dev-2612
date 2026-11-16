@@ -24,6 +24,16 @@ const RAW_CHANNELS: RawChannelItem[] = [
   { id: 'vtv9', name: 'VTV9 HD', logo: 'https://img.vtvprime.vn/ex99djinSR4gpBal6_f_GON5IjWOqhAtmAmGePjIRnA/rs:fit:836:468/czM6Ly9wcmQtc24taW1hZ2VzL2NoYW5uZWwvZDk0Y2NmZDYtYjZjOS00NDA5LTg2MTYtNzVlZTE5OWMwNzhmLnBuZw==.png', category: 'Kênh VTV', streamUrl: 'https://vtvgoliveapp1-aws-plus-tn.vtvdigital.vn/aws/vtv9_paid/playlist.m3u8' },
   { id: 'vtv10', name: 'VTV10 HD', logo: 'https://img.vtvprime.vn/gis0m2zIPCwqsPz3alKrBrJevbPKkXJ_SkhjYgZ1gJQ/rs:fit:836:468/czM6Ly9wcmQtc24taW1hZ2VzL2NoYW5uZWwvOGFlMTllZGYtZDU5Zi00OGRmLWIyMDgtZGE3OTQxMzE5NGZiLnBuZw==.png', category: 'Kênh VTV', streamUrl: 'https://vtvgoliveapp1-aws-plus-tn.vtvdigital.vn/aws/vtv10_paid/playlist.m3u8' },
 
+  // VTVgo FAST
+  { id: 'vtvgo_vui_ve', name: 'VTVgo FAST — Vui Vẻ', logo: '/assets/aistudio/image_7f331d65.png', category: 'VTVgo FAST', streamUrl: 'https://fast-channel-stg.vtvdigital.vn/playout/releases/go-20261013/channels/auto-vui-ve/master.m3u8' },
+  { id: 'vtvgo_ca_nhac', name: 'VTVgo FAST — Ca Nhạc', logo: '/assets/aistudio/image_7f331d65.png', category: 'VTVgo FAST', streamUrl: 'https://fast-channel-stg.vtvdigital.vn/playout/channels/auto-ca-nhac/master.m3u8' },
+  { id: 'vtvgo_phim_tai_lieu', name: 'VTVgo FAST — Phim Tài Liệu', logo: '/assets/aistudio/image_7f331d65.png', category: 'VTVgo FAST', streamUrl: 'https://fast-channel-stg.vtvdigital.vn/playout/channels/auto-phim-tai-lieu/master.m3u8' },
+  { id: 'vtvgo_game_show', name: 'VTVgo FAST — Game Show', logo: '/assets/aistudio/image_7f331d65.png', category: 'VTVgo FAST', streamUrl: 'https://fast-channel-stg.vtvdigital.vn/playout/channels/auto-game-show/master.m3u8' },
+  { id: 'vtvgo_du_lich_kham_pha', name: 'VTVgo FAST — Du Lịch Khám Phá', logo: '/assets/aistudio/image_7f331d65.png', category: 'VTVgo FAST', streamUrl: 'https://fast-channel-stg.vtvdigital.vn/playout/channels/auto-du-lich-kham-pha/master.m3u8' },
+  { id: 'vtvgo_suc_khoe_nguoi_gia', name: 'VTVgo FAST — Sức Khỏe Người Già', logo: '/assets/aistudio/image_7f331d65.png', category: 'VTVgo FAST', streamUrl: 'https://fast-channel-stg.vtvdigital.vn/playout/channels/auto-suc-khoe-nguoi-gia/master.m3u8' },
+  { id: 'vtvgo_thieu_nhi', name: 'VTVgo FAST — Thiếu Nhi', logo: '/assets/aistudio/image_7f331d65.png', category: 'VTVgo FAST', streamUrl: 'https://fast-channel-stg.vtvdigital.vn/playout/channels/auto-thieu-nhi/master.m3u8' },
+  { id: 'vtvgo_phim_truyen', name: 'VTVgo FAST — Phim Truyện', logo: '/assets/aistudio/image_7f331d65.png', category: 'VTVgo FAST', streamUrl: 'https://fast-channel-stg.vtvdigital.vn/playout/channels/auto-phim-truyen/master.m3u8' },
+
   // Kênh VTVcab
   { id: 'on_trending', name: 'ON TRENDING TV HD', logo: 'https://img.vtvprime.vn/55xu-sW33ZbTdC_Jok1jkP6jWGpa3U96dXvvDuXoyz0/rs:fit:836:468/czM6Ly9wcmQtc24taW1hZ2VzL2NoYW5uZWwvOGZjNzVhY2EtYjZhYS00MjYwLWIwMDMtZDRkYzg4OWI4ZGNkLnBuZw==.png', category: 'Kênh VTVcab', streamUrl: 'https://vpsttt.vietanhtv.top/tv360/tv360.php?id=186' },
   { id: 'on_kids', name: 'ON Kids HD', logo: 'https://img.vtvprime.vn/L7ERumqY3GEtK8vTe_DtMEJRYJkZPrVD3O4cbdT5P44/rs:fit:836:468/czM6Ly9wcmQtc24taW1hZ2VzL2NoYW5uZWwvOGFlYmUzZGMtODZmYS00NGFkLTlhNzUtODg5NmFkODZhNGI3LnBuZw==.png', category: 'Kênh VTVcab', streamUrl: 'https://vpsttt.vietanhtv.top/tv360/tv360.php?id=179' },
@@ -140,7 +150,9 @@ export const CHANNELS_DATA: Channel[] = RAW_CHANNELS.map((item, idx) => {
   return {
     id: item.id,
     name: item.name,
-    shortName: item.name.replace(/ HD| —.*/g, ''),
+    shortName: item.category === 'VTVgo FAST'
+      ? item.name.replace(/^VTVgo FAST — /, '')
+      : item.name.replace(/ HD| —.*/g, ''),
     channelNumber: chNum,
     channelCode: chCode,
     slug: item.id,

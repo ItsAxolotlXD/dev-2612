@@ -6,11 +6,12 @@ import { useSettings } from '../hooks/useSettings';
 type Feature = {
   label: string;
   description: string;
-  key: 'navigationMode' | 'searchColorfulExperiment' | 'widgetsFeed' | 'fluentIcons' | 'dynamicSidebarIcons';
+  key: 'isTopBarBottom' | 'isSidebarMerged' | 'searchColorfulExperiment' | 'widgetsFeed' | 'fluentIcons' | 'dynamicSidebarIcons';
 };
 
 const FEATURES: Feature[] = [
-  { label: 'Taskbar Mode', description: 'Move navigation to a Windows 11-style bottom taskbar.', key: 'navigationMode' },
+  { label: 'IsTopBarBottom', description: 'Move the top bar and search experience to the bottom edge.', key: 'isTopBarBottom' },
+  { label: 'IsSidebarMerged', description: 'Merge all sidebar items into the bottom bar as icons (enabled with IsTopBarBottom).', key: 'isSidebarMerged' },
   { label: 'Search UI upgraded', description: 'Enable the upgraded search experience and colorful shortcuts.', key: 'searchColorfulExperiment' },
   { label: 'Widgets Feed', description: 'Show the live widgets feed in the navigation.', key: 'widgetsFeed' },
   { label: 'Fluent icons', description: 'Use the refreshed Fluent icon set throughout Sparkle.', key: 'fluentIcons' },
@@ -30,7 +31,7 @@ export const ViveToolGuiWindow = ({ isOpen, onClose }: ViveToolGuiWindowProps) =
   useEffect(() => {
     if (!isOpen) return;
     previousFocusRef.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
-    const focusFrame = window.requestAnimationFrame(() => document.getElementById('vivetool-gui-taskbar')?.focus());
+    const focusFrame = window.requestAnimationFrame(() => document.getElementById('vivetool-gui-first-feature')?.focus());
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         event.preventDefault();
@@ -46,15 +47,16 @@ export const ViveToolGuiWindow = ({ isOpen, onClose }: ViveToolGuiWindowProps) =
   }, [isOpen, onClose]);
 
   const isEnabled = (feature: Feature) =>
-    feature.key === 'navigationMode' ? settings.navigationMode === 'taskbar' : settings[feature.key];
+    feature.key === 'isSidebarMerged'
+      ? settings.isTopBarBottom && settings.isSidebarMerged
+      : settings[feature.key];
 
   const toggleFeature = (feature: Feature) => {
     const enabled = isEnabled(feature);
-    if (feature.key === 'navigationMode') {
-      updateSetting('navigationMode', enabled ? 'sidebar' : 'taskbar');
-    } else {
-      updateSetting(feature.key, !enabled);
+    if (feature.key === 'isSidebarMerged' && !enabled && !settings.isTopBarBottom) {
+      updateSetting('isTopBarBottom', true);
     }
+    updateSetting(feature.key, !enabled);
   };
 
   return (
@@ -90,7 +92,7 @@ export const ViveToolGuiWindow = ({ isOpen, onClose }: ViveToolGuiWindowProps) =
                   return (
                     <div key={feature.key} className="flex items-center justify-between gap-4 rounded-lg border border-black/10 bg-white/70 p-4 dark:border-white/10 dark:bg-white/[0.04]">
                       <div className="min-w-0"><p className="text-sm font-medium text-slate-900 dark:text-white">{feature.label}</p><p className="mt-1 text-xs leading-5 text-slate-500 dark:text-slate-400">{feature.description}</p></div>
-                      <button id={feature.key === 'navigationMode' ? 'vivetool-gui-taskbar' : undefined} type="button" role="switch" aria-checked={enabled} onClick={() => toggleFeature(feature)} className={`relative h-6 w-11 shrink-0 cursor-pointer rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0078d4] focus-visible:ring-offset-2 dark:focus-visible:ring-offset-[#111821] ${enabled ? 'bg-[#0078d4]' : 'bg-slate-300 dark:bg-slate-700'}`}>
+                      <button id={feature.key === 'isTopBarBottom' ? 'vivetool-gui-first-feature' : undefined} type="button" role="switch" aria-checked={enabled} onClick={() => toggleFeature(feature)} className={`relative h-6 w-11 shrink-0 cursor-pointer rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0078d4] focus-visible:ring-offset-2 dark:focus-visible:ring-offset-[#111821] ${enabled ? 'bg-[#0078d4]' : 'bg-slate-300 dark:bg-slate-700'}`}>
                         <span className={`absolute top-1 size-4 rounded-full bg-white shadow-sm transition-transform ${enabled ? 'translate-x-6' : 'translate-x-1'}`} />
                         <span className="sr-only">{enabled ? 'Disable' : 'Enable'} {feature.label}</span>
                       </button>

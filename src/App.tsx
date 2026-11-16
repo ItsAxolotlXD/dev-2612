@@ -421,6 +421,13 @@ export default function App() {
       }
     };
 
+    const isMerged = Boolean(settings.isTopBarBottom && settings.isSidebarMerged && settings.navigationMode !== 'floaty');
+    if (isMerged) {
+      setIsMobileSidebarOpen(false);
+      setMobileDragOffset(null);
+      return;
+    }
+
     window.addEventListener('touchstart', handleTouchStart, { passive: true });
     window.addEventListener('touchmove', handleTouchMove, { passive: false });
     window.addEventListener('touchend', handleTouchEnd, { passive: true });
@@ -432,9 +439,10 @@ export default function App() {
       window.removeEventListener('touchend', handleTouchEnd);
       window.removeEventListener('touchcancel', handleTouchCancel);
     };
-  }, [isSidebarCollapsed]);
+  }, [isSidebarCollapsed, settings.isSidebarMerged, settings.isTopBarBottom, settings.navigationMode]);
 
   // Determine effective sidebar width for page adaptation
+  const isSidebarMerged = Boolean(settings.isTopBarBottom && settings.isSidebarMerged && settings.navigationMode !== 'floaty');
   const isEffectiveCollapsed = settings.autoHideSidebar || isSidebarCollapsed;
   const isInkCanvasEditor = currentRoute.startsWith('/draws/');
 
@@ -1006,7 +1014,7 @@ export default function App() {
       {isInkCanvasEditor && !isInkCanvasChromeVisible && <><div onMouseEnter={() => setIsInkCanvasChromeVisible(true)} className="fixed left-0 top-0 bottom-0 w-3 z-[200]" /><div onMouseEnter={() => setIsInkCanvasChromeVisible(true)} className="fixed left-0 top-0 right-0 h-3 z-[200]" /><div onMouseEnter={() => setIsInkCanvasChromeVisible(true)} className="fixed left-0 bottom-0 right-0 h-3 z-[200]" /></>}
 
       {/* Sidebar Navigation (Desktop + Mobile Drawer) */}
-      {(settings.navigationMode !== 'floaty' || isMobileSidebarOpen || mobileDragOffset !== null) && (!isInkCanvasEditor || isInkCanvasChromeVisible) && !isGalleryViewerOpen && (
+      {!isSidebarMerged && (settings.navigationMode !== 'floaty' || isMobileSidebarOpen || mobileDragOffset !== null) && (!isInkCanvasEditor || isInkCanvasChromeVisible) && !isGalleryViewerOpen && (
         <Sidebar
           currentRoute={isDriverManagementPanelOpen ? '/drivers' : currentRoute}
           navigate={navigate}
@@ -1049,15 +1057,17 @@ export default function App() {
         className={`flex-1 flex flex-col min-w-0 h-screen overflow-y-auto overflow-x-hidden no-scrollbar transition-[padding] duration-[160ms] ease-[cubic-bezier(0.34,1.45,0.64,1)] bg-[#f3f3f3] dark:bg-[#1b1f24] ${
         isInkCanvasEditor || isGalleryViewerOpen
           ? 'md:pl-0 md:pr-0 pb-0'
-          : !settings.dockToSidebar || settings.navigationMode === 'floaty' || settings.navigationMode === 'taskbar'
-          ? 'md:pl-0 md:pr-0 pb-20'
-            : settings.sidebarPosition === 'right'
-              ? isEffectiveCollapsed
-                ? 'md:pr-[48px]'
-                : 'md:pr-[260px]'
-              : isEffectiveCollapsed
-                ? 'md:pl-[48px]'
-                : 'md:pl-[260px]'
+          : !settings.dockToSidebar || settings.navigationMode === 'floaty'
+            ? 'md:pl-0 md:pr-0 pb-20'
+            : isSidebarMerged
+              ? 'md:pl-0 md:pr-0 pb-0'
+              : settings.sidebarPosition === 'right'
+                ? isEffectiveCollapsed
+                  ? 'md:pr-[48px]'
+                  : 'md:pr-[260px]'
+                : isEffectiveCollapsed
+                  ? 'md:pl-[48px]'
+                  : 'md:pl-[260px]'
       }`}>
         {/* Keep search behavior mounted for the sidebar field and shortcuts without showing the old header. */}
         {(!isInkCanvasEditor || isInkCanvasChromeVisible) && !isGalleryViewerOpen && (
@@ -1112,6 +1122,14 @@ export default function App() {
             onToggleWidgets={handleToggleWidgetsFeed}
             theme={settings.theme}
             isTopBarBottom={settings.isTopBarBottom}
+            isSidebarMerged={isSidebarMerged}
+            currentRoute={currentRoute}
+            isDriverManagementPanelOpen={isDriverManagementPanelOpen}
+            isCommandPromptOpen={isCommandPromptOpen}
+            dynamicSidebarIcons={settings.dynamicSidebarIcons}
+            fluentIcons={settings.fluentIcons}
+            onNavigate={navigate}
+            onOpenCommandPrompt={handleOpenCommandPrompt}
             onSelectTab={handleSelectAppTab}
             onCreateTab={handleCreateAppTab}
             onCloseTab={handleCloseAppTab}
@@ -1123,7 +1141,7 @@ export default function App() {
           id={settings.tabsExperiment ? `app-tab-panel-${activeAppTabId}` : undefined}
           role={settings.tabsExperiment ? 'tabpanel' : undefined}
           aria-labelledby={settings.tabsExperiment ? `app-tab-${activeAppTabId}` : undefined}
-          className={`main-tab-page flex-1 w-full mx-auto rounded-tl-none md:rounded-tl-[10px] rounded-tr-none rounded-br-none rounded-bl-none bg-[#f9f9f9] dark:bg-[#282c31] ${
+          className={`main-tab-page flex-1 w-full mx-auto ${isSidebarMerged ? 'rounded-none' : 'rounded-tl-none md:rounded-tl-[10px]'} rounded-tr-none rounded-br-none rounded-bl-none bg-[#f9f9f9] dark:bg-[#282c31] ${
           currentRoute === '/' || currentRoute === '/home' || currentRoute === '/news' || currentRoute === '/updates' || isOfficeRoute || currentRoute === '/craftmine' || currentRoute === '/photopea' || currentRoute === '/vlc' || currentRoute === '/screenbox' || currentRoute === '/screenbug' || currentRoute === '/gallery' || currentRoute === '/draws' || currentRoute.startsWith('/draws/') || currentRoute === '/camera'
             ? 'p-0 max-w-none pt-0' 
             : 'px-4 sm:px-6 md:px-8 py-5 max-w-7xl'
