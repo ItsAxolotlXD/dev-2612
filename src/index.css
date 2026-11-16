@@ -8939,6 +8939,14 @@ html.dark .app-toast-tick {
 }
 
 /* Fallback solid backgrounds in light mode */
+.windows-boot-gif {
+  top: calc(50% + 227px);
+}
+
+@media (max-height: 500px) {
+  .windows-boot-gif { top: calc(50% + 125px); }
+}
+
 html.light-mode .no-visual-drivers aside#waves-desktop-sidebar,
 html.light-mode .no-visual-drivers header#waves-topbar,
 html.light-mode .no-visual-drivers nav#waves-bottom-dock,
@@ -9022,24 +9030,4 @@ html.light-mode .no-visual-drivers div[role="dialog"] {
 [data-oobe-experience-content] > div > [class*="text-center"] {
   align-items: stretch !important;
   text-align: left !important;
-}
-
-@keyframes windows-boot-spin {
-  to { transform: rotate(360deg); }
-}
-
-.windows-boot-spinner {
-  position: absolute;
-  top: calc(50% + 227px);
-  width: 20px;
-  height: 20px;
-  border: 3px solid transparent;
-  border-top-color: #fff;
-  border-right-color: #fff;
-  border-radius: 9999px;
-  animation: windows-boot-spin 1s linear infinite;
-}
-
-@media (max-height: 500px) {
-  .windows-boot-spinner { top: calc(50% + 125px); }
 }
