@@ -10,8 +10,8 @@ type Feature = {
 };
 
 const FEATURES: Feature[] = [
-  { label: 'IsTopBarBottom', description: 'Move the top bar and search experience to the bottom edge.', key: 'isTopBarBottom' },
-  { label: 'IsSidebarMerged', description: 'Merge all sidebar items into the bottom bar as icons (enabled with IsTopBarBottom).', key: 'isSidebarMerged' },
+  { label: 'Windows Mode', description: 'Move the taskbar and search experience to the bottom edge.', key: 'isTopBarBottom' },
+  { label: 'IsSidebarMerged', description: 'Merge all sidebar items into the bottom bar as icons (enabled with Windows Mode).', key: 'isSidebarMerged' },
   { label: 'IsWallpaperAllowed', description: 'Show the Sparkle desktop wallpaper as the app background.', key: 'isWallpaperAllowed' },
   { label: 'Search UI upgraded', description: 'Enable the upgraded search experience and colorful shortcuts.', key: 'searchColorfulExperiment' },
   { label: 'Widgets Feed', description: 'Show the live widgets feed in the navigation.', key: 'widgetsFeed' },

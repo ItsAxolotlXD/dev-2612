@@ -40,7 +40,7 @@ const SETTING_LABELS: Partial<Record<keyof SystemSettings, string>> = {
   tabsExperiment: 'Tabs experiment',
   searchColorfulExperiment: 'Search experience upgrades',
   widgetsFeed: 'Widgets Feed',
-  isTopBarBottom: 'IsTopBarBottom',
+  isTopBarBottom: 'Windows Mode',
   isSidebarMerged: 'IsSidebarMerged',
   isWallpaperAllowed: 'IsWallpaperAllowed',
   fluentIcons: 'Fluent icons',

@@ -33,6 +33,7 @@ import { AppNativeCursor } from './components/AppNativeCursor';
 import { SparkverAboutWindow } from './components/SparkverAboutWindow';
 import { WidgetsFeed } from './components/WidgetsFeed';
 import { DirectCommandExperience } from './components/DirectCommandExperience';
+import { StartMenu } from './components/StartMenu';
 import { CommandPromptWindow } from './components/CommandPromptWindow';
 import { ViveToolGuiWindow } from './components/ViveToolGuiWindow';
 import { GlobalToast } from './components/GlobalToast';
@@ -255,30 +256,43 @@ export default function App() {
   const [isUnderConstructionOpen, setIsUnderConstructionOpen] = useState(false);
   const [isWidgetsFeedOpen, setIsWidgetsFeedOpen] = useState(false);
   const [isDirectCommandOpen, setIsDirectCommandOpen] = useState(false);
+  const [isStartMenuOpen, setIsStartMenuOpen] = useState(false);
   const handleOpenWidgetsFeed = useCallback(() => {
     setIsDirectCommandOpen(false);
+    setIsStartMenuOpen(false);
     setIsWidgetsFeedOpen(true);
   }, []);
   const handleToggleWidgetsFeed = useCallback(() => {
     setIsDirectCommandOpen(false);
+    setIsStartMenuOpen(false);
     setIsWidgetsFeedOpen((prev) => !prev);
   }, []);
   const handleCloseWidgetsFeed = useCallback(() => setIsWidgetsFeedOpen(false), []);
   const handleToggleDirectCommand = useCallback(() => {
     setIsWidgetsFeedOpen(false);
+    setIsStartMenuOpen(false);
     setIsDirectCommandOpen((prev) => !prev);
   }, []);
   const handleCloseDirectCommand = useCallback(() => setIsDirectCommandOpen(false), []);
+  const handleToggleStartMenu = useCallback(() => {
+    setIsWidgetsFeedOpen(false);
+    setIsDirectCommandOpen(false);
+    setIsStartMenuOpen((prev) => !prev);
+  }, []);
+  const handleCloseStartMenu = useCallback(() => setIsStartMenuOpen(false), []);
   useEffect(() => {
     if (!settings.widgetsFeed) setIsWidgetsFeedOpen(false);
   }, [settings.widgetsFeed]);
   useEffect(() => {
-    const closeDirectCommand = () => setIsDirectCommandOpen(false);
-    window.addEventListener('vplay:focus-topbar-search', closeDirectCommand);
-    window.addEventListener('vplay:search-command', closeDirectCommand);
+    const closeBottomPopups = () => {
+      setIsDirectCommandOpen(false);
+      setIsStartMenuOpen(false);
+    };
+    window.addEventListener('vplay:focus-topbar-search', closeBottomPopups);
+    window.addEventListener('vplay:search-command', closeBottomPopups);
     return () => {
-      window.removeEventListener('vplay:focus-topbar-search', closeDirectCommand);
-      window.removeEventListener('vplay:search-command', closeDirectCommand);
+      window.removeEventListener('vplay:focus-topbar-search', closeBottomPopups);
+      window.removeEventListener('vplay:search-command', closeBottomPopups);
     };
   }, []);
   const [isSparkverAboutOpen, setIsSparkverAboutOpen] = useState(false);
@@ -1160,6 +1174,8 @@ export default function App() {
             onToggleWidgets={handleToggleWidgetsFeed}
             isDirectCommandOpen={isDirectCommandOpen}
             onToggleDirectCommand={handleToggleDirectCommand}
+            isStartMenuOpen={isStartMenuOpen}
+            onToggleStartMenu={handleToggleStartMenu}
             theme={settings.theme}
             isTopBarBottom={settings.isTopBarBottom}
             isSidebarMerged={isSidebarMerged}
@@ -1258,6 +1274,22 @@ export default function App() {
         onOpenViveToolGui={handleOpenViveToolGui}
         onOpenFullCommandPrompt={handleOpenCommandPrompt}
         onClose={handleCloseDirectCommand}
+      />
+      <StartMenu
+        isOpen={isStartMenuOpen}
+        isTopBarBottom={settings.isTopBarBottom}
+        showWidgets={settings.widgetsFeed}
+        dynamicSidebarIcons={settings.dynamicSidebarIcons}
+        fluentIcons={settings.fluentIcons}
+        onNavigate={navigate}
+        onOpenSearch={handleOpenSearch}
+        onOpenDirectCommand={handleToggleDirectCommand}
+        onOpenCommandPrompt={handleOpenCommandPrompt}
+        onOpenWidgets={handleOpenWidgetsFeed}
+        onOpenViveToolGui={handleOpenViveToolGui}
+        onOpenAbout={handleOpenSparkverAbout}
+        onOpenSetupWizard={() => setIsSetupWizardOpen(true)}
+        onClose={handleCloseStartMenu}
       />
       <SparkverAboutWindow
         isOpen={isSparkverAboutOpen}

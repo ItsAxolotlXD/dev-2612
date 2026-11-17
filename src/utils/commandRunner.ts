@@ -44,7 +44,7 @@ export const EXPERIMENTS: Experiment[] = [
   { id: '385104729', name: 'Tabs', settingKey: 'tabsExperiment' },
   { id: '742839516', name: 'Search experience upgrades', settingKey: 'searchColorfulExperiment' },
   { id: '861937204', name: 'Widgets Feed', settingKey: 'widgetsFeed' },
-  { id: '902417635', name: 'IsTopBarBottom', settingKey: 'isTopBarBottom' },
+  { id: '902417635', name: 'Windows Mode', settingKey: 'isTopBarBottom' },
   { id: '648291037', name: 'IsSidebarMerged', settingKey: 'isSidebarMerged' },
   { id: '519482736', name: 'IsWallpaperAllowed', settingKey: 'isWallpaperAllowed' },
 ];

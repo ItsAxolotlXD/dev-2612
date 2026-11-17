@@ -37,6 +37,33 @@ export const FLUENT_ICON_URLS = {
   draws: 'https://raw.githubusercontent.com/microsoft/fluentui-system-icons/refs/heads/main/assets/Draw%20Shape/SVG/ic_fluent_draw_shape_24_regular.svg'
 };
 
+export const FluentStartIcon: React.FC<{ className?: string; style?: React.CSSProperties }> = ({ className = 'w-5 h-5', style }) => (
+  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} style={style}>
+    <defs>
+      <linearGradient id="sparkle-start-grad-tl" x1="2" y1="2" x2="11.2" y2="11.2" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stopColor="#5ed3ff" />
+        <stop offset="100%" stopColor="#1ca8f8" />
+      </linearGradient>
+      <linearGradient id="sparkle-start-grad-tr" x1="12.8" y1="2" x2="22" y2="11.2" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stopColor="#3cc3ff" />
+        <stop offset="100%" stopColor="#0f8de6" />
+      </linearGradient>
+      <linearGradient id="sparkle-start-grad-bl" x1="2" y1="12.8" x2="11.2" y2="22" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stopColor="#2ab4fb" />
+        <stop offset="100%" stopColor="#067ad4" />
+      </linearGradient>
+      <linearGradient id="sparkle-start-grad-br" x1="12.8" y1="12.8" x2="22" y2="22" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stopColor="#1599eb" />
+        <stop offset="100%" stopColor="#0066bd" />
+      </linearGradient>
+    </defs>
+    <rect x="2" y="2" width="9.2" height="9.2" rx="1.6" fill="url(#sparkle-start-grad-tl)" />
+    <rect x="12.8" y="2" width="9.2" height="9.2" rx="1.6" fill="url(#sparkle-start-grad-tr)" />
+    <rect x="2" y="12.8" width="9.2" height="9.2" rx="1.6" fill="url(#sparkle-start-grad-bl)" />
+    <rect x="12.8" y="12.8" width="9.2" height="9.2" rx="1.6" fill="url(#sparkle-start-grad-br)" />
+  </svg>
+);
+
 export const FluentHomeIcon: React.FC<{ className?: string; style?: React.CSSProperties }> = ({ className = 'w-5 h-5', style }) => (
   <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} style={style}>
     <path d="M21.6062 5.85517C23.0048 4.71494 24.9952 4.71494 26.3938 5.85517L39.5688 16.5966C40.4736 17.3342 41 18.4492 41 19.628V39.1134C41 41.2599 39.2875 43 37.175 43H31.825C29.7125 43 28 41.2599 28 39.1134V29.8866C28 29.1711 27.4292 28.5911 26.725 28.5911H21.275C20.5708 28.5911 20 29.1711 20 29.8866V39.1134C20 41.2599 18.2875 43 16.175 43H10.825C8.71251 43 7 41.2599 7 39.1134V19.628C7 18.4493 7.52645 17.3342 8.43124 16.5966L21.6062 5.85517ZM24.7979 7.87612C24.3317 7.49604 23.6683 7.49604 23.2021 7.87612L10.0271 18.6175C9.72548 18.8634 9.55 19.2351 9.55 19.628V39.1134C9.55 39.8289 10.1208 40.4089 10.825 40.4089H16.175C16.8792 40.4089 17.45 39.8289 17.45 39.1134V29.8866C17.45 27.7401 19.1625 26 21.275 26H26.725C28.8375 26 30.55 27.7401 30.55 29.8866V39.1134C30.55 39.8289 31.1208 40.4089 31.825 40.4089H37.175C37.8792 40.4089 38.45 39.8289 38.45 39.1134V19.628C38.45 19.2351 38.2745 18.8634 37.9729 18.6175L24.7979 7.87612Z" fill="currentColor"/>
