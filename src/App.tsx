@@ -3,6 +3,8 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Sidebar } from './components/Sidebar';
 import { TopBar } from './components/TopBar';
 import { AppTabsBar, type AppTab } from './components/AppTabsBar';
+import { WindowedTabsLayer } from './components/WindowedTabsLayer';
+import { getDefaultWindowBounds, type WindowBounds } from './utils/tabMeta';
 import { BottomDock } from './components/BottomDock';
 import { SpotlightModal } from './components/SpotlightModal';
 import { CustomStreamModal } from './components/CustomStreamModal';
@@ -34,6 +36,7 @@ import { SparkverAboutWindow } from './components/SparkverAboutWindow';
 import { WidgetsFeed } from './components/WidgetsFeed';
 import { DirectCommandExperience } from './components/DirectCommandExperience';
 import { StartMenu } from './components/StartMenu';
+import { ControlCenterScreenOverlay } from './components/ControlCenterTray';
 import { CommandPromptWindow } from './components/CommandPromptWindow';
 import { ViveToolGuiWindow } from './components/ViveToolGuiWindow';
 import { GlobalToast } from './components/GlobalToast';
@@ -55,6 +58,10 @@ import { Craftmine } from './pages/Craftmine';
 import { Photopea } from './pages/Photopea';
 import { Updates } from './pages/Updates';
 import { Gallery } from './pages/Gallery';
+import { FileExplorer } from './pages/FileExplorer';
+import { Calculator } from './pages/Calculator';
+import { HtmlWriter } from './pages/HtmlWriter';
+import { MediaPlayer } from './pages/MediaPlayer';
 import { Draws } from './pages/Draws';
 import { VLC } from './pages/VLC';
 import { Camera } from './pages/Camera';
@@ -107,7 +114,17 @@ export default function App() {
     return `${route}${pathname === '/drivers' || pathname === '/command-prompt' ? '' : window.location.search}`;
   };
   const [currentRoute, setCurrentRouteState] = useState<string>(() => getInitialAppRoute().split(/[?#]/)[0] || '/');
-  const [appTabs, setAppTabs] = useState<AppTab[]>(() => [{ id: 1, route: getInitialAppRoute() }]);
+  const nextWindowZIndexRef = useRef(10);
+  const [appTabs, setAppTabs] = useState<AppTab[]>(() => [
+    {
+      id: 1,
+      route: getInitialAppRoute(),
+      isMinimized: false,
+      isMaximized: false,
+      bounds: getDefaultWindowBounds(0, getInitialAppRoute()),
+      zIndex: 1,
+    },
+  ]);
   const [activeAppTabId, setActiveAppTabId] = useState(1);
   const nextAppTabIdRef = useRef(2);
   const [isDriverManagementPanelOpen, setIsDriverManagementPanelOpen] = useState(
@@ -145,6 +162,12 @@ export default function App() {
       [String(activeAppTabId)]: query
     }));
   }, [activeAppTabId]);
+  const handleSpecificTabSearchChange = useCallback((tabId: number, query: string) => {
+    setTabSearchQueries((prev) => ({
+      ...prev,
+      [String(tabId)]: query
+    }));
+  }, []);
 
   // Channels State (base channels + imported channels from localStorage)
   const [channels, setChannels] = useState<Channel[]>(() => {
@@ -566,11 +589,31 @@ export default function App() {
     window.history.pushState(null, '', path);
     setCurrentRouteState(targetRoute);
     if (targetTabId !== undefined) setActiveAppTabId(targetTabId);
+    const nextZ = ++nextWindowZIndexRef.current;
     setAppTabs((currentTabs) => {
       const remainingTabs = closeTabId === undefined
         ? currentTabs
         : currentTabs.filter((tab) => tab.id !== closeTabId);
-      return remainingTabs.map((tab) => tab.id === destinationTabId ? { ...tab, route: path } : tab);
+      const exists = remainingTabs.some((tab) => tab.id === destinationTabId);
+      if (!exists && settings.windowedTabs) {
+        return [
+          ...remainingTabs,
+          {
+            id: destinationTabId || nextAppTabIdRef.current++,
+            route: path,
+            routeState: state,
+            isMinimized: false,
+            isMaximized: false,
+            bounds: getDefaultWindowBounds(remainingTabs.length),
+            zIndex: nextZ,
+          },
+        ];
+      }
+      return remainingTabs.map((tab) =>
+        tab.id === destinationTabId
+          ? { ...tab, route: path, routeState: state, isMinimized: false, zIndex: nextZ }
+          : tab
+      );
     });
 
     // Scroll to top on route navigation
@@ -581,7 +624,7 @@ export default function App() {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    if (isDifferentRoute && !isAppTabSwitch) {
+    if (isDifferentRoute && !isAppTabSwitch && !settings.windowedTabs) {
       if (tabLoadingTimerRef.current) clearTimeout(tabLoadingTimerRef.current);
       setIsTabLoading(true);
       tabLoadingTimerRef.current = setTimeout(() => {
@@ -589,7 +632,7 @@ export default function App() {
         setTabLoadCount((c) => c + 1);
       }, 1000);
     }
-  }, [activeAppTabId, channels, currentRoute]);
+  }, [activeAppTabId, channels, currentRoute, settings.windowedTabs]);
 
   // Navigation handler
   const navigate = useCallback((path: string, state?: any, targetTabId?: number, closeTabId?: number) => {
@@ -625,19 +668,211 @@ export default function App() {
     navigate('/search');
   }, [navigate]);
 
+  // Sync tabs when toggling WindowedTabs velocity flag
+  useEffect(() => {
+    if (settings.windowedTabs) {
+      setAppTabs((prev) =>
+        prev.map((tab, idx) => ({
+          ...tab,
+          bounds: tab.bounds ?? getDefaultWindowBounds(idx),
+          zIndex: tab.zIndex ?? idx + 1,
+          isMinimized: Boolean(tab.isMinimized),
+          isMaximized: Boolean(tab.isMaximized),
+        }))
+      );
+    } else {
+      setAppTabs((prev) => {
+        if (prev.length > 0) return prev;
+        const id = nextAppTabIdRef.current++;
+        setActiveAppTabId(id);
+        setCurrentRouteState('/');
+        return [
+          {
+            id,
+            route: '/',
+            isMinimized: false,
+            isMaximized: false,
+            bounds: getDefaultWindowBounds(0),
+            zIndex: ++nextWindowZIndexRef.current,
+          },
+        ];
+      });
+    }
+  }, [settings.windowedTabs]);
+
+  const handleFocusWindowTab = useCallback((tabId: number) => {
+    const nextZ = ++nextWindowZIndexRef.current;
+    const target = appTabs.find((t) => t.id === tabId);
+    setAppTabs((prev) =>
+      prev.map((tab) =>
+        tab.id === tabId ? { ...tab, isMinimized: false, zIndex: nextZ } : tab
+      )
+    );
+    setActiveAppTabId(tabId);
+    if (target) {
+      setCurrentRouteState(target.route.split(/[?#]/)[0] || '/');
+    }
+  }, [appTabs]);
+
+  const handleMinimizeWindowTab = useCallback((tabId: number) => {
+    setAppTabs((prev) => {
+      const updated = prev.map((tab) =>
+        tab.id === tabId ? { ...tab, isMinimized: true } : tab
+      );
+      const nextTop = updated
+        .filter((t) => !t.isMinimized)
+        .sort((a, b) => (b.zIndex ?? 0) - (a.zIndex ?? 0))[0];
+      if (nextTop) {
+        setActiveAppTabId(nextTop.id);
+        setCurrentRouteState(nextTop.route.split(/[?#]/)[0] || '/');
+      } else {
+        setActiveAppTabId(0);
+      }
+      return updated;
+    });
+  }, []);
+
+  const handleToggleWindowTab = useCallback((tabId: number) => {
+    const target = appTabs.find((t) => t.id === tabId);
+    if (!target) return;
+    const topVisibleZ = appTabs.reduce(
+      (maxZ, t) => (!t.isMinimized ? Math.max(maxZ, t.zIndex ?? 0) : maxZ),
+      0
+    );
+    const isCurrentlyTopmost =
+      !target.isMinimized && (tabId === activeAppTabId || (target.zIndex ?? 0) >= topVisibleZ);
+
+    if (isCurrentlyTopmost) {
+      handleMinimizeWindowTab(tabId);
+    } else {
+      handleFocusWindowTab(tabId);
+    }
+  }, [activeAppTabId, appTabs, handleFocusWindowTab, handleMinimizeWindowTab]);
+
+  const handleToggleMaximizeWindowTab = useCallback((tabId: number) => {
+    const nextZ = ++nextWindowZIndexRef.current;
+    setAppTabs((prev) =>
+      prev.map((tab) =>
+        tab.id === tabId
+          ? { ...tab, isMinimized: false, isMaximized: !tab.isMaximized, zIndex: nextZ }
+          : tab
+      )
+    );
+    setActiveAppTabId(tabId);
+  }, []);
+
+  const handleUpdateWindowBounds = useCallback(
+    (tabId: number, bounds: WindowBounds, isMaximized?: boolean) => {
+      setAppTabs((prev) =>
+        prev.map((tab) =>
+          tab.id === tabId
+            ? {
+                ...tab,
+                bounds,
+                isMaximized: isMaximized !== undefined ? isMaximized : tab.isMaximized,
+              }
+            : tab
+        )
+      );
+    },
+    []
+  );
+
+  const handleReorderWindowTabs = useCallback((orderedIds: number[]) => {
+    setAppTabs((prev) => {
+      const byId = new Map<number, AppTab>(prev.map((tab) => [tab.id, tab] as const));
+      const next: AppTab[] = [];
+      for (const id of orderedIds) {
+        const item = byId.get(id);
+        if (item) {
+          next.push(item);
+          byId.delete(id);
+        }
+      }
+      byId.forEach((item) => next.push(item));
+      return next;
+    });
+  }, []);
+
   const handleSelectAppTab = useCallback((tabId: number) => {
+    if (settings.windowedTabs) {
+      handleFocusWindowTab(tabId);
+      return;
+    }
     const selectedTab = appTabs.find((tab) => tab.id === tabId);
     if (!selectedTab || tabId === activeAppTabId) return;
     navigate(selectedTab.route, undefined, selectedTab.id);
-  }, [activeAppTabId, appTabs, navigate]);
+  }, [activeAppTabId, appTabs, handleFocusWindowTab, navigate, settings.windowedTabs]);
+
+  const openAppInWindow = useCallback((path: string, state?: any) => {
+    const targetRoute = path.split(/[?#]/)[0] || '/';
+    if (targetRoute === '/drivers') {
+      setIsDriverManagementPanelOpen(true);
+      return;
+    }
+    if (!settings.windowedTabs) {
+      navigate(path, state);
+      return;
+    }
+    const id = nextAppTabIdRef.current++;
+    const nextZ = ++nextWindowZIndexRef.current;
+    setAppTabs((currentTabs) => [
+      ...currentTabs,
+      {
+        id,
+        route: path,
+        routeState: state,
+        isMinimized: false,
+        isMaximized: false,
+        bounds: getDefaultWindowBounds(currentTabs.length, path),
+        zIndex: nextZ,
+      },
+    ]);
+    setActiveAppTabId(id);
+    setCurrentRouteState(targetRoute);
+    window.history.pushState(null, '', path);
+  }, [navigate, settings.windowedTabs]);
 
   const handleCreateAppTab = useCallback(() => {
+    if (settings.windowedTabs) {
+      openAppInWindow('/');
+      return;
+    }
     const id = nextAppTabIdRef.current++;
-    setAppTabs((currentTabs) => [...currentTabs, { id, route: '/' }]);
+    setAppTabs((currentTabs) => [
+      ...currentTabs,
+      {
+        id,
+        route: '/',
+        isMinimized: false,
+        isMaximized: false,
+        bounds: getDefaultWindowBounds(currentTabs.length),
+        zIndex: ++nextWindowZIndexRef.current,
+      },
+    ]);
     navigate('/', undefined, id);
-  }, [navigate]);
+  }, [navigate, openAppInWindow, settings.windowedTabs]);
 
   const handleCloseAppTab = useCallback((tabId: number) => {
+    if (settings.windowedTabs) {
+      setAppTabs((currentTabs) => {
+        const remaining = currentTabs.filter((tab) => tab.id !== tabId);
+        if (tabId === activeAppTabId) {
+          const nextTop = remaining
+            .filter((t) => !t.isMinimized)
+            .sort((a, b) => (b.zIndex ?? 0) - (a.zIndex ?? 0))[0] ?? remaining[0];
+          if (nextTop) {
+            setActiveAppTabId(nextTop.id);
+            setCurrentRouteState(nextTop.route.split(/[?#]/)[0] || '/');
+          } else {
+            setActiveAppTabId(0);
+          }
+        }
+        return remaining;
+      });
+      return;
+    }
+
     if (appTabs.length <= 1) return;
     if (tabId !== activeAppTabId) {
       setAppTabs((currentTabs) => currentTabs.filter((tab) => tab.id !== tabId));
@@ -647,7 +882,7 @@ export default function App() {
     const closingIndex = appTabs.findIndex((tab) => tab.id === tabId);
     const nextTab = appTabs[closingIndex + 1] || appTabs[closingIndex - 1];
     if (nextTab) navigate(nextTab.route, undefined, nextTab.id, tabId);
-  }, [activeAppTabId, appTabs, navigate]);
+  }, [activeAppTabId, appTabs, navigate, settings.windowedTabs]);
 
   const handleSaveAndNavigate = () => {
     applyDraftSettings();
@@ -849,13 +1084,25 @@ export default function App() {
     }
   };
 
-  // Render Page Content based on currentRoute
-  const renderContent = () => {
-    if (currentRoute.startsWith('/draws/')) return <Draws navigate={navigate} />;
-    if (currentRoute.startsWith('/notes/')) {
+  // Render Page Content based on route (supports both main view and individual WindowedTabs)
+  const renderContent = (
+    routeArg?: string,
+    routeStateArg?: any,
+    searchQueryArg?: string,
+    onSearchChangeArg?: (query: string) => void,
+    navArg?: (path: string, state?: any, targetTabId?: number, closeTabId?: number) => void
+  ) => {
+    const activeRoute = (routeArg ?? currentRoute).split(/[?#]/)[0] || '/';
+    const activeRouteState = routeArg !== undefined ? routeStateArg : routeState;
+    const activeSearchQuery = searchQueryArg !== undefined ? searchQueryArg : currentTabSearchQuery;
+    const activeSearchChange = onSearchChangeArg ?? handleTabSearchChange;
+    const activeNavigate = navArg ?? navigate;
+
+    if (activeRoute.startsWith('/draws/')) return <Draws navigate={activeNavigate} />;
+    if (activeRoute.startsWith('/notes/')) {
       return (
         <NotesApp
-          navigate={navigate}
+          navigate={activeNavigate}
           onEnterEditor={() => setIsSidebarCollapsed(true)}
           onRegisterUnsavedNote={setUnsavedNoteState}
         />
@@ -863,16 +1110,16 @@ export default function App() {
     }
 
     // Route matching for news detail: /news/:slug
-    if (currentRoute.startsWith('/news/')) {
-      const slug = currentRoute.replace('/news/', '');
-      return <Article slug={slug} navigate={navigate} fontSize={articleFontSize} />;
+    if (activeRoute.startsWith('/news/')) {
+      const slug = activeRoute.replace('/news/', '');
+      return <Article slug={slug} navigate={activeNavigate} fontSize={articleFontSize} />;
     }
 
-    switch (currentRoute) {
+    switch (activeRoute) {
       case '/':
       case '/home':
       case '/home-preview':
-        return <HomePreview channels={channels} onSelectChannel={setCurrentChannel} navigate={navigate} />;
+        return <HomePreview channels={channels} onSelectChannel={setCurrentChannel} navigate={activeNavigate} />;
 
       case '/live-tv':
       case '/watch-preview':
@@ -884,9 +1131,9 @@ export default function App() {
             }}
             channels={channels}
             onOpenCustomStreamModal={() => setIsCustomStreamModalOpen(true)}
-            searchQuery={currentTabSearchQuery}
-            onSearchChange={handleTabSearchChange}
-            navigate={navigate}
+            searchQuery={activeSearchQuery}
+            onSearchChange={activeSearchChange}
+            navigate={activeNavigate}
           />
         );
 
@@ -897,8 +1144,8 @@ export default function App() {
             onSelectChannel={setCurrentChannel}
             channels={channels}
             onOpenCustomStreamModal={() => setIsCustomStreamModalOpen(true)}
-            searchQuery={currentTabSearchQuery}
-            onSearchChange={handleTabSearchChange}
+            searchQuery={activeSearchQuery}
+            onSearchChange={activeSearchChange}
           />
         );
 
@@ -906,9 +1153,9 @@ export default function App() {
       case '/updates':
         return (
           <News
-            navigate={navigate}
-            searchQuery={currentTabSearchQuery}
-            onSearchChange={handleTabSearchChange}
+            navigate={activeNavigate}
+            searchQuery={activeSearchQuery}
+            onSearchChange={activeSearchChange}
             onOpenUpdate={() => setIsUpdating(true)}
           />
         );
@@ -918,10 +1165,10 @@ export default function App() {
           <Channels
             channels={channels}
             onSelectChannel={setCurrentChannel}
-            navigate={navigate}
+            navigate={activeNavigate}
             onOpenCustomStreamModal={() => setIsCustomStreamModalOpen(true)}
-            searchQuery={currentTabSearchQuery}
-            onSearchChange={handleTabSearchChange}
+            searchQuery={activeSearchQuery}
+            onSearchChange={activeSearchChange}
           />
         );
 
@@ -930,9 +1177,9 @@ export default function App() {
           <Favorites
             channels={channels}
             onSelectChannel={setCurrentChannel}
-            navigate={navigate}
-            searchQuery={currentTabSearchQuery}
-            onSearchChange={handleTabSearchChange}
+            navigate={activeNavigate}
+            searchQuery={activeSearchQuery}
+            onSearchChange={activeSearchChange}
           />
         );
 
@@ -940,10 +1187,10 @@ export default function App() {
         return <About />;
 
       case '/auth':
-        return <Auth navigate={navigate} />;
+        return <Auth navigate={activeNavigate} />;
 
       case '/feedback':
-        return <Feedback navigate={navigate} />;
+        return <Feedback navigate={activeNavigate} />;
 
       case '/winui-3':
         return <WinUI3 />;
@@ -961,23 +1208,23 @@ export default function App() {
       case '/settings':
         return (
           <Settings
-            searchQuery={currentTabSearchQuery}
-            onSearchChange={handleTabSearchChange}
+            searchQuery={activeSearchQuery}
+            onSearchChange={activeSearchChange}
             onOpenUpdate={() => setIsUpdating(true)}
             onOpenOfficeTool={handleOpenOfficeTool}
             onOpenSetupWizard={() => setIsSetupWizardOpen(true)}
-            navigate={navigate}
+            navigate={activeNavigate}
           />
         );
 
       case '/search':
         return (
           <ImmersiveSearch
-            navigate={navigate}
+            navigate={activeNavigate}
             onSelectChannel={setCurrentChannel}
             onClose={() => {
               const target = previousRouteRef.current && previousRouteRef.current !== '/search' ? previousRouteRef.current : '/';
-              navigate(target);
+              activeNavigate(target);
             }}
           />
         );
@@ -988,25 +1235,37 @@ export default function App() {
       case '/table':
         return (
           <NotesApp
-            navigate={navigate}
+            navigate={activeNavigate}
             onEnterEditor={() => setIsSidebarCollapsed(true)}
             onRegisterUnsavedNote={setUnsavedNoteState}
           />
         );
 
       case '/gallery':
-        return <Gallery navigate={navigate} searchQuery={currentTabSearchQuery} routeState={routeState} />;
+        return <Gallery navigate={activeNavigate} searchQuery={activeSearchQuery} routeState={activeRouteState} />;
+
+      case '/explorer':
+        return <FileExplorer navigate={activeNavigate} />;
+
+      case '/calculator':
+        return <Calculator />;
+
+      case '/html-writer':
+        return <HtmlWriter />;
+
+      case '/media-player':
+        return <MediaPlayer />;
 
       case '/draws':
-        return <Draws navigate={navigate} />;
+        return <Draws navigate={activeNavigate} />;
 
       case '/screenbug':
       case '/screenbox':
       case '/vlc':
-        return <VLC navigate={navigate} />;
+        return <VLC navigate={activeNavigate} />;
 
       case '/camera':
-        return <Camera navigate={navigate} />;
+        return <Camera navigate={activeNavigate} />;
 
       case '/craftmine':
         return <Craftmine />;
@@ -1015,7 +1274,7 @@ export default function App() {
         return <Photopea />;
 
       default:
-        return <HomePreview channels={channels} onSelectChannel={setCurrentChannel} navigate={navigate} />;
+        return <HomePreview channels={channels} onSelectChannel={setCurrentChannel} navigate={activeNavigate} />;
     }
   };
 
@@ -1059,7 +1318,7 @@ export default function App() {
             draggable={false}
             className="h-full w-full object-cover object-center"
           />
-          <div className="absolute inset-0 bg-white/15 dark:bg-black/30" />
+          <div className="absolute inset-0 bg-white/15 dark:bg-transparent" />
         </div>
       )}
 
@@ -1069,7 +1328,7 @@ export default function App() {
       {!isSidebarMerged && (settings.navigationMode !== 'floaty' || isMobileSidebarOpen || mobileDragOffset !== null) && (!isInkCanvasEditor || isInkCanvasChromeVisible) && !isGalleryViewerOpen && (
         <Sidebar
           currentRoute={isDriverManagementPanelOpen ? '/drivers' : currentRoute}
-          navigate={navigate}
+          navigate={openAppInWindow}
           onOpenCommandPrompt={handleOpenCommandPrompt}
           onSelectChannel={setCurrentChannel}
           isCollapsed={isSidebarCollapsed}
@@ -1106,7 +1365,9 @@ export default function App() {
       {/* Main App Container */}
       <div 
         id="main-content-scroll-container"
-        className={`relative z-10 flex-1 flex flex-col min-w-0 h-screen overflow-y-auto overflow-x-hidden no-scrollbar transition-[padding] duration-[160ms] ease-[cubic-bezier(0.34,1.45,0.64,1)] ${settings.isWallpaperAllowed ? 'bg-transparent' : 'bg-[#f3f3f3] dark:bg-[#1b1f24]'} ${
+        className={`relative z-10 flex-1 flex flex-col min-w-0 h-screen ${
+          settings.windowedTabs ? 'overflow-hidden' : 'overflow-y-auto overflow-x-hidden'
+        } no-scrollbar transition-[padding] duration-[160ms] ease-[cubic-bezier(0.34,1.45,0.64,1)] ${settings.isWallpaperAllowed ? 'bg-transparent' : 'bg-[#f3f3f3] dark:bg-[#1b1f24]'} ${
         isInkCanvasEditor || isGalleryViewerOpen
           ? 'md:pl-0 md:pr-0 pb-0'
           : !settings.dockToSidebar || settings.navigationMode === 'floaty'
@@ -1126,7 +1387,7 @@ export default function App() {
           <div className="hidden" aria-hidden="true">
             <TopBar
               currentRoute={currentRoute}
-              navigate={navigate}
+              navigate={openAppInWindow}
               tabSearchQuery={currentTabSearchQuery}
               onTabSearchChange={handleTabSearchChange}
               onOpenSearch={handleOpenSearch}
@@ -1162,7 +1423,8 @@ export default function App() {
         {(!isInkCanvasEditor || isInkCanvasChromeVisible) && !isGalleryViewerOpen && (
           <AppTabsBar
             showTabs={settings.tabsExperiment}
-            tabs={settings.tabsExperiment ? appTabs : []}
+            windowedTabs={settings.windowedTabs}
+            tabs={settings.windowedTabs || settings.tabsExperiment ? appTabs : []}
             activeTabId={activeAppTabId}
             searchQuery={currentTabSearchQuery}
             onSearchChange={handleTabSearchChange}
@@ -1184,21 +1446,47 @@ export default function App() {
             isCommandPromptOpen={isCommandPromptOpen}
             dynamicSidebarIcons={settings.dynamicSidebarIcons}
             fluentIcons={settings.fluentIcons}
-            onNavigate={navigate}
+            onNavigate={openAppInWindow}
             onOpenCommandPrompt={handleOpenCommandPrompt}
             onSelectTab={handleSelectAppTab}
             onCreateTab={handleCreateAppTab}
             onCloseTab={handleCloseAppTab}
+            onToggleWindowTab={handleToggleWindowTab}
+            onMinimizeWindowTab={handleMinimizeWindowTab}
+            onToggleMaximizeWindowTab={handleToggleMaximizeWindowTab}
+            onReorderWindowTabs={handleReorderWindowTabs}
           />
         )}
 
-        {/* Dynamic Page Content with smooth slide-up transition - Bo cong 10px góc trên trái ở desktop, không bo ở mobile */}
+        {settings.windowedTabs ? (
+          <WindowedTabsLayer
+            windows={appTabs}
+            activeWindowId={activeAppTabId}
+            onFocusWindow={handleFocusWindowTab}
+            onMinimizeWindow={handleMinimizeWindowTab}
+            onToggleMaximizeWindow={handleToggleMaximizeWindowTab}
+            onCloseWindow={handleCloseAppTab}
+            onUpdateWindowBounds={handleUpdateWindowBounds}
+            onCreateWindow={handleCreateAppTab}
+            renderWindowContent={(win) =>
+              renderContent(
+                win.route,
+                win.routeState,
+                tabSearchQueries[String(win.id)] || '',
+                (query) => handleSpecificTabSearchChange(win.id, query),
+                (path, state, targetId, closeId) =>
+                  navigate(path, state, targetId ?? win.id, closeId)
+              )
+            }
+          />
+        ) : (
+        /* Dynamic Page Content with smooth slide-up transition - Bo cong 10px góc trên trái ở desktop, không bo ở mobile */
         <main
           id={settings.tabsExperiment ? `app-tab-panel-${activeAppTabId}` : undefined}
           role={settings.tabsExperiment ? 'tabpanel' : undefined}
           aria-labelledby={settings.tabsExperiment ? `app-tab-${activeAppTabId}` : undefined}
-          className={`main-tab-page flex-1 w-full mx-auto ${isSidebarMerged ? 'rounded-none' : 'rounded-tl-none md:rounded-tl-[10px]'} rounded-tr-none rounded-br-none rounded-bl-none ${settings.isWallpaperAllowed ? 'bg-transparent' : 'bg-[#f9f9f9] dark:bg-[#282c31]'} ${
-          currentRoute === '/' || currentRoute === '/home' || currentRoute === '/news' || currentRoute === '/updates' || isOfficeRoute || currentRoute === '/craftmine' || currentRoute === '/photopea' || currentRoute === '/vlc' || currentRoute === '/screenbox' || currentRoute === '/screenbug' || currentRoute === '/gallery' || currentRoute === '/draws' || currentRoute.startsWith('/draws/') || currentRoute === '/camera'
+          className={`main-tab-page flex-1 flex flex-col w-full mx-auto ${isSidebarMerged ? 'rounded-none' : 'rounded-tl-none md:rounded-tl-[10px]'} rounded-tr-none rounded-br-none rounded-bl-none ${settings.isWallpaperAllowed ? 'bg-transparent' : 'bg-[#f9f9f9] dark:bg-[#282c31]'} ${
+          currentRoute === '/' || currentRoute === '/home' || currentRoute === '/news' || currentRoute === '/updates' || isOfficeRoute || currentRoute === '/craftmine' || currentRoute === '/photopea' || currentRoute === '/vlc' || currentRoute === '/screenbox' || currentRoute === '/screenbug' || currentRoute === '/gallery' || currentRoute === '/explorer' || currentRoute === '/calculator' || currentRoute === '/html-writer' || currentRoute === '/media-player' || currentRoute === '/draws' || currentRoute.startsWith('/draws/') || currentRoute === '/camera'
             ? 'p-0 max-w-none pt-0' 
             : 'px-4 sm:px-6 md:px-8 py-5 max-w-7xl'
         } ${
@@ -1220,7 +1508,7 @@ export default function App() {
               initial={{ opacity: 0, y: 22 }}
               animate={isSplashFinished ? { opacity: 1, y: 0 } : { opacity: 0, y: 22 }}
               transition={{ duration: 0.44, ease: [0.16, 1, 0.3, 1] }}
-              className={`tab-element-slide-up-container w-full min-h-full rounded-tl-none md:rounded-tl-[10px] rounded-tr-none rounded-br-none rounded-bl-none ${
+              className={`tab-element-slide-up-container flex-1 flex flex-col w-full min-h-full rounded-tl-none md:rounded-tl-[10px] rounded-tr-none rounded-br-none rounded-bl-none ${
                 settings.pageAnimation === 'zoomIn' ? 'page-anim-zoom origin-center' : ''
               }`}
             >
@@ -1228,6 +1516,7 @@ export default function App() {
             </motion.div>
           )}
         </main>
+        )}
 
       </div>
 
@@ -1263,7 +1552,8 @@ export default function App() {
         />
       )}
 
-      {/* Global Modals */}
+      {/* Global Modals & Control Center Screen Overlay */}
+      <ControlCenterScreenOverlay />
       <WidgetsFeed isOpen={settings.widgetsFeed && isWidgetsFeedOpen} onClose={handleCloseWidgetsFeed} />
       <DirectCommandExperience
         isOpen={isDirectCommandOpen}
@@ -1281,7 +1571,7 @@ export default function App() {
         showWidgets={settings.widgetsFeed}
         dynamicSidebarIcons={settings.dynamicSidebarIcons}
         fluentIcons={settings.fluentIcons}
-        onNavigate={navigate}
+        onNavigate={openAppInWindow}
         onOpenSearch={handleOpenSearch}
         onOpenDirectCommand={handleToggleDirectCommand}
         onOpenCommandPrompt={handleOpenCommandPrompt}
@@ -1307,7 +1597,7 @@ export default function App() {
       <SpotlightModal
         isOpen={isSpotlightOpen}
         onClose={() => setIsSpotlightOpen(false)}
-        navigate={navigate}
+        navigate={openAppInWindow}
         onSelectChannel={setCurrentChannel}
       />
 
@@ -1381,7 +1671,7 @@ export default function App() {
       />
 
       {/* Floating Movable Sticky Note Widget */}
-      {!isGalleryViewerOpen && <StickyNoteWidget onNavigateNotes={() => navigate('/notes')} />}
+      {!isGalleryViewerOpen && <StickyNoteWidget onNavigateNotes={() => openAppInWindow('/notes')} />}
 
       {/* Windows 11 Fluent In-App Custom Scroller Bar */}
       <AppScrollbar

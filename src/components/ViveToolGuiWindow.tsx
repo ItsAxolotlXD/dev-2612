@@ -6,13 +6,14 @@ import { useSettings } from '../hooks/useSettings';
 type Feature = {
   label: string;
   description: string;
-  key: 'isTopBarBottom' | 'isSidebarMerged' | 'searchColorfulExperiment' | 'widgetsFeed' | 'fluentIcons' | 'dynamicSidebarIcons' | 'isWallpaperAllowed';
+  key: 'isTopBarBottom' | 'isSidebarMerged' | 'searchColorfulExperiment' | 'widgetsFeed' | 'fluentIcons' | 'dynamicSidebarIcons' | 'isWallpaperAllowed' | 'windowedTabs';
 };
 
 const FEATURES: Feature[] = [
   { label: 'Windows Mode', description: 'Move the taskbar and search experience to the bottom edge.', key: 'isTopBarBottom' },
   { label: 'IsSidebarMerged', description: 'Merge all sidebar items into the bottom bar as icons (enabled with Windows Mode).', key: 'isSidebarMerged' },
   { label: 'IsWallpaperAllowed', description: 'Show the Sparkle desktop wallpaper as the app background.', key: 'isWallpaperAllowed' },
+  { label: 'WindowedTabs', description: 'Open tabs as draggable, resizable windows with minimize & maximize.', key: 'windowedTabs' },
   { label: 'Search UI upgraded', description: 'Enable the upgraded search experience and colorful shortcuts.', key: 'searchColorfulExperiment' },
   { label: 'Widgets Feed', description: 'Show the live widgets feed in the navigation.', key: 'widgetsFeed' },
   { label: 'Fluent icons', description: 'Use the refreshed Fluent icon set throughout Sparkle.', key: 'fluentIcons' },

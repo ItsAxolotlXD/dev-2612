@@ -59,6 +59,8 @@ export interface SystemSettings {
   widgetsFeedVersion?: number;
   newWatchTab: boolean;
   tabsExperiment: boolean;
+  windowedTabs: boolean;
+  windowedTabsVersion?: number;
   fluentIcons: boolean;
   dynamicSidebarIcons: boolean;
   pageAnimation: 'slideUp' | 'zoomIn';
@@ -128,6 +130,8 @@ export const DEFAULT_SETTINGS: SystemSettings = {
   widgetsFeedVersion: 1,
   newWatchTab: false,
   tabsExperiment: false,
+  windowedTabs: false,
+  windowedTabsVersion: 1,
   fluentIcons: false,
   dynamicSidebarIcons: true,
   pageAnimation: 'slideUp',
@@ -243,6 +247,10 @@ export const getStoredSettings = (): SystemSettings => {
         widgetsFeedVersion: 1,
         newWatchTab: typeof parsed.newWatchTab === 'boolean' ? parsed.newWatchTab : DEFAULT_SETTINGS.newWatchTab,
         tabsExperiment: typeof parsed.tabsExperiment === 'boolean' ? parsed.tabsExperiment : DEFAULT_SETTINGS.tabsExperiment,
+        windowedTabs: parsed.windowedTabsVersion === 1
+          ? (typeof parsed.windowedTabs === 'boolean' ? parsed.windowedTabs : false)
+          : false,
+        windowedTabsVersion: 1,
         fluentIcons: typeof parsed.fluentIcons === 'boolean' ? parsed.fluentIcons : DEFAULT_SETTINGS.fluentIcons,
         dynamicSidebarIcons: typeof parsed.dynamicSidebarIcons === 'boolean' ? parsed.dynamicSidebarIcons : true,
         pageAnimation: parsed.pageAnimation === 'zoomIn' ? 'zoomIn' : 'slideUp',
@@ -412,7 +420,7 @@ export const updateGlobalSetting = <K extends keyof SystemSettings>(key: K, valu
   if (key === 'theme' && value === 'light') {
     extraUpdates.spatialGlassOpacity = 43;
   }
-  settingsStore = { ...settingsStore, [key]: value, ...extraUpdates, fontScaleVersion: 2, spatialGlassVersion: 3, nativeKeyboardVersion: 3, pageLoadingVersion: 2, isTopBarBottomVersion: 1, isSidebarMergedVersion: 1, isWallpaperAllowedVersion: 1 };
+  settingsStore = { ...settingsStore, [key]: value, ...extraUpdates, fontScaleVersion: 2, spatialGlassVersion: 3, nativeKeyboardVersion: 3, pageLoadingVersion: 2, isTopBarBottomVersion: 1, isSidebarMergedVersion: 1, isWallpaperAllowedVersion: 1, windowedTabsVersion: 1 };
   draftSettingsStore = { ...settingsStore };
   try {
     localStorage.setItem('waves_system_settings', JSON.stringify(settingsStore));
@@ -432,7 +440,7 @@ export const updateGlobalSetting = <K extends keyof SystemSettings>(key: K, valu
 };
 
 export const updateMultipleSettings = (newSettings: Partial<SystemSettings>) => {
-  settingsStore = { ...settingsStore, ...newSettings, fontScaleVersion: 2, spatialGlassVersion: 3, nativeKeyboardVersion: 3, pageLoadingVersion: 2, isTopBarBottomVersion: 1, isSidebarMergedVersion: 1, isWallpaperAllowedVersion: 1 };
+  settingsStore = { ...settingsStore, ...newSettings, fontScaleVersion: 2, spatialGlassVersion: 3, nativeKeyboardVersion: 3, pageLoadingVersion: 2, isTopBarBottomVersion: 1, isSidebarMergedVersion: 1, isWallpaperAllowedVersion: 1, windowedTabsVersion: 1 };
   draftSettingsStore = { ...settingsStore };
   try {
     localStorage.setItem('waves_system_settings', JSON.stringify(settingsStore));

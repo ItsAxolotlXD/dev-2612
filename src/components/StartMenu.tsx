@@ -25,11 +25,15 @@ import { getAppPortalTarget, toAppPortalCoordinates } from '../utils/appPortal';
 import { flyoutPanelClassName, flyoutPanelStyle } from './FlyoutDropdown';
 import {
   FluentArticlesIcon,
+  FluentCalculatorIcon,
   FluentCameraIcon,
   FluentCraftmineIcon,
+  FluentFileExplorerIcon,
   FluentGalleryIcon,
   FluentHomeIcon,
+  FluentHtmlWriterIcon,
   FluentInkCanvasIcon,
+  FluentMediaPlayerIcon,
   FluentNotesIcon,
   FluentPersonFeedbackIcon,
   FluentPhotopeaIcon,
@@ -255,6 +259,50 @@ export const StartMenu: React.FC<StartMenuProps> = ({
         onSelect: () => {
           onClose();
           onNavigate('/live-tv');
+        },
+      },
+      {
+        id: 'start-explorer',
+        label: 'File Explorer',
+        subtitle: 'Files & folders',
+        icon: <FluentFileExplorerIcon className="size-7 shrink-0" />,
+        smallIcon: <FluentFileExplorerIcon className="size-3.5 shrink-0" />,
+        onSelect: () => {
+          onClose();
+          onNavigate('/explorer');
+        },
+      },
+      {
+        id: 'start-calculator',
+        label: 'Calculator',
+        subtitle: 'Standard & scientific',
+        icon: <FluentCalculatorIcon className="size-7 shrink-0" />,
+        smallIcon: <FluentCalculatorIcon className="size-3.5 shrink-0" />,
+        onSelect: () => {
+          onClose();
+          onNavigate('/calculator');
+        },
+      },
+      {
+        id: 'start-html-writer',
+        label: 'HTML Writer',
+        subtitle: 'Write & run HTML',
+        icon: <FluentHtmlWriterIcon className="size-7 shrink-0" />,
+        smallIcon: <FluentHtmlWriterIcon className="size-3.5 shrink-0" />,
+        onSelect: () => {
+          onClose();
+          onNavigate('/html-writer');
+        },
+      },
+      {
+        id: 'start-media-player',
+        label: 'Media Player',
+        subtitle: 'Music & videos',
+        icon: <FluentMediaPlayerIcon className="size-7 shrink-0" />,
+        smallIcon: <FluentMediaPlayerIcon className="size-3.5 shrink-0" />,
+        onSelect: () => {
+          onClose();
+          onNavigate('/media-player');
         },
       },
       {

@@ -8,6 +8,10 @@ import {
   FluentArticlesIcon,
   FluentNotesIcon,
   FluentGalleryIcon,
+  FluentFileExplorerIcon,
+  FluentCalculatorIcon,
+  FluentHtmlWriterIcon,
+  FluentMediaPlayerIcon,
   FluentInkCanvasIcon,
   FluentScreenbugIcon,
   FluentCraftmineIcon,
@@ -68,6 +72,22 @@ export const TabLoadingScreen: React.FC<TabLoadingScreenProps> = ({
       ) : (
         <FluentArticlesIcon className={standardIconClass} />
       );
+    }
+
+    if (cleanRoute.startsWith('/explorer')) {
+      return <FluentFileExplorerIcon className={largeIconClass} />;
+    }
+
+    if (cleanRoute.startsWith('/calculator')) {
+      return <FluentCalculatorIcon className={largeIconClass} />;
+    }
+
+    if (cleanRoute.startsWith('/html-writer')) {
+      return <FluentHtmlWriterIcon className={largeIconClass} />;
+    }
+
+    if (cleanRoute.startsWith('/media-player')) {
+      return <FluentMediaPlayerIcon className={largeIconClass} />;
     }
 
     if (cleanRoute.startsWith('/gallery')) {

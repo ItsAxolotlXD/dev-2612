@@ -304,3 +304,115 @@ export const Fluent3DCameraIcon: React.FC<{ className?: string; style?: React.CS
     />
   </div>
 );
+
+export const FluentFileExplorerIcon: React.FC<{ className?: string; style?: React.CSSProperties }> = ({
+  className = 'w-5 h-5',
+  style,
+}) => (
+  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} style={style}>
+    <defs>
+      <linearGradient id="win11-fe-back" x1="2" y1="3" x2="22" y2="14" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stopColor="#f5c242" />
+        <stop offset="100%" stopColor="#d99116" />
+      </linearGradient>
+      <linearGradient id="win11-fe-front" x1="2" y1="7.5" x2="22" y2="20.5" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stopColor="#ffe17d" />
+        <stop offset="55%" stopColor="#f8c13c" />
+        <stop offset="100%" stopColor="#e59e1a" />
+      </linearGradient>
+      <linearGradient id="win11-fe-stand" x1="6" y1="16" x2="18" y2="21" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stopColor="#35b6ff" />
+        <stop offset="100%" stopColor="#0072cf" />
+      </linearGradient>
+    </defs>
+    <path
+      d="M2.2 5.4C2.2 4.3 3.1 3.4 4.2 3.4H8.9C9.5 3.4 10.1 3.66 10.5 4.12L12.1 5.9H19.8C20.9 5.9 21.8 6.8 21.8 7.9V17.4C21.8 18.5 20.9 19.4 19.8 19.4H4.2C3.1 19.4 2.2 18.5 2.2 17.4V5.4Z"
+      fill="url(#win11-fe-back)"
+    />
+    <rect x="2.2" y="7.2" width="19.6" height="12.2" rx="2.1" fill="url(#win11-fe-front)" />
+    <path
+      d="M7.2 16.5C7.2 15.67 7.87 15 8.7 15H15.3C16.13 15 16.8 15.67 16.8 16.5V20.5H7.2V16.5Z"
+      fill="url(#win11-fe-stand)"
+    />
+    <rect x="9.6" y="17.1" width="4.8" height="1.3" rx="0.65" fill="#e0f4ff" fillOpacity="0.92" />
+  </svg>
+);
+
+export const FluentCalculatorIcon: React.FC<{ className?: string; style?: React.CSSProperties }> = ({
+  className = 'w-5 h-5',
+  style,
+}) => (
+  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} style={style}>
+    <defs>
+      <linearGradient id="win11-calc-body" x1="3" y1="2" x2="21" y2="22" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stopColor="#9aa8b8" />
+        <stop offset="100%" stopColor="#5d6a79" />
+      </linearGradient>
+      <linearGradient id="win11-calc-screen" x1="5.5" y1="4" x2="18.5" y2="8.5" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stopColor="#2c3e52" />
+        <stop offset="100%" stopColor="#1b2634" />
+      </linearGradient>
+      <linearGradient id="win11-calc-equals" x1="15.2" y1="14.2" x2="18.6" y2="20" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stopColor="#35b6ff" />
+        <stop offset="100%" stopColor="#0067c0" />
+      </linearGradient>
+    </defs>
+    <rect x="3.5" y="1.8" width="17" height="20.4" rx="2.6" fill="url(#win11-calc-body)" />
+    <rect x="5.4" y="3.8" width="13.2" height="4.4" rx="1.1" fill="url(#win11-calc-screen)" />
+    <rect x="5.4" y="9.8" width="3.7" height="2.6" rx="0.75" fill="#f3f6fa" />
+    <rect x="10.15" y="9.8" width="3.7" height="2.6" rx="0.75" fill="#f3f6fa" />
+    <rect x="14.9" y="9.8" width="3.7" height="2.6" rx="0.75" fill="#d9e2ec" />
+    <rect x="5.4" y="13.4" width="3.7" height="2.6" rx="0.75" fill="#f3f6fa" />
+    <rect x="10.15" y="13.4" width="3.7" height="2.6" rx="0.75" fill="#f3f6fa" />
+    <rect x="5.4" y="17" width="3.7" height="2.6" rx="0.75" fill="#f3f6fa" />
+    <rect x="10.15" y="17" width="3.7" height="2.6" rx="0.75" fill="#f3f6fa" />
+    <rect x="14.9" y="13.4" width="3.7" height="6.2" rx="0.9" fill="url(#win11-calc-equals)" />
+  </svg>
+);
+
+export const FluentHtmlWriterIcon: React.FC<{ className?: string; style?: React.CSSProperties }> = ({
+  className = 'w-5 h-5',
+  style,
+}) => (
+  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} style={style}>
+    <defs>
+      <linearGradient id="win11-html-doc" x1="3" y1="2" x2="20" y2="21" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stopColor="#ffffff" />
+        <stop offset="100%" stopColor="#dbe4f0" />
+      </linearGradient>
+      <linearGradient id="win11-html-badge" x1="2" y1="12" x2="22" y2="22" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stopColor="#ff7a33" />
+        <stop offset="100%" stopColor="#d9460f" />
+      </linearGradient>
+    </defs>
+    <path
+      d="M5 3.6C5 2.716 5.716 2 6.6 2H14.2L19 6.8V19.4C19 20.284 18.284 21 17.4 21H6.6C5.716 21 5 20.284 5 19.4V3.6Z"
+      fill="url(#win11-html-doc)"
+      stroke="#94a3b8"
+      strokeWidth="0.9"
+    />
+    <path d="M14 2V5.6C14 6.373 14.627 7 15.4 7H19" fill="#cbd5e1" />
+    <rect x="2.5" y="10.2" width="19" height="9.4" rx="2.4" fill="url(#win11-html-badge)" />
+    <path
+      d="M8.7 13.1L6.2 14.9L8.7 16.7M15.3 13.1L17.8 14.9L15.3 16.7M13 12.2L11 17.6"
+      stroke="#ffffff"
+      strokeWidth="1.7"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+export const FluentMediaPlayerIcon: React.FC<{ className?: string; style?: React.CSSProperties }> = ({
+  className = 'w-5 h-5',
+  style,
+}) => (
+  <img
+    src="/assets/aistudio/image_86b4ff60.png"
+    alt="Media Player"
+    draggable={false}
+    className={`shrink-0 object-contain select-none ${className}`}
+    style={style}
+  />
+);
+

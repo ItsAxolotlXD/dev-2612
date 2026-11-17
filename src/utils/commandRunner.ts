@@ -14,7 +14,8 @@ export type ExperimentSettingKey =
   | 'widgetsFeed'
   | 'isTopBarBottom'
   | 'isSidebarMerged'
-  | 'isWallpaperAllowed';
+  | 'isWallpaperAllowed'
+  | 'windowedTabs';
 
 export type Experiment = {
   id: string;
@@ -47,6 +48,7 @@ export const EXPERIMENTS: Experiment[] = [
   { id: '902417635', name: 'Windows Mode', settingKey: 'isTopBarBottom' },
   { id: '648291037', name: 'IsSidebarMerged', settingKey: 'isSidebarMerged' },
   { id: '519482736', name: 'IsWallpaperAllowed', settingKey: 'isWallpaperAllowed' },
+  { id: '493820175', name: 'WindowedTabs', settingKey: 'windowedTabs' },
 ];
 
 export const COMMAND_USAGE =
